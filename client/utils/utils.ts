@@ -52,11 +52,11 @@ export class ScreenUtils {
         this.screenMetrics.defaultGameWidth = defaultWidth;
         this.screenMetrics.defaultGameHeight = defaultHeight;
 
-        let orientation: ScreenOrientation = ((this.screenMetrics.defaultGameWidth < this.screenMetrics.defaultGameHeight) ? ScreenOrientation.PORTRAIT : ScreenOrientation.LANDSCAPE);
+        const orientation: ScreenOrientation = ((this.screenMetrics.defaultGameWidth < this.screenMetrics.defaultGameHeight) ? ScreenOrientation.PORTRAIT : ScreenOrientation.LANDSCAPE);
 
         // Swap width and height if necessary to match the specified orientation
-        let dimensionsOppositeForLandscape: boolean = ((this.screenMetrics.windowWidth < this.screenMetrics.windowHeight) && orientation === ScreenOrientation.LANDSCAPE);
-        let dimensionsOppositeForPortrait: boolean = ((this.screenMetrics.windowHeight < this.screenMetrics.windowWidth) && orientation === ScreenOrientation.PORTRAIT);
+        const dimensionsOppositeForLandscape: boolean = ((this.screenMetrics.windowWidth < this.screenMetrics.windowHeight) && orientation === ScreenOrientation.LANDSCAPE);
+        const dimensionsOppositeForPortrait: boolean = ((this.screenMetrics.windowHeight < this.screenMetrics.windowWidth) && orientation === ScreenOrientation.PORTRAIT);
 
         if (dimensionsOppositeForLandscape || dimensionsOppositeForPortrait) {
             [this.screenMetrics.windowWidth, this.screenMetrics.windowHeight] = [this.screenMetrics.windowHeight, this.screenMetrics.windowWidth];
@@ -71,8 +71,8 @@ export class ScreenUtils {
             this.screenMetrics.maxGameHeight = maxGameHeight;
         }
 
-        let defaultAspectRatio: number = (DEFAULT_GAME_WIDTH / DEFAULT_GAME_HEIGHT);
-        let windowAspectRatio: number = (this.screenMetrics.windowWidth / this.screenMetrics.windowHeight);
+        const defaultAspectRatio: number = (DEFAULT_GAME_WIDTH / DEFAULT_GAME_HEIGHT);
+        const windowAspectRatio: number = (this.screenMetrics.windowWidth / this.screenMetrics.windowHeight);
 
         if (windowAspectRatio > defaultAspectRatio) {
             this.screenMetrics.gameHeight = this.screenMetrics.defaultGameHeight;
@@ -100,16 +100,16 @@ export class ScreenUtils {
 
 export class StringUtils {
     public static toCamelCase(str: string) {
-        return str.replace(/[^A-Za-z0-9]/g, ' ').replace(/^\w|[A-Z]|\b\w|\s+/g, function (match, index) {
-            if (+match === 0 || match === '-' || match === '.') {
-                return '';
+        return str.replace(/[^A-Za-z0-9]/g, " ").replace(/^\w|[A-Z]|\b\w|\s+/g, function (match, index) {
+            if (+match === 0 || match === "-" || match === ".") {
+                return "";
             }
             return (index === 0 ? match.toLowerCase() : match.toUpperCase());
         });
     }
 
     public static toPascalCase(str: string) {
-        let camelCase: string = StringUtils.toCamelCase(str);
+        const camelCase: string = StringUtils.toCamelCase(str);
 
         return (camelCase[0].toUpperCase() + camelCase.substr(1));
     }

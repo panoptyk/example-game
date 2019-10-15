@@ -8,6 +8,7 @@
     "webpack-client:dist": "webpack --config webpack.dist.config.js --progress --colors",
     "webpack-client-server:dev": "webpack-dev-server --config webpack.dev.config.js --open",
     "webpack-client-server:dist": "webpack-dev-server --config webpack.dist.config.js --open",
+    "update": "npm install panoptyk/panoptyk-engine#engine-package-format",
     "assets:dev": "node ./scripts/generateAssetsClass.js --dev",
     "assets": "node ./scripts/generateAssetsClass.js"
   },
@@ -34,6 +35,7 @@
     "file-loader": "^2.0.0",
     "html-webpack-plugin": "^3.2.0",
     "imagejs": "^0.0.9",
+    "panoptyk-engine": "github:panoptyk/panoptyk-engine#engine-package-format",
     "phaser-ce": "^2.11.1",
     "pngjs-image": "^0.11.7",
     "shelljs": "^0.8.3",

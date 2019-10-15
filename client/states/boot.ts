@@ -1,5 +1,5 @@
-import * as Utils from '../utils/utils';
-import * as Assets from '../assets';
+import * as Utils from "../utils/utils";
+import * as Assets from "../assets";
 
 export default class Boot extends Phaser.State {
     public preload(): void {
@@ -17,8 +17,8 @@ export default class Boot extends Phaser.State {
 
         this.game.scale.scaleMode = (Phaser.ScaleManager as any)[SCALE_MODE];
 
-        if (SCALE_MODE === 'USER_SCALE') {
-            let screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.screenMetrics;
+        if (SCALE_MODE === "USER_SCALE") {
+            const screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.screenMetrics;
 
             this.game.scale.setUserScale(screenMetrics.scaleX, screenMetrics.scaleY);
         }
@@ -54,6 +54,6 @@ export default class Boot extends Phaser.State {
            \nSOUND_EXTENSIONS_PREFERENCE. ${SOUND_EXTENSIONS_PREFERENCE}`
         );
 
-        this.game.state.start('preloader');
+        this.game.state.start("Preload");
     }
 }

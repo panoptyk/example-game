@@ -5,6 +5,7 @@ var CleanWebpackPlugin = require("clean-webpack-plugin");
 var WebpackSynchronizableShellPlugin = require("webpack-synchronizable-shell-plugin");
 
 module.exports = {
+  target: "web",
   mode: "development",
   devtool: "source-map",
   entry: path.join(__dirname, "client/app.ts"),
@@ -95,7 +96,7 @@ module.exports = {
         test: /\.ts$/,
         loader: "ts-loader",
         options: {
-            configFile: path.join(__dirname, 'client.tsconfig.json')
+          configFile: path.join(__dirname, "client.tsconfig.json")
         },
         exclude: "/node_modules/"
       }
@@ -103,5 +104,15 @@ module.exports = {
   },
   performance: {
     hints: false
+  },
+  externals: {
+    uws: "uws"
+  },
+  node: {
+    fs: "empty",
+    net: "empty",
+    express: "empty",
+    http: "empty",
+    "socket.io": "empty"
   }
 };

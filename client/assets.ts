@@ -1,11 +1,25 @@
+/* tslint:disable */
 /* AUTO GENERATED FILE. DO NOT MODIFY. YOU WILL LOSE YOUR CHANGES ON BUILD. */
 
 export namespace Images {
-    class IExistSoTypeScriptWillNotComplainAboutAnEmptyNamespace {}
+    export class TilemapsTilesTilesDungeonV11 {
+        static getName(): string { return 'tiles_dungeon_v1.1'; }
+
+        static getPNG(): string { return require('assets/tilemaps/tiles/tiles_dungeon_v1.1.png'); }
+    }
 }
 
 export namespace Spritesheets {
-    class IExistSoTypeScriptWillNotComplainAboutAnEmptyNamespace {}
+    export class SpritesheetsButtonSpriteSheet193713 {
+        static getName(): string { return 'button_sprite_sheet.[193,71,3,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/button_sprite_sheet.[193,71,3,0,0].png'); }
+        static getFrameWidth(): number { return 193; }
+        static getFrameHeight(): number { return 71; }
+        static getFrameMax(): number { return 3; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
 }
 
 export namespace Atlases {
@@ -67,15 +81,28 @@ export namespace CustomWebFonts {
 }
 
 export namespace BitmapFonts {
-    class IExistSoTypeScriptWillNotComplainAboutAnEmptyNamespace {}
+    export class FontsFont {
+        static getName(): string { return 'font'; }
+
+        static getPNG(): string { return require('assets/fonts/font.png'); }
+        static getXML(): string { return require('assets/fonts/font.xml'); }
+    }
 }
 
 export namespace JSON {
-    class IExistSoTypeScriptWillNotComplainAboutAnEmptyNamespace {}
+    export class TilemapsMapsExampleRooms {
+        static getName(): string { return 'example_rooms'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/example_rooms.json'); }
+    }
 }
 
 export namespace TilemapJSON {
-    class IExistSoTypeScriptWillNotComplainAboutAnEmptyNamespace {}
+    export class TilemapsMapsRoom1 {
+        static getName(): string { return 'room1'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room1.json'); }
+    }
 }
 
 export namespace XML {
@@ -87,7 +114,11 @@ export namespace Text {
 }
 
 export namespace Scripts {
-    class IExistSoTypeScriptWillNotComplainAboutAnEmptyNamespace {}
+    export class ScriptsPhaserInputMin {
+        static getName(): string { return 'phaser-input.min'; }
+
+        static getJS(): string { return require('assets/scripts/phaser-input.min.js'); }
+    }
 }
 export namespace Shaders {
     class IExistSoTypeScriptWillNotComplainAboutAnEmptyNamespace {}

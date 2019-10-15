@@ -1,13 +1,14 @@
 {
   "extends": "./tsconfig.settings.json",
   "compilerOptions": {
-    "rootDir": "./client",
+    "module": "commonjs",
+    "rootDir": "./server",
     "baseUrl": ".",
     "types": [
       "node"
     ]
   },
   "include": [
-    "./client"
+    "./server"
   ]
 }

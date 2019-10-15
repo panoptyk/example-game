@@ -1,24 +1,28 @@
-import 'p2';
-import 'pixi';
-import 'phaser';
+import "p2";
+import "pixi";
+import "phaser";
 
-import * as WebFontLoader from 'webfontloader';
+import * as WebFontLoader from "webfontloader";
 
-import Boot from './states/boot';
-import Preloader from './states/preloader';
-import Title from './states/title';
-import * as Utils from './utils/utils';
-import * as Assets from './assets';
+import Boot from "./states/boot";
+import Preload from "./states/preloader";
+import { Login } from "./states/login";
+import { Game } from "./states/game";
+import * as Utils from "./utils/utils";
+import * as Assets from "./assets";
+
+import { ClientAPI } from "panoptyk-engine/dist/client";
 
 class App extends Phaser.Game {
     constructor(config: Phaser.IGameConfig) {
         super (config);
 
-        this.state.add('boot', Boot);
-        this.state.add('preloader', Preloader);
-        this.state.add('title', Title);
+        this.state.add("Boot", Boot, false);
+        this.state.add("Preload", Preload, false);
+        this.state.add("Login", Login, false);
+        this.state.add("Game", Game, false);
 
-        this.state.start('boot');
+        this.state.start("Boot");
     }
 }
 
@@ -26,28 +30,29 @@ function startApp(): void {
     let gameWidth: number = DEFAULT_GAME_WIDTH;
     let gameHeight: number = DEFAULT_GAME_HEIGHT;
 
-    if (SCALE_MODE === 'USER_SCALE') {
-        let screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.calculateScreenMetrics(gameWidth, gameHeight, MAX_GAME_WIDTH, MAX_GAME_HEIGHT);
+    if (SCALE_MODE === "USER_SCALE") {
+        const screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.calculateScreenMetrics(gameWidth, gameHeight, MAX_GAME_WIDTH, MAX_GAME_HEIGHT);
 
         gameWidth = screenMetrics.gameWidth;
         gameHeight = screenMetrics.gameHeight;
     }
 
     // There are a few more options you can set if needed, just take a look at Phaser.IGameConfig
-    let gameConfig: Phaser.IGameConfig = {
+    const gameConfig: Phaser.IGameConfig = {
         width: gameWidth,
         height: gameHeight,
         renderer: Phaser.AUTO,
-        parent: '',
+        parent: "",
         resolution: 1
     };
 
-    let app = new App(gameConfig);
+    ClientAPI.init();
+    const app = new App(gameConfig);
 }
 
 window.onload = () => {
-    let webFontLoaderOptions: any = null;
-    let webFontsToLoad: string[] = GOOGLE_WEB_FONTS;
+    let webFontLoaderOptions: any = undefined;
+    const webFontsToLoad: string[] = GOOGLE_WEB_FONTS;
 
     if (webFontsToLoad.length > 0) {
         webFontLoaderOptions = (webFontLoaderOptions || {});
@@ -65,9 +70,9 @@ window.onload = () => {
             urls: []
         };
 
-        let allCustomWebFonts = (Assets.CustomWebFonts as any);
+        const allCustomWebFonts = (Assets.CustomWebFonts as any);
 
-        for (let font in allCustomWebFonts) {
+        for (const font in allCustomWebFonts) {
             webFontLoaderOptions.custom.families.push(allCustomWebFonts[font].getFamily());
             webFontLoaderOptions.custom.urls.push(allCustomWebFonts[font].getCSS());
         }
