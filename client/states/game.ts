@@ -1,3 +1,4 @@
+import * as Assets from "../assets";
 import { ClientAPI, Room } from "panoptyk-engine/dist/client";
 
 export class Game extends Phaser.State {
@@ -22,8 +23,8 @@ export class Game extends Phaser.State {
     this.roomText.position.set(this.game.world.centerX - this.roomText.width / 2, 0);
 
     // add tileset map
-    this.map = this.game.add.tilemap("room1");
-    this.map.addTilesetImage("dungeon_tileset", "dungeon_tiles");
+    this.map = this.game.add.tilemap(Assets.TilemapJSON.TilemapsMapsRoom1.getName());
+    this.map.addTilesetImage("dungeon_tileset", Assets.Images.TilemapsTilesTilesDungeonV11.getName());
 
     // create floor layer
     this.floorLayer = this.map.createLayer("Floor");

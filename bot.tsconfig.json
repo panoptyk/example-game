@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.settings.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "rootDir": "./bot",
+    "baseUrl": ".",
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "./bot"
+  ]
+}

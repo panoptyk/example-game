@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "main": "",
   "scripts": {
+    "server": "ts-node --project ./server.tsconfig.json ./server/exampleServer.ts",
     "webpack-client:dev": "webpack --config webpack.dev.config.js --progress --colors",
     "webpack-client:dist": "webpack --config webpack.dist.config.js --progress --colors",
     "webpack-client-server:dev": "webpack-dev-server --config webpack.dev.config.js --open",
