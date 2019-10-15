@@ -5,6 +5,7 @@ var CleanWebpackPlugin = require("clean-webpack-plugin");
 var WebpackSynchronizableShellPlugin = require("webpack-synchronizable-shell-plugin");
 
 module.exports = {
+  target: "web",
   mode: "production",
   entry: path.join(__dirname, "client/app.ts"),
   output: {
@@ -102,5 +103,15 @@ module.exports = {
   },
   performance: {
     hints: false
+  },
+  externals: {
+    uws: "uws"
+  },
+  node: {
+    fs: "empty",
+    net: "empty",
+    express: "empty",
+    http: "empty",
+    "socket.io": "empty"
   }
 };

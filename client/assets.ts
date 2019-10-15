@@ -2,6 +2,16 @@
 /* AUTO GENERATED FILE. DO NOT MODIFY. YOU WILL LOSE YOUR CHANGES ON BUILD. */
 
 export namespace Images {
+    export class ImagesDoor {
+        static getName(): string { return 'door'; }
+
+        static getPNG(): string { return require('assets/images/door.png'); }
+    }
+    export class ImagesSideDoor {
+        static getName(): string { return 'sideDoor'; }
+
+        static getPNG(): string { return require('assets/images/sideDoor.png'); }
+    }
     export class TilemapsTilesTilesDungeonV11 {
         static getName(): string { return 'tiles_dungeon_v1.1'; }
 

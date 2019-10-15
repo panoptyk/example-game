@@ -41,8 +41,8 @@ export class Game extends Phaser.State {
     // add door objects
     this.doorObjects = this.game.add.group();
     this.doorObjects.inputEnableChildren = true;
-    this.map.createFromObjects("Doors", 481, "door", undefined, true, false, this.doorObjects);
-    this.map.createFromObjects("Doors", 482, "sideDoor", undefined, true, false, this.doorObjects);
+    this.map.createFromObjects("Doors", 481, Assets.Images.ImagesDoor.getName(), undefined, true, false, this.doorObjects);
+    this.map.createFromObjects("Doors", 482, Assets.Images.ImagesSideDoor.getName(), undefined, true, false, this.doorObjects);
     this.doorObjects.position.set(this.game.world.centerX - this.floorLayer.width / 2, this.game.world.centerY - this.floorLayer.height / 2);
     this.doorObjects.onChildInputDown.add(this.onDoorClicked, this);
   }
