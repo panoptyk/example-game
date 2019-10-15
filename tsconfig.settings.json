@@ -3,7 +3,7 @@
     "moduleResolution": "node",
     "downlevelIteration": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es6",
+    "target": "es2018",
     "module": "es6",
     "declaration": true,
     "declarationMap": true,
@@ -14,6 +14,7 @@
     "declarationDir": "./build",
     "typeRoots": [
       "node_modules/@types",
+      "node_modules/panoptyk-engine",
       "**/types"
     ]
   }

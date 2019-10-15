@@ -1,14 +1,4 @@
-import { ClientAPI } from "../src/core/panoptykClientAPI";
-import {
-  Agent,
-  Room,
-  Info,
-  Trade,
-  Item,
-  Conversation
-} from "../src/core/models";
-import { getPanoptykDatetime } from "../src/core/utilities/util";
-import { logger } from "../src/core/utilities/logger";
+import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, getPanoptykDatetime, logger } from "panoptyk-engine/dist/client";
 
 const username = process.argv[2] ? process.argv[2] : "simpleTrader";
 const password = process.argv[3] ? process.argv[3] : "password";
@@ -18,12 +8,13 @@ function init() {
   console.log("Logging in as: " + username + " to server: " + address);
   logger.silence();
   address ? ClientAPI.init(address) : ClientAPI.init();
+  // tslint:disable-next-line: ban
   setTimeout(actWrapper, 100);
 }
 
 let acting = false;
 let loggedIn = false;
-let endBot = false;
+const endBot = false;
 function actWrapper() {
   if (!acting) {
     acting = true;
@@ -44,6 +35,7 @@ function actWrapper() {
     }
   }
   if (!endBot) {
+    // tslint:disable-next-line: ban
     setTimeout(actWrapper, 100);
   }
 }

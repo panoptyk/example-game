@@ -4,11 +4,14 @@
   "version": "0.0.1",
   "main": "",
   "scripts": {
+    "prestart": "npm run webpack-client:dev",
+    "start": "npm run server",
     "server": "ts-node --project ./server.tsconfig.json ./server/exampleServer.ts",
     "webpack-client:dev": "webpack --config webpack.dev.config.js --progress --colors",
     "webpack-client:dist": "webpack --config webpack.dist.config.js --progress --colors",
     "webpack-client-server:dev": "webpack-dev-server --config webpack.dev.config.js --open",
     "webpack-client-server:dist": "webpack-dev-server --config webpack.dist.config.js --open",
+    "bot": "ts-node --project ./bot.tsconfig.json",
     "update": "npm install panoptyk/panoptyk-engine#engine-package-format",
     "assets:dev": "node ./scripts/generateAssetsClass.js --dev",
     "assets": "node ./scripts/generateAssetsClass.js"

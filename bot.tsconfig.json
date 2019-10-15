@@ -2,13 +2,13 @@
   "extends": "./tsconfig.settings.json",
   "compilerOptions": {
     "module": "commonjs",
-    "rootDir": "./bot",
+    "rootDir": "./bots",
     "baseUrl": ".",
     "types": [
       "node"
     ]
   },
   "include": [
-    "./bot"
+    "./bots"
   ]
 }
