@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "main": "",
   "scripts": {
-    "prestart": "npm run webpack-client:dev",
+    "prestart": "npm run update && npm run webpack-client:dev",
     "start": "npm run server",
     "server": "ts-node --project ./server.tsconfig.json ./server/exampleServer.ts",
     "webpack-client:dev": "webpack --config webpack.dev.config.js --progress --colors",
