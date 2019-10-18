@@ -1,4 +1,4 @@
-import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, getPanoptykDatetime } from "panoptyk-engine/dist/client";
+import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, getPanoptykDatetime } from "panoptyk-engine/dist";
 
 const username = process.argv.length >= 3 ? process.argv[2] : "scavenger";
 const password = process.argv.length > 3 ? process.argv[3] : "password";

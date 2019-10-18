@@ -27,14 +27,22 @@ async function sendRequests() {
     }
 }
 
-async function attemptTrade() {
+async function informationTrade() {
     while (ClientAPI.playerAgent.inConversation()) {
         const trades: Trade[] = Trade.getActiveTradesWithAgent(ClientAPI.playerAgent);
         if (trades.length > 0) {
-            // accept any trade
-            await ClientAPI.setTradeReadyStatus(trades[0], true).catch(err => {
-                console.log(err.message);
-            });
+            if (username === "info1") {
+                const other = trades[0].agentIni === ClientAPI.playerAgent ? trades[0].agentRec : trades[0].agentIni;
+                const pred = {0: undefined, 1: other.id, 2: ClientAPI.playerAgent.room.id};
+                await ClientAPI.askQuestion("ENTER", pred);
+            }
+            if (username === "info2") {
+                for (const info of ClientAPI.playerAgent.knowledge) {
+                    if (info.query) {
+                        await ClientAPI.confirmKnowledgeOfAnswerToQuestion(info);
+                    }
+                }
+            }
         }
         else {
             // attempt to start trade with anyone in conversation
@@ -60,7 +68,7 @@ async function main() {
         }
         else if (ClientAPI.playerAgent.inConversation()) {
             console.log("yay conversation!!", ClientAPI.playerAgent.conversation);
-            await attemptTrade();
+            await informationTrade();
         }
         else {
             await ClientAPI.acceptConversation(ClientAPI.playerAgent.conversationRequesters[0]).catch(err => {
