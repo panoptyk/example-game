@@ -32,14 +32,14 @@ async function informationTrade() {
         const trades: Trade[] = Trade.getActiveTradesWithAgent(ClientAPI.playerAgent);
         if (trades.length > 0) {
             if (username === "info1") {
-                const other = trades[0].agentIni === ClientAPI.playerAgent ? trades[0].agentRec : trades[0].agentIni;
-                const pred = {0: undefined, 1: other.id, 2: ClientAPI.playerAgent.room.id};
-                await ClientAPI.askQuestion("ENTER", pred);
+                await ClientAPI.setTradeReadyStatus(trades[0], true).catch(err => {
+                    console.log(err.message);
+                });
             }
             if (username === "info2") {
                 for (const info of ClientAPI.playerAgent.knowledge) {
-                    if (info.query) {
-                        await ClientAPI.confirmKnowledgeOfAnswerToQuestion(info);
+                    if (info.isQuery()) {
+                        // answer question
                     }
                 }
             }
@@ -58,6 +58,32 @@ async function informationTrade() {
     }
 }
 
+async function conversationQuestionTest() {
+    while (true) {
+        if (username === "info1") {
+            const other = ClientAPI.playerAgent.conversation.getAgents(ClientAPI.playerAgent)[0];
+            const pred = Info.ACTIONS.ENTER.question({agent: other, time: undefined, loc: ClientAPI.playerAgent.room});
+            await ClientAPI.askQuestion(pred).catch(err => {
+                console.log(err.message);
+            });
+            return;
+        }
+        if (username === "info2") {
+            for (const info of ClientAPI.playerAgent.knowledge) {
+                if (info.isQuery()) {
+                    await ClientAPI.confirmKnowledgeOfAnswerToQuestion(info).catch(err => {
+                        console.log(err.message);
+                    });
+                    return;
+                }
+            }
+        }
+        // delay next iteration of loop to avoid spinning cpu
+        // tslint:disable-next-line: ban
+        await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 1000));
+    }
+}
+
 async function main() {
     let waitAmount: number;
     while (true) {
@@ -68,6 +94,7 @@ async function main() {
         }
         else if (ClientAPI.playerAgent.inConversation()) {
             console.log("yay conversation!!", ClientAPI.playerAgent.conversation);
+            await conversationQuestionTest();
             await informationTrade();
         }
         else {
