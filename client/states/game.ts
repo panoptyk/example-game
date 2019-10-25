@@ -13,6 +13,7 @@ export class Game extends Phaser.State {
   private doorObjects: Phaser.Group;
 
   private listView: ListView;
+  private clientConsole: ListView;
 
   public create(): void {
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -49,23 +50,59 @@ export class Game extends Phaser.State {
     this.doorObjects.position.set(this.game.world.centerX - this.floorLayer.width / 2, this.game.world.height / 4);
     this.doorObjects.onChildInputDown.add(this.onDoorClicked, this);
 
+    this.createClientConsole();
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+    this.addConsoleMessage("message");
+
+
     this.createInventory();
     this.loadInventory();
    }
 
-   public createInventory(): void {
-      this.listView = new ListView(this.game);
+   private createClientConsole(): void {
+      const style = { font: "16px Arial", fill: "#ffffff" };
+      const header = this.game.add.text(0, 0, "Console", style);
+      this.clientConsole = new ListView(this.game, 350, 150, header);
+      this.clientConsole.moveTo(this.game.world.centerX - 175, this.wallLayer.position.y + this.wallLayer.height + 30);
+   }
+
+   private addConsoleMessage(messageString: string): void {
+      const style = { font: "12px Arial", fill: "#ffffff" };
+      const message = this.game.add.text(0, 0, messageString, style);
+      this.clientConsole.add(message);
+   }
+
+   private createInventory(): void {
+      const style = { font: "16px Arial", fill: "#ffffff" };
+      const header = this.game.add.text(0, 0, "Inventory", style);
+      this.listView = new ListView(this.game, 200, 400, header);
       this.listView.moveTo(this.game.world.centerX + this.map.widthInPixels / 2 + 30, this.game.world.centerY / 4);
    }
 
-   public loadInventory(): void {
+   private loadInventory(): void {
       ClientAPI.playerAgent.inventory.forEach(item => {
          const rowString = item.itemName;
          this.createInventoryRow(this.listView, rowString);
       });
    }
 
-   public createInventoryRow(listview: ListView, rowString: string): void {
+   private createInventoryRow(listview: ListView, rowString: string): void {
       const group = this.game.add.group();
       const fill = this.game.add.graphics(0, 0);
       fill.beginFill(0xffffff).drawRect(0, 0, listview.width, 25);
@@ -79,7 +116,7 @@ export class Game extends Phaser.State {
       listview.add(group);
    }
 
-  public async onDoorClicked(sprite: Phaser.Sprite): Promise<void> {
+   private async onDoorClicked(sprite: Phaser.Sprite): Promise<void> {
     // add a loading image later
 
     const temp = ClientAPI.playerAgent.room.getAdjacentRooms()[this.doorObjects.getChildIndex(sprite)];

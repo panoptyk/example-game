@@ -4,14 +4,17 @@ export class ListView {
    private HUD: Phaser.Group;
    private items: Phaser.Group;
    private old: number;
+   private header: any;
    public width: number;
    public height: number;
 
-   constructor(game: Phaser.Game) {
+
+   constructor(game: Phaser.Game, width: number, height: number, header: any) {
       this.game = game;
 
-      this.width = 200;
-      this.height = 400;
+      this.width = width;
+      this.height = height;
+      this.header = header;
       const x = 0;
       const y = 0;
 
@@ -33,8 +36,7 @@ export class ListView {
       this.items.position.set(x, y + 16);
 
       // create header
-      const style = { font: "16px Arial", fill: "#ffffff" };
-      this.game.add.text(0, 0, "inventory", style, this.HUD);
+      this.HUD.add(header);
 
       // add signals
       this.mask.inputEnabled = true;
@@ -55,6 +57,10 @@ export class ListView {
       const yDiff = this.old - y;
       const itemsX = this.items.position.x;
       const itemsY = this.items.position.y - yDiff;
+
+      if (this.items.height < this.height || itemsY > this.header.height) {
+         return;
+      }
 
       this.items.position.set(itemsX, itemsY);
       this.old = y;
