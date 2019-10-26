@@ -16,63 +16,46 @@ export class Game extends Phaser.State {
   private clientConsole: ListView;
 
   public create(): void {
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+      this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    this.game.input.mouse.capture = true;
+      this.game.input.mouse.capture = true;
 
-    this.room = ClientAPI.playerAgent.room;
+      this.room = ClientAPI.playerAgent.room;
+      const style = { font: "65px Arial", fill: "#ffffff" };
+      this.roomText = this.game.add.text(undefined, undefined, "Room: " + this.room.roomName, style);
+      this.roomText.position.set(this.game.world.centerX - this.roomText.width / 2, 0);
 
-    const style = { font: "65px Arial", fill: "#ffffff" };
-    this.roomText = this.game.add.text(undefined, undefined, "Room: " + this.room.roomName, style);
-    this.roomText.position.set(this.game.world.centerX - this.roomText.width / 2, 0);
+      // add tileset map
+      this.map = this.game.add.tilemap(Assets.TilemapJSON.TilemapsMapsRoom1.getName());
+      this.map.addTilesetImage("dungeon_tileset", Assets.Images.TilemapsTilesTilesDungeonV11.getName());
+      this.loadMap();
 
-    // add tileset map
-    this.map = this.game.add.tilemap(Assets.TilemapJSON.TilemapsMapsRoom1.getName());
-    this.map.addTilesetImage("dungeon_tileset", Assets.Images.TilemapsTilesTilesDungeonV11.getName());
+      this.createClientConsole();
 
-    // create floor layer
-    this.floorLayer = this.map.createLayer("Floor");
-    this.floorLayer.fixedToCamera = false;
-    this.floorLayer.resize(this.map.tileWidth * this.map.width, this.map.tileHeight * this.map.height);
-    this.floorLayer.position.set(this.game.world.centerX - this.floorLayer.width / 2, this.game.world.height / 4);
+      this.createInventory();
+      this.loadInventory();
+   }
 
-    // create wall layer
-    this.wallLayer = this.map.createLayer("Walls");
-    this.wallLayer.fixedToCamera = false;
-    this.wallLayer.resize(this.map.tileWidth * this.map.width, this.map.tileHeight * this.map.height);
-    this.wallLayer.position.set(this.game.world.centerX - this.wallLayer.width / 2, this.game.world.height / 4 /*- this.wallLayer.height / 2 */);
+   private loadMap(): void {
+      // create floor layer
+      this.floorLayer = this.map.createLayer("Floor");
+      this.floorLayer.fixedToCamera = false;
+      this.floorLayer.resize(this.map.tileWidth * this.map.width, this.map.tileHeight * this.map.height);
+      this.floorLayer.position.set(this.game.world.centerX - this.floorLayer.width / 2, this.game.world.height / 4);
 
-    // add door objects
-    this.doorObjects = this.game.add.group();
-    this.doorObjects.inputEnableChildren = true;
-    this.map.createFromObjects("Doors", 481, Assets.Images.ImagesDoor.getName(), undefined, true, false, this.doorObjects);
-    this.map.createFromObjects("Doors", 482, Assets.Images.ImagesSideDoor.getName(), undefined, true, false, this.doorObjects);
-    this.doorObjects.position.set(this.game.world.centerX - this.floorLayer.width / 2, this.game.world.height / 4);
-    this.doorObjects.onChildInputDown.add(this.onDoorClicked, this);
+      // create wall layer
+      this.wallLayer = this.map.createLayer("Walls");
+      this.wallLayer.fixedToCamera = false;
+      this.wallLayer.resize(this.map.tileWidth * this.map.width, this.map.tileHeight * this.map.height);
+      this.wallLayer.position.set(this.game.world.centerX - this.wallLayer.width / 2, this.game.world.height / 4 /*- this.wallLayer.height / 2 */);
 
-    this.createClientConsole();
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-    this.addConsoleMessage("message");
-
-
-    this.createInventory();
-    this.loadInventory();
+      // add door objects
+      this.doorObjects = this.game.add.group();
+      this.doorObjects.inputEnableChildren = true;
+      this.map.createFromObjects("Doors", 481, Assets.Images.ImagesDoor.getName(), undefined, true, false, this.doorObjects);
+      this.map.createFromObjects("Doors", 482, Assets.Images.ImagesSideDoor.getName(), undefined, true, false, this.doorObjects);
+      this.doorObjects.position.set(this.game.world.centerX - this.floorLayer.width / 2, this.game.world.height / 4);
+      this.doorObjects.onChildInputDown.add(this.onDoorClicked, this);
    }
 
    private createClientConsole(): void {
@@ -123,8 +106,8 @@ export class Game extends Phaser.State {
     await ClientAPI.moveToRoom(temp).then(res => {
       this.room = ClientAPI.playerAgent.room;
       this.roomText.setText("Room: " + this.room.roomName);
-      console.log("room changed");
+      this.addConsoleMessage("Room changed to " + temp.roomName);
     })
-    .catch(err => console.log("room change fail!"));
+    .catch(err => this.addConsoleMessage("Room change fail!"));
   }
 }
