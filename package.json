@@ -13,6 +13,7 @@
     "webpack-client-server:dist": "webpack-dev-server --config webpack.dist.config.js --open",
     "bot": "ts-node --project ./bot.tsconfig.json",
     "update": "npm install panoptyk/panoptyk-engine#master",
+    "load-scenario": "./loadScenario.sh",
     "assets:dev": "node ./scripts/generateAssetsClass.js --dev",
     "assets": "node ./scripts/generateAssetsClass.js"
   },
