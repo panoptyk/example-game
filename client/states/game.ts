@@ -1,12 +1,16 @@
 import * as Assets from "../assets";
-import { ClientAPI, Room } from "panoptyk-engine/dist/client";
+import { ClientAPI, getPanoptykDatetime, formatPanoptykDatetime, Room } from "panoptyk-engine/dist/client";
 import { ListView } from "../components/listview";
+import { AgentSprite } from "../prefabs/agent";
+
+const offset = Date.UTC(2019, 9, 28); // Current server beginning of time
 
 export class Game extends Phaser.State {
   private map: Phaser.Tilemap;
 
   private room: Room;
   private roomText: Phaser.Text;
+  private dateText: Phaser.Text;
 
   private floorLayer: Phaser.TilemapLayer;
   private wallLayer: Phaser.TilemapLayer;
@@ -24,9 +28,12 @@ export class Game extends Phaser.State {
       this.game.input.mouse.capture = true;
 
       this.room = ClientAPI.playerAgent.room;
-      const style = { font: "65px Arial", fill: "#ffffff" };
+      const style = { font: "35px Arial", fill: "#ffffff" };
       this.roomText = this.game.add.text(undefined, undefined, "Room: " + this.room.roomName, style);
       this.roomText.position.set(this.game.world.centerX - this.roomText.width / 2, 0);
+
+      this.dateText = this.game.add.text(undefined, undefined, "", style);
+      this.dateText.position.set(this.game.world.centerX - this.roomText.width / 2, 40);
 
       // add tileset map
       this.map = this.game.add.tilemap(Assets.TilemapJSON.TilemapsMapsRoom1.getName());
@@ -67,6 +74,8 @@ export class Game extends Phaser.State {
    }
 
    public update(): void {
+      const dateTime = formatPanoptykDatetime(getPanoptykDatetime(offset));
+      this.dateText.setText("Year: " + dateTime.year + "  Day: " + dateTime.day + "   " + dateTime.hour + ":00");
       this.refreshPlayers();
    }
 
@@ -74,8 +83,9 @@ export class Game extends Phaser.State {
       const currentAgents = ClientAPI.playerAgent.room.getAgents(ClientAPI.playerAgent);
       currentAgents.forEach(agent => {
             const agentPosition = this.createAgentPosition();
-            const agentSprite = this.game.add.sprite(agentPosition.x, agentPosition.y, Assets.Spritesheets.SpritesheetsPlayerSpriteSheet484844.getName(), 0);
+            const agentSprite = new AgentSprite(this.game, agentPosition.x, agentPosition.y);
             agentSprite.inputEnabled = true;
+            this.game.add.existing(agentSprite);
             this.agents.push([agent, agentSprite]);
          }
       );
@@ -112,25 +122,15 @@ export class Game extends Phaser.State {
 
    // creates a random point for an agent
    private createAgentPosition(): any {
-      // not done
-      const x = Math.floor(Math.random() * this.game.width);
-      const y = Math.floor(Math.random() * this.game.height);
-      return new Phaser.Point(x, y);
-   }
-
-   private log() {
-      console.log("hi");
+      const x = Math.floor(Math.random() * this.floorLayer.width) - this.floorLayer.width / 2;
+      const y = Math.floor(Math.random() * this.floorLayer.height);
+      return new Phaser.Point(x + this.game.world.centerX, y + this.game.world.height / 4);
    }
 
    private loadPlayer(): void {
       const playerLocation = this.getPlayerPosition();
-      this.player = this.game.add.sprite(playerLocation.x, playerLocation.y, Assets.Spritesheets.SpritesheetsPlayerSpriteSheet484844.getName(), 0);
-      this.player.animations.add("standing", [0, 1, 2], 3, true);
-      this.player.animations.add("walk_forward", [9, 10, 11, 12], 4, true);
-      this.player.animations.add("walking_side", [13, 14, 15, 16], 4, true);
-      this.player.animations.add("walking_back", [17, 18, 19, 20], 4, true);
-      this.player.animations.play("standing", 3, true);
-      this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
+      this.player = new AgentSprite(this.game, playerLocation.x, playerLocation.y);
+      this.game.add.existing(this.player);
    }
 
    // creates a position for the player
