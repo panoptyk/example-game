@@ -12,6 +12,9 @@ export class Game extends Phaser.State {
   private wallLayer: Phaser.TilemapLayer;
   private doorObjects: Phaser.Group;
 
+  private player: Phaser.Sprite;
+  private agents: any[] = new Array();
+
   private listView: ListView;
   private clientConsole: ListView;
 
@@ -29,6 +32,8 @@ export class Game extends Phaser.State {
       this.map = this.game.add.tilemap(Assets.TilemapJSON.TilemapsMapsRoom1.getName());
       this.map.addTilesetImage("dungeon_tileset", Assets.Images.TilemapsTilesTilesDungeonV11.getName());
       this.loadMap();
+
+      this.loadPlayer();
 
       this.createClientConsole();
 
@@ -56,6 +61,34 @@ export class Game extends Phaser.State {
       this.map.createFromObjects("Doors", 482, Assets.Images.ImagesSideDoor.getName(), undefined, true, false, this.doorObjects);
       this.doorObjects.position.set(this.game.world.centerX - this.floorLayer.width / 2, this.game.world.height / 4);
       this.doorObjects.onChildInputDown.add(this.onDoorClicked, this);
+
+      this.loadPlayers();
+   }
+
+   private loadPlayers() {
+      console.log("hiii");
+      ClientAPI.playerAgent.room.getAgents(ClientAPI.playerAgent).forEach(agent => {
+            const agentSprite = this.game.add.sprite(100, 100, Assets.Spritesheets.SpritesheetsPlayerSpriteSheet484844.getName(), 0);
+            agentSprite.inputEnabled = true;
+            agentSprite.events.onInputDown.add(this.log);
+            this.agents.push([agent, agentSprite]);
+         }
+      );
+   }
+
+   private log() {
+      console.log("hi");
+   }
+
+   private loadPlayer(): void {
+      this.player = this.game.add.sprite(this.doorObjects.getChildAt(0).position.x + this.floorLayer.position.x - this.map.tileWidth, this.doorObjects.getChildAt(0).position.y + this.floorLayer.position.y - this.map.tileHeight, Assets.Spritesheets.SpritesheetsPlayerSpriteSheet484844.getName(), 0);
+      this.player.animations.add("standing", [0, 1, 2], 3, true);
+      this.player.animations.add("walk_forward", [9, 10, 11, 12], 4, true);
+      this.player.animations.add("walking_side", [13, 14, 15, 16], 4, true);
+      this.player.animations.add("walking_back", [17, 18, 19, 20], 4, true);
+
+      this.player.animations.play("standing", 3, true);
+      this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
    }
 
    private createClientConsole(): void {
@@ -109,5 +142,8 @@ export class Game extends Phaser.State {
       this.addConsoleMessage("Room changed to " + temp.roomName);
     })
     .catch(err => this.addConsoleMessage("Room change fail!"));
-  }
+    this.player.animations.play("walking_back");
+    this.player.body.moveTo(1000, 100, 270);
+    this.player.animations.stop("walking_back");
+   }
 }
