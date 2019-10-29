@@ -37,7 +37,7 @@
       "_maxOccupants": 15
     },
     "5": {
-      "id": 3,
+      "id": 5,
       "_roomName": "room5",
       "adjacent": [1, 2, 4, 7],
       "_occupants": [],
@@ -46,7 +46,7 @@
       "_maxOccupants": 15
     },
     "6": {
-      "id": 3,
+      "id": 6,
       "_roomName": "room6",
       "adjacent": [3],
       "_occupants": [],
@@ -55,7 +55,7 @@
       "_maxOccupants": 15
     },
     "7": {
-      "id": 3,
+      "id": 7,
       "_roomName": "room7",
       "adjacent": [5],
       "_occupants": [],
