@@ -42,7 +42,6 @@ export class Game extends Phaser.State {
 
       this.createInventory();
       this.loadInventory();
-
    }
 
    private loadMap(): void {
@@ -67,11 +66,22 @@ export class Game extends Phaser.State {
       this.doorObjects.onChildInputDown.add(this.onDoorClicked, this);
    }
 
-   public render(): void {
-      this.loadPlayers();
+   public update(): void {
+      this.refreshPlayers();
    }
 
    private loadPlayers() {
+      const currentAgents = ClientAPI.playerAgent.room.getAgents(ClientAPI.playerAgent);
+      currentAgents.forEach(agent => {
+            const agentPosition = this.createAgentPosition();
+            const agentSprite = this.game.add.sprite(agentPosition.x, agentPosition.y, Assets.Spritesheets.SpritesheetsPlayerSpriteSheet484844.getName(), 0);
+            agentSprite.inputEnabled = true;
+            this.agents.push([agent, agentSprite]);
+         }
+      );
+   }
+
+   private refreshPlayers() {
       // needs more testing and could use improvements
       const currentAgents = ClientAPI.playerAgent.room.getAgents(ClientAPI.playerAgent);
       currentAgents.forEach(agent => {
@@ -80,6 +90,10 @@ export class Game extends Phaser.State {
                const agentSprite = this.game.add.sprite(agentPosition.x, agentPosition.y, Assets.Spritesheets.SpritesheetsPlayerSpriteSheet484844.getName(), 0);
                agentSprite.inputEnabled = true;
                this.agents.push([agent, agentSprite]);
+
+               // add message to client console
+               const message = "agent " + agent.agentName + " entered the room";
+               this.addConsoleMessage(message);
             }
          }
       );
@@ -88,6 +102,10 @@ export class Game extends Phaser.State {
          if (currentAgents.find(value => {return value.agentName === agent[0].agentName; }) === undefined) {
             this.agents = this.agents.filter(value => {return value[0].agentName !== agent[0].agentName; });
             agent[1].kill();
+
+            // add message to console
+            const message = "agent " + agent[0].agentName + " exited the room";
+            this.addConsoleMessage(message);
          }
       });
    }
@@ -173,7 +191,17 @@ export class Game extends Phaser.State {
       this.room = ClientAPI.playerAgent.room;
       this.roomText.setText("Room: " + this.room.roomName);
       this.addConsoleMessage("Room changed to " + temp.roomName);
+
+      this.clearAgents();
+      this.loadPlayers();
     })
     .catch(err => this.addConsoleMessage("Room change fail!"));
+   }
+
+   private clearAgents(): void {
+      this.agents.forEach(agent => {
+         agent[1].kill();
+      });
+      this.agents = new Array();
    }
 }
