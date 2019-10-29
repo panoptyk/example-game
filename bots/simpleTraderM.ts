@@ -14,7 +14,7 @@ function init() {
 
 let acting = false;
 let loggedIn = false;
-const endBot = false;
+let endBot = false;
 function actWrapper() {
   if (!acting) {
     acting = true;
@@ -55,7 +55,7 @@ let moving = true;
 let lastSwitch = 0;
 let switchWait = 10;
 
-let stop = false;
+let stop = true;
 
 async function act() {
   if (moving && Date.now() - lastSwitch > switchWait) {
