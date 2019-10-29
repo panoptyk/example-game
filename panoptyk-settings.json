@@ -1,1 +1,9 @@
-{"default_room_id":1,"data_dir":"data","port":8080,"log_level":2,"log_line_length":99}
+{
+  "default_room_id": 1,
+  "data_dir": "data",
+  "port": 8080,
+  "log_level": 2,
+  "log_line_length": 99,
+  "server_start_date": { "day": 28, "month": 10, "year": 2019 },
+  "server_start_date_ms": 0
+}
