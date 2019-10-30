@@ -11,7 +11,7 @@ import { Game } from "./states/game";
 import * as Utils from "./utils/utils";
 import * as Assets from "./assets";
 
-import { ClientAPI } from "panoptyk-engine/dist/client";
+import { ClientAPI, Room } from "panoptyk-engine/dist/client";
 
 class App extends Phaser.Game {
     constructor(config: Phaser.IGameConfig) {
@@ -49,6 +49,9 @@ function startApp(): void {
     ClientAPI.init();
     const app = new App(gameConfig);
 }
+
+(window as any).ClientAPI = ClientAPI;
+(window as any).Room = Room;
 
 window.onload = () => {
     let webFontLoaderOptions: any = undefined;

@@ -28,6 +28,7 @@ export class Game extends Phaser.State {
   private doorObjects: Phaser.Group;
 
   private player: Phaser.Sprite;
+  private otherAgents: Phaser.Group;
   private agentSpriteMap: Map<number, AgentSprite> = new Map();
   private agentsInRoom: number[] = new Array();
   private roomEvents: RoomEvent[] = new Array();
@@ -41,7 +42,7 @@ export class Game extends Phaser.State {
     this.game.input.mouse.capture = true;
 
     this.room = ClientAPI.playerAgent.room;
-    const style = { font: "35px Arial", fill: "#ffffff" };
+    const style = { font: "25px Arial", fill: "#ffffff" };
     this.roomText = this.game.add.text(
       undefined,
       undefined,
@@ -55,8 +56,8 @@ export class Game extends Phaser.State {
 
     this.dateText = this.game.add.text(undefined, undefined, "", style);
     this.dateText.position.set(
-      this.game.world.centerX - this.roomText.width / 2,
-      40
+      this.game.world.centerX - this.dateText.width / 2,
+      30
     );
 
     // add tileset map
@@ -72,6 +73,7 @@ export class Game extends Phaser.State {
     this.loadPlayer();
 
     // Add other players
+    this.otherAgents = this.game.add.group();
     this.loadAgents();
 
     this.createClientConsole();
@@ -131,6 +133,9 @@ export class Game extends Phaser.State {
       this.game.world.height / 4
     );
     this.doorObjects.onChildInputDown.add(this.onDoorClicked, this);
+    ClientAPI.addOnUpdateListener(() => {
+      this.scheduleAgentRoomEvents();
+    });
   }
 
   public update(): void {
@@ -144,7 +149,9 @@ export class Game extends Phaser.State {
         dateTime.hour +
         ":00"
     );
-    this.scheduleAgentRoomEvents();
+    if (!ClientAPI.isUpdating()) {
+      this.handleRoomEvents();
+    }
   }
 
   private loadPlayer(): void {
@@ -240,10 +247,18 @@ export class Game extends Phaser.State {
   private clearAgents(): void {
     this.agentsInRoom.forEach(agent => {
       if (this.agentSpriteMap.has(agent)) {
-        this.agentSpriteMap.get(agent).kill();
+        this.agentSpriteMap.get(agent).destroy();
         this.agentSpriteMap.delete(agent);
       }
     });
+    Array.from(this.agentSpriteMap.values()).forEach(sprite => {
+      console.log("should not need to be entered");
+      sprite.destroy();
+    });
+    console.log(this.otherAgents);
+    this.otherAgents.destroy();
+    this.otherAgents = this.game.add.group();
+    this.agentSpriteMap = new Map();
     this.agentsInRoom = new Array();
     this.roomEvents = new Array();
   }
@@ -271,8 +286,10 @@ export class Game extends Phaser.State {
         agentPosition.x,
         agentPosition.y
       );
+      agentSprite.id = agent.id;
       agentSprite.inputEnabled = true;
       this.game.add.existing(agentSprite);
+      this.otherAgents.add(agentSprite);
       this.agentsInRoom.push(agent.id);
       this.agentSpriteMap.set(agent.id, agentSprite);
     });
@@ -288,7 +305,7 @@ export class Game extends Phaser.State {
       if (index !== -1) {
         // remove agents who are in room to see who is left
         agentsLeft.splice(index);
-      } else {
+      } else if (this.agentsInRoom.indexOf(agent.id) === -1) {
         // else new agent entered room
         this.agentsInRoom.push(agent.id);
         this.roomEvents.push({ agentID: agent.id, type: "entered" });
@@ -306,29 +323,33 @@ export class Game extends Phaser.State {
   private handleRoomEvents() {
     const unHandledEvents: RoomEvent[] = [];
     while (this.roomEvents.length) {
-      const event = this.roomEvents.pop();
+      const event = this.roomEvents.shift();
       if (event.type === "entered") {
-         // This can be replaced with animation code
-         const pos = this.createAgentPosition();
-         const agentSprite = new AgentSprite(this.game, pos.x, pos.y);
-         agentSprite.inputEnabled = true;
-         this.game.add.existing(agentSprite);
-         this.agentSpriteMap.set(event.agentID, agentSprite);
-         // Console Message
-         const message = "Agent " + Agent.getByID(event.agentID).agentName + " entered the room";
-         this.addConsoleMessage(message);
-      }
-      else if (event.type === "left") {
-         if (this.agentSpriteMap.has(event.agentID)) {
-            this.agentSpriteMap.get(event.agentID).kill();
-            this.agentSpriteMap.delete(event.agentID);
-         }
-         // Console Message
-         const message = "Agent " + Agent.getByID(event.agentID).agentName + " left the room";
-         this.addConsoleMessage(message);
-      }
-      else {
-         unHandledEvents.push(event);
+        // This can be replaced with animation code
+        const pos = this.createAgentPosition();
+        const agentSprite = new AgentSprite(this.game, pos.x, pos.y);
+        agentSprite.id = event.agentID;
+        agentSprite.inputEnabled = true;
+        this.game.add.existing(agentSprite);
+        this.otherAgents.add(agentSprite);
+        this.agentSpriteMap.set(event.agentID, agentSprite);
+        // Console Message
+        const message =
+          "Agent " +
+          Agent.getByID(event.agentID).agentName +
+          " entered the room";
+        this.addConsoleMessage(message);
+      } else if (event.type === "left") {
+        if (this.agentSpriteMap.has(event.agentID)) {
+          this.agentSpriteMap.get(event.agentID).destroy();
+          this.agentSpriteMap.delete(event.agentID);
+        }
+        // Console Message
+        const message =
+          "Agent " + Agent.getByID(event.agentID).agentName + " left the room";
+        this.addConsoleMessage(message);
+      } else {
+        unHandledEvents.push(event);
       }
     }
     this.roomEvents = unHandledEvents;
