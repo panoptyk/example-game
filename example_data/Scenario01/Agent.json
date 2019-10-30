@@ -1,0 +1,14 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_conversationID": 0,
+      "_agentName": "itemMan",
+      "roomID": 1,
+      "_inventory": [2, 3, 4],
+      "_knowledge": [2],
+      "_conversationRequests": []
+    }
+  },
+  "nextID": 2
+}
