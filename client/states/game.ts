@@ -25,10 +25,8 @@ export class Game extends Phaser.State {
 
   private floorLayer: Phaser.TilemapLayer;
   private wallLayer: Phaser.TilemapLayer;
-  private doorObjects: Phaser.Group;
 
   private player: Phaser.Sprite;
-  private otherAgents: Phaser.Group;
   private agentSpriteMap: Map<number, AgentSprite> = new Map();
   private agentsInRoom: number[] = new Array();
   private roomEvents: RoomEvent[] = new Array();
@@ -36,29 +34,25 @@ export class Game extends Phaser.State {
   private listView: ListView;
   private clientConsole: ListView;
 
-  public create(): void {
-    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+  // Groups
+  private otherAgents: Phaser.Group;
+  private doorObjects: Phaser.Group;
+  private HUD: Phaser.Group;
 
+  public createGroups() {
+    this.otherAgents = this.game.add.group();
+    this.doorObjects = this.game.add.group();
+    this.HUD = this.game.add.group();
+  }
+
+  // PHASER CREATE FUNCTION //
+  public create(): void { // Initialization code
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.game.input.mouse.capture = true;
+    this.createGroups();
 
     this.room = ClientAPI.playerAgent.room;
-    const style = { font: "25px Arial", fill: "#ffffff" };
-    this.roomText = this.game.add.text(
-      undefined,
-      undefined,
-      "Room: " + this.room.roomName,
-      style
-    );
-    this.roomText.position.set(
-      this.game.world.centerX - this.roomText.width / 2,
-      0
-    );
-
-    this.dateText = this.game.add.text(undefined, undefined, "", style);
-    this.dateText.position.set(
-      this.game.world.centerX - this.dateText.width / 2,
-      30
-    );
+    this.createHUD();
 
     // add tileset map
     this.map = this.game.add.tilemap(
@@ -73,13 +67,65 @@ export class Game extends Phaser.State {
     this.loadPlayer();
 
     // Add other players
-    this.otherAgents = this.game.add.group();
     this.loadAgents();
 
     this.createClientConsole();
 
     this.createInventory();
     this.loadInventory();
+  }
+
+  // PHASER UPDATE FUNCTION //
+  public update(): void {
+    this.updateHUD();
+    if (!ClientAPI.isUpdating()) {
+      this.handleRoomEvents();
+    }
+  }
+
+  // HUD code //
+  public createHUD() {
+    const style = { font: "25px Arial", fill: "#ffffff" };
+    const spacing = 10;
+    this.roomText = this.game.add.text(
+      undefined,
+      undefined,
+      "Room: " + this.room.roomName,
+      style
+    );
+    this.roomText.position.set(
+      spacing / 2,
+      0
+    );
+
+    this.dateText = this.game.add.text(undefined, undefined, "", style);
+    this.dateText.position.set(
+      this.roomText.width + spacing,
+      0
+    );
+    this.HUD.add(this.roomText);
+    this.HUD.add(this.dateText);
+    this.HUD.position.set(
+      this.game.world.centerX - this.HUD.getLocalBounds().width / 2,
+      5
+    );
+  }
+
+  public updateHUD() {
+    const dateTime = formatPanoptykDatetime(getPanoptykDatetime(offset));
+    this.dateText.setText(
+      "Year: " +
+        dateTime.year +
+        "  Day: " +
+        dateTime.day +
+        "   " +
+        dateTime.hour +
+        ":00"
+    );
+    this.HUD.position.set(
+      this.game.world.centerX - this.HUD.getLocalBounds().width / 2,
+      5
+    );
   }
 
   private loadMap(): void {
@@ -108,7 +154,6 @@ export class Game extends Phaser.State {
     );
 
     // add door objects
-    this.doorObjects = this.game.add.group();
     this.doorObjects.inputEnableChildren = true;
     this.map.createFromObjects(
       "Doors",
@@ -136,22 +181,6 @@ export class Game extends Phaser.State {
     ClientAPI.addOnUpdateListener(() => {
       this.scheduleAgentRoomEvents();
     });
-  }
-
-  public update(): void {
-    const dateTime = formatPanoptykDatetime(getPanoptykDatetime(offset));
-    this.dateText.setText(
-      "Year: " +
-        dateTime.year +
-        "  Day: " +
-        dateTime.day +
-        "   " +
-        dateTime.hour +
-        ":00"
-    );
-    if (!ClientAPI.isUpdating()) {
-      this.handleRoomEvents();
-    }
   }
 
   private loadPlayer(): void {
