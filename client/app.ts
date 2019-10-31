@@ -27,11 +27,11 @@ class App extends Phaser.Game {
 }
 
 function startApp(): void {
-    let gameWidth: number = DEFAULT_GAME_WIDTH;
-    let gameHeight: number = DEFAULT_GAME_HEIGHT;
+    let gameWidth = 1280;
+    let gameHeight = 800;
 
     if (SCALE_MODE === "USER_SCALE") {
-        const screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.calculateScreenMetrics(gameWidth, gameHeight, MAX_GAME_WIDTH, MAX_GAME_HEIGHT);
+        const screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.calculateScreenMetrics(gameWidth, gameHeight, gameWidth, gameHeight);
 
         gameWidth = screenMetrics.gameWidth;
         gameHeight = screenMetrics.gameHeight;
@@ -42,7 +42,7 @@ function startApp(): void {
         width: gameWidth,
         height: gameHeight,
         renderer: Phaser.AUTO,
-        parent: "",
+        parent: "game",
         resolution: 1
     };
 
