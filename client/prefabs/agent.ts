@@ -1,8 +1,9 @@
 import * as Assets from "../assets";
 
 export class AgentSprite extends Phaser.Sprite {
-  public lock = false;
+  public animating = false;
   public id = 0;
+  public standLocIndex = -1;
 
   constructor(game: Phaser.Game, x: number, y: number) {
     super(game, x, y, Assets.Spritesheets.SpritesheetsPlayerSpriteSheet484844.getName(), 0);

@@ -20,26 +20,26 @@ export namespace Images {
 }
 
 export namespace Spritesheets {
-   export class SpritesheetsButtonSpriteSheet193713 {
-      static getName(): string { return 'button_sprite_sheet.[193,71,3,0,0]'; }
+    export class SpritesheetsButtonSpriteSheet193713 {
+        static getName(): string { return 'button_sprite_sheet.[193,71,3,0,0]'; }
 
-      static getPNG(): string { return require('assets/spritesheets/button_sprite_sheet.[193,71,3,0,0].png'); }
-      static getFrameWidth(): number { return 193; }
-      static getFrameHeight(): number { return 71; }
-      static getFrameMax(): number { return 3; }
-      static getMargin(): number { return 0; }
-      static getSpacing(): number { return 0; }
-   }
-   export class SpritesheetsPlayerSpriteSheet484844 {
-      static getName(): string { return 'player_sprite_sheet.[48,48,44,0,0]'; }
+        static getPNG(): string { return require('assets/spritesheets/button_sprite_sheet.[193,71,3,0,0].png'); }
+        static getFrameWidth(): number { return 193; }
+        static getFrameHeight(): number { return 71; }
+        static getFrameMax(): number { return 3; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsPlayerSpriteSheet484844 {
+        static getName(): string { return 'player_sprite_sheet.[48,48,44,0,0]'; }
 
-      static getPNG(): string { return require('assets/spritesheets/player_sprite_sheet.[48,48,44,0,0].png'); }
-      static getFrameWidth(): number { return 48; }
-      static getFrameHeight(): number { return 48; }
-      static getFrameMax(): number { return 44; }
-      static getMargin(): number { return 0; }
-      static getSpacing(): number { return 0; }
-   }
+        static getPNG(): string { return require('assets/spritesheets/player_sprite_sheet.[48,48,44,0,0].png'); }
+        static getFrameWidth(): number { return 48; }
+        static getFrameHeight(): number { return 48; }
+        static getFrameMax(): number { return 44; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
 }
 
 export namespace Atlases {
@@ -122,6 +122,11 @@ export namespace TilemapJSON {
         static getName(): string { return 'room1'; }
 
         static getJSON(): string { return require('assets/tilemaps/maps/room1.json'); }
+    }
+    export class TilemapsMapsTemplateRoom {
+        static getName(): string { return 'templateRoom'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/templateRoom.json'); }
     }
 }
 
