@@ -62,7 +62,7 @@ async function conversationQuestionTest() {
     while (true) {
         if (username === "info1") {
             const other = ClientAPI.playerAgent.conversation.getAgents(ClientAPI.playerAgent)[0];
-            const pred = Info.ACTIONS.ENTER.question({agent: other, time: undefined, loc: ClientAPI.playerAgent.room});
+            const pred = Info.ACTIONS.MOVE.question({agent: other, time: undefined, loc1: undefined, loc2: ClientAPI.playerAgent.room});
             await ClientAPI.askQuestion(pred).catch(err => {
                 console.log(err.message);
             });
@@ -71,9 +71,9 @@ async function conversationQuestionTest() {
         if (username === "info2") {
             for (const info of ClientAPI.playerAgent.knowledge) {
                 if (info.isQuery()) {
-                    await ClientAPI.confirmKnowledgeOfAnswerToQuestion(info).catch(err => {
-                        console.log(err.message);
-                    });
+                    // await ClientAPI.confirmKnowledgeOfAnswerToQuestion(info).catch(err => {
+                    //     console.log(err.message);
+                    // });
                     return;
                 }
             }
@@ -104,7 +104,6 @@ async function main() {
             // skip rest of loop since we now have a conversation
             continue;
         }
-
         if (getPanoptykDatetime() - lastMove > waitAmount) {
             await leaveRoom();
         }
