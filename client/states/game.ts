@@ -75,19 +75,21 @@ export class Game extends Phaser.State {
     this.room = ClientAPI.playerAgent.room;
     this.createHUD();
 
-    // add tileset map
+    // load map and set gameWorld location
     this.loadMap(ClientAPI.playerAgent.room);
     this.gameWorld.position.set(
-      this.game.world.centerX - this.wallLayer.width / 2,
-      this.game.world.height / 4
+      50,
+      50
     );
+    this.gameWorld.scale.set(2, 2);
 
+    // Initialize player
     const standLoc = this.getStandingLoc();
     const pos = standLoc.pos;
     this.createPlayer(pos.x, pos.y);
     this.player.standLocIndex = standLoc.index;
 
-    // Add other players
+    // Add other agents
     this.loadAgents();
 
     this.createClientConsole();
