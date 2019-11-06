@@ -12,6 +12,7 @@ import * as Utils from "./utils/utils";
 import * as Assets from "./assets";
 
 import { ClientAPI, Room, logger } from "panoptyk-engine/dist/client";
+import Vue from "vue";
 
 class App extends Phaser.Game {
     constructor(config: Phaser.IGameConfig) {
@@ -27,6 +28,7 @@ class App extends Phaser.Game {
 }
 
 function startApp(): void {
+    Vue.config.productionTip = false;
     let gameWidth = 1280;
     let gameHeight = 800;
 
@@ -42,7 +44,7 @@ function startApp(): void {
         width: gameWidth,
         height: gameHeight,
         renderer: Phaser.AUTO,
-        parent: "game",
+        parent: "phaser-game",
         resolution: 1
     };
 

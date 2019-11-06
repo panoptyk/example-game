@@ -9,7 +9,7 @@ import {
 } from "panoptyk-engine/dist/client";
 import { ListView } from "../components/listview";
 import { AgentSprite } from "../prefabs/agent";
-import { Sprite, Point } from "phaser-ce";
+import { UI } from "../ui/ui";
 
 const offset = Date.UTC(2019, 9, 28); // Current server beginning of time
 
@@ -20,6 +20,7 @@ interface RoomEvent {
 }
 
 export class Game extends Phaser.State {
+  private UI: UI;
   private map: Phaser.Tilemap;
 
   private room: Room;
@@ -36,7 +37,7 @@ export class Game extends Phaser.State {
     tileHeight: 0,
     width: 0,
     height: 0,
-    offset: new Point(0, 0),
+    offset: new Phaser.Point(0, 0),
     possible: []
   };
   private agentSpriteMap: Map<number, AgentSprite> = new Map();
@@ -67,6 +68,8 @@ export class Game extends Phaser.State {
 
   // PHASER CREATE FUNCTION //
   public create(): void {
+    this.UI = new UI();
+    (window as any).myUI = this.UI;
     // Initialization code
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.game.input.mouse.capture = true;
@@ -91,11 +94,6 @@ export class Game extends Phaser.State {
 
     // Add other agents
     this.loadAgents();
-
-    this.createClientConsole();
-
-    this.createInventory();
-    this.loadInventory();
 
     ClientAPI.addOnUpdateListener(models => {
       models.Info.forEach(i => {
@@ -168,6 +166,7 @@ export class Game extends Phaser.State {
       });
     }
     this.doorObjects.visible = false;
+    this.mapLayers.alpha = 0;
     // Load
     this.map = this.game.add.tilemap(
       Assets.TilemapJSON.TilemapsMapsTemplateRoom.getName()
@@ -226,6 +225,7 @@ export class Game extends Phaser.State {
     });
     this.world.bringToTop(this.doorObjects);
     this.doorObjects.visible = true;
+    this.mapLayers.alpha = 1;
 
     // create possible standing locations
     const standArea = this.map.objects["Areas"][0];
@@ -258,7 +258,7 @@ export class Game extends Phaser.State {
       Math.floor(loc / this.standingLocs.width) * this.standingLocs.tileHeight +
       this.standingLocs.offset.y;
     this.standingLocs.possible.splice(index);
-    return { pos: new Point(x, y), index };
+    return { pos: new Phaser.Point(x, y), index };
   }
 
   private createPlayer(x: number, y: number): void {
@@ -267,7 +267,7 @@ export class Game extends Phaser.State {
   }
 
   private moveAgent(
-    agent: Sprite,
+    agent: Phaser.Sprite,
     start: Phaser.Point,
     end: Phaser.Point,
     callback = function() {}
@@ -289,51 +289,8 @@ export class Game extends Phaser.State {
     agent.visible = true;
   }
 
-  private createClientConsole(): void {
-    const style = { font: "16px Arial", fill: "#ffffff" };
-    const header = this.game.add.text(0, 0, "Console", style);
-    this.clientConsole = new ListView(this.game, 350, 150, header);
-    this.clientConsole.moveTo(
-      this.game.world.centerX - 175,
-      this.gameWorld.position.y + this.gameWorld.height + 30
-    );
-  }
-
   private addConsoleMessage(messageString: string): void {
-    const style = { font: "12px Arial", fill: "#ffffff" };
-    const message = this.game.add.text(0, 0, messageString, style);
-    this.clientConsole.add(message);
-  }
-
-  private createInventory(): void {
-    const style = { font: "16px Arial", fill: "#ffffff" };
-    const header = this.game.add.text(0, 0, "Inventory", style);
-    this.listView = new ListView(this.game, 200, 400, header);
-    this.listView.moveTo(
-      this.game.world.centerX + this.map.widthInPixels / 2 + 30,
-      this.game.world.centerY / 4
-    );
-  }
-
-  private loadInventory(): void {
-    ClientAPI.playerAgent.inventory.forEach(item => {
-      const rowString = item.itemName;
-      this.createInventoryRow(this.listView, rowString);
-    });
-  }
-
-  private createInventoryRow(listview: ListView, rowString: string): void {
-    const group = this.game.add.group();
-    const fill = this.game.add.graphics(0, 0);
-    fill.beginFill(0xffffff).drawRect(0, 0, listview.width, 25);
-
-    const style = { font: "16px Arial", fill: "#000000" };
-    const text = this.game.add.text(0, 0, rowString, style);
-
-    group.add(fill);
-    group.add(text);
-
-    listview.add(group);
+    console.log(messageString);
   }
 
   private async onDoorClicked(sprite: Phaser.Sprite): Promise<void> {
