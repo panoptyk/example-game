@@ -13,6 +13,8 @@ import * as Assets from "./assets";
 
 import { ClientAPI, Room, logger } from "panoptyk-engine/dist/client";
 import Vue from "vue";
+import Buefy from "Buefy";
+import { UI } from "./ui/ui";
 
 class App extends Phaser.Game {
     constructor(config: Phaser.IGameConfig) {
@@ -29,8 +31,10 @@ class App extends Phaser.Game {
 
 function startApp(): void {
     Vue.config.productionTip = false;
-    let gameWidth = 1280;
-    let gameHeight = 800;
+    Vue.use(Buefy);
+    const ui = UI.instance;
+    let gameWidth = 900;
+    let gameHeight = 600;
 
     if (SCALE_MODE === "USER_SCALE") {
         const screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.calculateScreenMetrics(gameWidth, gameHeight, gameWidth, gameHeight);

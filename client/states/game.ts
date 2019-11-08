@@ -7,7 +7,6 @@ import {
   Agent,
   Info
 } from "panoptyk-engine/dist/client";
-import { ListView } from "../components/listview";
 import { AgentSprite } from "../prefabs/agent";
 import { UI } from "../ui/ui";
 
@@ -25,11 +24,6 @@ export class Game extends Phaser.State {
 
   private room: Room;
   private previousRoom: Room;
-  private roomText: Phaser.Text;
-  private dateText: Phaser.Text;
-
-  private floorLayer: Phaser.TilemapLayer;
-  private wallLayer: Phaser.TilemapLayer;
 
   private player: AgentSprite;
   private standingLocs = {
@@ -43,9 +37,6 @@ export class Game extends Phaser.State {
   private agentSpriteMap: Map<number, AgentSprite> = new Map();
   private agentsInRoom: Set<number> = new Set();
   private roomEvents: RoomEvent[] = new Array();
-
-  private listView: ListView;
-  private clientConsole: ListView;
 
   // Groups
   private gameWorld: Phaser.Group;
@@ -68,7 +59,7 @@ export class Game extends Phaser.State {
 
   // PHASER CREATE FUNCTION //
   public create(): void {
-    this.UI = new UI();
+    this.UI = UI.instance;
     (window as any).myUI = this.UI;
     // Initialization code
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -81,8 +72,8 @@ export class Game extends Phaser.State {
     // load map and set gameWorld location
     this.loadMap(ClientAPI.playerAgent.room);
     this.gameWorld.position.set(
-      50,
-      50
+      this.world.centerX - this.mapLayers.width,
+      this.world.centerY - this.mapLayers.height
     );
     this.gameWorld.scale.set(2, 2);
 
@@ -99,6 +90,10 @@ export class Game extends Phaser.State {
       models.Info.forEach(i => {
         this.scheduleRoomEvents(i);
       });
+      this.UI.clearInfoTable();
+      ClientAPI.playerAgent.knowledge.forEach(info => {
+        this.UI.addInfoToTable(info);
+      });
     });
 
     this.game.onFocus.add(() => {
@@ -110,6 +105,9 @@ export class Game extends Phaser.State {
 
   // PHASER UPDATE FUNCTION //
   public update(): void {
+    // Update time
+    this.UI.setTime(formatPanoptykDatetime(getPanoptykDatetime(offset)));
+
     this.updateHUD();
     if (!ClientAPI.isUpdating()) {
       this.handleRoomEvents();
@@ -118,41 +116,9 @@ export class Game extends Phaser.State {
 
   // HUD code //
   public createHUD() {
-    const style = { font: "25px Arial", fill: "#ffffff" };
-    const spacing = 10;
-    this.roomText = this.game.add.text(
-      undefined,
-      undefined,
-      "Room: " + this.room.roomName,
-      style
-    );
-    this.roomText.position.set(spacing / 2, 0);
-
-    this.dateText = this.game.add.text(undefined, undefined, "", style);
-    this.dateText.position.set(this.roomText.width + spacing, 0);
-    this.HUD.add(this.roomText);
-    this.HUD.add(this.dateText);
-    this.HUD.position.set(
-      this.game.world.centerX - this.HUD.getLocalBounds().width / 2,
-      5
-    );
   }
 
   public updateHUD() {
-    const dateTime = formatPanoptykDatetime(getPanoptykDatetime(offset));
-    this.dateText.setText(
-      "Year: " +
-        dateTime.year +
-        "  Day: " +
-        dateTime.day +
-        "   " +
-        dateTime.hour +
-        ":00"
-    );
-    this.HUD.position.set(
-      this.game.world.centerX - this.HUD.getLocalBounds().width / 2,
-      5
-    );
   }
 
   private loadMap(room: Room): void {
@@ -165,8 +131,7 @@ export class Game extends Phaser.State {
         child.destroy();
       });
     }
-    this.doorObjects.visible = false;
-    this.mapLayers.alpha = 0;
+    this.UI.setRoom(room);
     // Load
     this.map = this.game.add.tilemap(
       Assets.TilemapJSON.TilemapsMapsTemplateRoom.getName()
@@ -174,23 +139,15 @@ export class Game extends Phaser.State {
     this.map.addTilesetImage(
       Assets.Images.TilemapsTilesTilesDungeonV11.getName()
     );
-    // create floor layer
-    this.floorLayer = this.map.createLayer(
-      "Floor",
-      this.map.tileWidth * this.map.width,
-      this.map.tileHeight * this.map.height,
-      this.mapLayers
-    );
-    this.floorLayer.fixedToCamera = false;
-
-    // create wall layer
-    this.wallLayer = this.map.createLayer(
-      "Wall",
-      this.map.tileWidth * this.map.width,
-      this.map.tileHeight * this.map.height,
-      this.mapLayers
-    );
-    this.wallLayer.fixedToCamera = false;
+    this.map.layers.forEach(layerObj => {
+      const layer = this.map.createLayer(
+        layerObj.name,
+        this.map.tileWidth * this.map.width,
+        this.map.tileHeight * this.map.height,
+        this.mapLayers
+      );
+      layer.fixedToCamera = false;
+    });
 
     // create map of room to door
     const roomToDoor = {};
@@ -224,8 +181,6 @@ export class Game extends Phaser.State {
       sprite.getChildAt(0).visible = false;
     });
     this.world.bringToTop(this.doorObjects);
-    this.doorObjects.visible = true;
-    this.mapLayers.alpha = 1;
 
     // create possible standing locations
     const standArea = this.map.objects["Areas"][0];
@@ -296,33 +251,47 @@ export class Game extends Phaser.State {
   private async onDoorClicked(sprite: Phaser.Sprite): Promise<void> {
     // add a loading image later
     this.doorObjects.inputEnableChildren = false;
-    const temp = Room.getByID(parseInt(sprite.name));
-    await ClientAPI.moveToRoom(temp)
+    const target = Room.getByID(parseInt(sprite.name));
+    await ClientAPI.moveToRoom(target)
+      .catch(err => this.addConsoleMessage("Failed to move to room!"))
       .then(res => {
-        this.previousRoom = this.room;
-        this.room = ClientAPI.playerAgent.room;
-        this.roomText.setText("Room: " + this.room.roomName);
-        this.addConsoleMessage("Moved to " + this.room.roomName);
-
-        this.loadMap(this.room);
-        this.clearAgents();
-        this.loadAgents();
-
-        const end = this.getStandingLoc();
-        let start = end.pos;
+        const start = this.player.position;
+        let end = start;
         for (const door of this.doorObjects.getAll()) {
-          if (parseInt(door.name) === this.previousRoom.id) {
-            start = door.position;
+          if (parseInt(door.name) === target.id) {
+            end = door.position;
             break;
           }
         }
-        this.player.standLocIndex = end.index;
-        this.player.animating = true;
-        this.moveAgent(this.player, start, end.pos, () => {
-          this.player.animating = false;
+        this.moveAgent(this.player, start, end, () => {
+          this.enterNewRoom();
         });
       })
-      .catch(err => this.addConsoleMessage("Failed to move to room!"));
+      .catch(err => this.addConsoleMessage(err));
+  }
+
+  private enterNewRoom(): void {
+    this.previousRoom = this.room;
+    this.room = ClientAPI.playerAgent.room;
+    this.addConsoleMessage("Moved to " + this.room.roomName);
+
+    this.loadMap(this.room);
+    this.clearAgents();
+    this.loadAgents();
+
+    const end = this.getStandingLoc();
+    let start = end.pos;
+    for (const door of this.doorObjects.getAll()) {
+      if (parseInt(door.name) === this.previousRoom.id) {
+        start = door.position;
+        break;
+      }
+    }
+    this.player.standLocIndex = end.index;
+    this.player.animating = true;
+    this.moveAgent(this.player, start, end.pos, () => {
+      this.player.animating = false;
+    });
   }
 
   private clearAgents(): void {

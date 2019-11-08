@@ -5,35 +5,14 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
 
     <style>
-      body {
-        width: 100%;
+      html, body {
+        margin: 0px;
         height: 100%;
-        text-align: center;
-        margin-left: auto;
-        margin-right: auto;
-        background-color: black;
-        margin: 0px; /*This removes the border around the canvas that Phaser adds, making the game actually take up all the available space*/
-      }
-      #game {
-        display: block;
-        width: 100%;
-        text-align: center;
-        padding: 1;
-      }
-      #phaser-game {
-        display: inline-block;
-        width: 1280px;
-        border: 5px;
-        border-color: antiquewhite;
-        border-style: solid;
       }
     </style>
   </head>
   <body>
-    <div id="phaser-game">
-      <!-- ui-overlay is vuejs game ui insertion point-->
-      <div id="ui-overlay"></div>
-      <!-- Phaser's canvas inserted here -->
-    </div>
+      <!-- vue app injected here game + ui insertion point-->
+      <div id="app"></div>
   </body>
 </html>
