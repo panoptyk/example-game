@@ -26,7 +26,7 @@
         </b-tabs>
       </div>
     </div>
-    <console></console>
+    <console v-bind:tests="tests"></console>
   </div>
 </template>
 
@@ -66,6 +66,8 @@ export default class App extends Vue {
   activeSideBarTab = 0;
   allInfo = [];
   infoCols = [];
+  // Console data
+  tests = [];
 }
 </script>
 

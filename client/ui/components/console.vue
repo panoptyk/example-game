@@ -1,6 +1,6 @@
 <template>
   <div id="console">
-    <console-entry v-for="test in tests" v-bind:key="test"></console-entry>
+    <console-entry v-for="test in tests.slice().reverse()" v-bind:key="test" > {{ test }}</console-entry>
   </div>
 </template>
 
@@ -14,7 +14,7 @@ import consoleEntry from "./consoleEntry.vue";
   }
 })
 export default class Console extends Vue {
-  tests = [0, 1, 2, 3, 4];
+  @Prop() tests = [];
 }
 </script>
 

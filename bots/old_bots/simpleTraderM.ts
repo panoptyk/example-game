@@ -50,10 +50,10 @@ async function switchRoom() {
   await ClientAPI.moveToRoom(adjacents[rm]);
 }
 
-const SWITCH_ROOM_INTERVAL = 10; // seconds
+const SWITCH_ROOM_INTERVAL = 3; // seconds
 let moving = true;
 let lastSwitch = 0;
-let switchWait = 10;
+let switchWait = 0;
 
 let stop = true;
 
@@ -61,7 +61,7 @@ async function act() {
   if (moving && Date.now() - lastSwitch > switchWait) {
     await switchRoom();
     lastSwitch = Date.now();
-    switchWait = (SWITCH_ROOM_INTERVAL + Math.random() * 5) * 1000;
+    switchWait = (SWITCH_ROOM_INTERVAL + Math.random() * 3) * 1000;
     console.log("Moved to " + player().room);
   } else if (!stop && player().conversation === undefined) {
     // Try and request a trade with an occupant

@@ -61,6 +61,7 @@ export class Game extends Phaser.State {
   public create(): void {
     this.UI = UI.instance;
     (window as any).myUI = this.UI;
+    this.UI.addMessage("Welcome to Panoptyk!");
     // Initialization code
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.game.input.mouse.capture = true;
@@ -246,6 +247,7 @@ export class Game extends Phaser.State {
 
   private addConsoleMessage(messageString: string): void {
     console.log(messageString);
+    this.UI.addMessage(messageString);
   }
 
   private async onDoorClicked(sprite: Phaser.Sprite): Promise<void> {

@@ -102,4 +102,8 @@ export class UI {
 
     (this.main.$data.allInfo as InfoTableEntry[]).push(infoEntry);
   }
+
+  public addMessage(m: string) {
+    this.main.$data.tests.push(m);
+  }
 }

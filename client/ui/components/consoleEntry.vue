@@ -3,7 +3,7 @@
     class="console-entry"
     style="margin-bottom: 5px;"
     aria-close-label="Close notification"
-  >I am TEXT!</b-notification>
+  ><slot></slot></b-notification>
 </template>
 
 <script lang="ts">

@@ -1,6 +1,6 @@
 <template>
   <div id="info-tab" class="game-tab">
-      <b-table :data="allInfo" :columns="infoCols"></b-table>
+      <b-table :data="allInfo" :columns="infoCols" :paginated="true" :per-page="5"></b-table>
   </div>
 </template>
 
