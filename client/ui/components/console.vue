@@ -1,11 +1,15 @@
 <template>
   <div id="console">
-    <console-entry v-for="test in tests.slice().reverse()" v-bind:key="test" > {{ test }}</console-entry>
+    <console-entry
+      v-for="(message, index) in messages.slice().reverse()"
+      v-bind:key="message.id"
+      v-bind:index="messages.length - index - 1"
+    >{{ message.msg }}</console-entry>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import consoleEntry from "./consoleEntry.vue";
 
 @Component({
@@ -14,7 +18,14 @@ import consoleEntry from "./consoleEntry.vue";
   }
 })
 export default class Console extends Vue {
-  @Prop() tests = [];
+  @Prop() max = 5;
+  @Prop() messages = [];
+  @Watch("messages")
+  enforceMaxNotifications() {
+    while (this.messages.length > this.max) {
+      this.messages.shift();
+    }
+  }
 }
 </script>
 
@@ -34,7 +45,7 @@ export default class Console extends Vue {
   border-style: solid;
 }
 #console::-webkit-scrollbar {
-    width: 0;
-    height: 0;
+  width: 0;
+  height: 0;
 }
 </style>

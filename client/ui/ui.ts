@@ -31,6 +31,8 @@ export class UI {
       render: h => h(App)
     }).$mount("#app");
     this.main = this.vm.$children[0];
+    // set up console data
+    this.maxMsgs = this.main.$data.maxMsgs;
     // set up info table column headers
     this.main.$data.infoCols = [
       {
@@ -103,7 +105,10 @@ export class UI {
     (this.main.$data.allInfo as InfoTableEntry[]).push(infoEntry);
   }
 
+  private msgID = 0;
+  private maxMsgs;
   public addMessage(m: string) {
-    this.main.$data.tests.push(m);
+    this.main.$data.messages.push({msg: m, id: this.msgID++});
+    this.msgID = this.msgID % this.maxMsgs;
   }
 }

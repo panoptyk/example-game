@@ -26,7 +26,7 @@
         </b-tabs>
       </div>
     </div>
-    <console v-bind:tests="tests"></console>
+    <console v-bind:messages="messages" v-bind:max="maxMsgs"></console>
   </div>
 </template>
 
@@ -67,7 +67,8 @@ export default class App extends Vue {
   allInfo = [];
   infoCols = [];
   // Console data
-  tests = [];
+  maxMsgs = 5;
+  messages = [];
 }
 </script>
 
