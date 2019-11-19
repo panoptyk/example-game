@@ -1,0 +1,27 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_itemName": "Thesis Draft",
+      "type": "imaginary",
+      "roomID": 1,
+      "inTransaction": false
+    },
+    "2": {
+      "id": 2,
+      "_itemName": "Freedom",
+      "type": "imaginary",
+      "roomID": 4,
+      "inTransaction": false
+    },
+    "3": {
+      "id": 3,
+      "_itemName": "Vague Threats",
+      "type": "imaginary",
+      "roomID": 0,
+      "agentID": 3,
+      "inTransaction": false
+    }
+  },
+  "nextID": 4
+}
