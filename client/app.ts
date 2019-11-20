@@ -31,7 +31,9 @@ class App extends Phaser.Game {
 
 function startApp(): void {
     Vue.config.productionTip = false;
-    Vue.use(Buefy);
+    Vue.use(Buefy, {
+        defaultIconPack: "mdi"
+    });
     const ui = UI.instance;
     let gameWidth = 900;
     let gameHeight = 600;

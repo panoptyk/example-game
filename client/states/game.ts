@@ -62,6 +62,7 @@ export class Game extends Phaser.State {
     this.UI = UI.instance;
     (window as any).myUI = this.UI;
     this.UI.addMessage("Welcome to Panoptyk!");
+    this.UI.refresh();
     // Initialization code
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.game.input.mouse.capture = true;
@@ -91,16 +92,14 @@ export class Game extends Phaser.State {
       models.Info.forEach(i => {
         this.scheduleRoomEvents(i);
       });
-      this.UI.clearInfoTable();
-      ClientAPI.playerAgent.knowledge.forEach(info => {
-        this.UI.addInfoToTable(info);
-      });
+      this.UI.refresh();
     });
 
     this.game.onFocus.add(() => {
       console.log("Focus!");
       this.clearAgents();
       this.loadAgents();
+      this.UI.refresh();
     });
   }
 
@@ -108,7 +107,6 @@ export class Game extends Phaser.State {
   public update(): void {
     // Update time
     this.UI.setTime(formatPanoptykDatetime(getPanoptykDatetime(offset)));
-
     this.updateHUD();
     if (!ClientAPI.isUpdating()) {
       this.handleRoomEvents();
@@ -218,7 +216,7 @@ export class Game extends Phaser.State {
   }
 
   private createPlayer(x: number, y: number): void {
-    this.player = new AgentSprite(this.game, x, y);
+    this.player = new AgentSprite(this.game, x, y, false);
     this.gameWorld.add(this.player);
   }
 

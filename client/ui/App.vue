@@ -15,10 +15,10 @@
             <item-tab></item-tab>
           </b-tab-item>
           <b-tab-item label="Info">
-            <info-tab v-bind:allInfo="allInfo" v-bind:infoCols="infoCols"></info-tab>
+            <info-tab v-bind:trigger="trigger"></info-tab>
           </b-tab-item>
           <b-tab-item label="Conversation">
-            <convo-tab></convo-tab>
+            <convo-tab ref="convo" v-bind:defaultActions="listOfActions" v-bind:trigger="trigger"></convo-tab>
           </b-tab-item>
           <b-tab-item label="Trade">
             <trade-tab></trade-tab>
@@ -64,8 +64,8 @@ export default class App extends Vue {
   };
   // Sidebar data
   activeSideBarTab = 0;
-  allInfo = [];
-  infoCols = [];
+  listOfActions = [];
+  trigger = 0;
   // Console data
   maxMsgs = 5;
   messages = [];
@@ -82,8 +82,15 @@ $primary-invert: findColorInvert($primary);
 $twitter: #4099ff;
 $twitter-invert: findColorInvert($twitter);
 
+$action: #073269;
+$action-invert: findColorInvert($action);
+
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 $colors: (
+  "action": (
+    $action,
+    $action-invert
+  ),
   "white": (
     $white,
     $black
@@ -138,6 +145,11 @@ $notification-padding: .25rem .25rem .5rem .5rem;
 // Latches changes made above
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
+
+span.action {
+  color: $action;
+  font-weight: bold;
+}
 
 body {
   width: 100%;

@@ -1,5 +1,17 @@
-import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, getPanoptykDatetime, logger } from "panoptyk-engine/dist/";
+import {
+  Agent,
+  Room,
+  Info,
+  Trade,
+  Item,
+  Conversation,
+  ClientAPI,
+  getPanoptykDatetime,
+  logger
+} from "panoptyk-engine/dist/";
+import { Time } from "phaser-ce";
 
+// Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "simpleTrader";
 const password = process.argv[3] ? process.argv[3] : "password";
 const address = process.argv[4] ? process.argv[4] : "http://localhost:8080";
@@ -12,33 +24,35 @@ function init() {
   setTimeout(actWrapper, 100);
 }
 
-let acting = false;
-let loggedIn = false;
-let endBot = false;
+let _acting = false;
+let _loggedIn = false;
+let _endBot = false;
+const _actInterval = 100; // ms before act() is called again(possibly)
 function actWrapper() {
-  if (!acting) {
-    acting = true;
-    if (!loggedIn) {
+  if (!_acting) {
+    _acting = true;
+    if (!_loggedIn) {
       ClientAPI.login(username, password)
         .then(res => {
           console.log("Logged in!");
-          loggedIn = true;
+          _loggedIn = true;
         })
         .finally(() => {
-          acting = false;
+          _acting = false;
         });
     } else {
-      act()
-        .finally(() => {
-          acting = false;
-        });
+      act().finally(() => {
+        _acting = false;
+      });
     }
   }
-  if (!endBot) {
+  if (!_endBot) {
     // tslint:disable-next-line: ban
-    setTimeout(actWrapper, 100);
+    setTimeout(actWrapper, _actInterval);
   }
 }
+// Boilerplate agent code ================================================== END
+// set "endBot" to true to exit the script cleanly
 
 function player() {
   return ClientAPI.playerAgent;
@@ -51,28 +65,27 @@ async function switchRoom() {
 }
 
 const SWITCH_ROOM_INTERVAL = 3; // seconds
-let moving = true;
+let moving = false;
 let lastSwitch = 0;
 let switchWait = 0;
 
-let stop = true;
+let stop = false;
 
+// This function is called every 100ms if possible
+//  if it has not completed it will not be called until it has
 async function act() {
   if (moving && Date.now() - lastSwitch > switchWait) {
     await switchRoom();
     lastSwitch = Date.now();
     switchWait = (SWITCH_ROOM_INTERVAL + Math.random() * 3) * 1000;
     console.log("Moved to " + player().room);
-  } else if (!stop && player().conversation === undefined) {
-    // Try and request a trade with an occupant
-    for (const other of player().room.occupants) {
-        if (other.id !== player().id) {
-            await ClientAPI.requestConversation(other);
-            console.log("requested trade with " + other);
-            moving = false;
-            stop = true;
-        }
-    }
+  } else if (!stop && player().conversationRequesters.length > 0) {
+    // Accept convo
+    await ClientAPI.acceptConversation(player().conversationRequesters[0]).then(
+      () => {
+        console.log("Accepted convo!");
+      }
+    );
   }
 }
 

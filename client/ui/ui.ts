@@ -1,6 +1,12 @@
 import Vue from "vue";
 import App from "./App.vue";
-import { Agent, Info, Room, Item, formatPanoptykDatetime } from "panoptyk-engine/dist/client";
+import {
+  Agent,
+  Info,
+  Room,
+  Item,
+  formatPanoptykDatetime
+} from "panoptyk-engine/dist/client";
 
 // useful formats
 interface InfoTableEntry {
@@ -26,6 +32,7 @@ export class UI {
 
   private vm: Vue;
   private main: Vue;
+  private trigger = 0;
   constructor() {
     this.vm = new Vue({
       render: h => h(App)
@@ -33,43 +40,11 @@ export class UI {
     this.main = this.vm.$children[0];
     // set up console data
     this.maxMsgs = this.main.$data.maxMsgs;
-    // set up info table column headers
-    this.main.$data.infoCols = [
-      {
-        field: "id",
-        label: "ID",
-        width: "40",
-        numeric: true
-      },
-      {
-        field: "action",
-        label: "Action"
-      },
-      {
-        field: "time",
-        label: "Time"
-      },
-      {
-        field: "agent1",
-        label: "Agent1"
-      },
-      {
-        field: "loc1",
-        label: "Location1"
-      },
-      {
-        field: "loc2",
-        label: "Location2"
-      },
-      {
-        field: "agent2",
-        label: "Agent2"
-      },
-      {
-        field: "item",
-        label: "Item"
-      }
-    ];
+    // set up list of actions
+    this.main.$data.listOfActions = ["???"];
+    for (const act in Info.ACTIONS) {
+      this.main.$data.listOfActions.push(Info.ACTIONS[act].name);
+    }
   }
 
   public setTime(time) {
@@ -80,35 +55,15 @@ export class UI {
     this.main.$data.room = room.roomName;
   }
 
-  public clearInfoTable() {
-    this.main.$data.allInfo = [];
-  }
-
-  public addInfoToTable(info: Info) {
-    const time = formatPanoptykDatetime(info.time);
-    const infoEntry: InfoTableEntry = {
-      id: info.id,
-      action: info.action,
-      agent1: (Agent.getByID(info.agents[0]) as Agent),
-      agent2: (Agent.getByID(info.agents[1]) as Agent),
-      loc1: (Room.getByID(info.locations[0]) as Room),
-      loc2: (Room.getByID(info.locations[1]) as Room),
-      item: (Item.getByID(info.items[0]) as Item),
-      time: "" + time.dayName + " day " + time.day + " year " + time.year
-    };
-    infoEntry.agent1 = infoEntry.agent1 ? infoEntry.agent1.agentName : undefined;
-    infoEntry.agent2 = infoEntry.agent2 ? infoEntry.agent2.agentName : undefined;
-    infoEntry.loc1 = infoEntry.loc1 ? infoEntry.loc1.roomName : undefined;
-    infoEntry.loc2 = infoEntry.loc2 ? infoEntry.loc2.roomName : undefined;
-    infoEntry.item = infoEntry.item ? infoEntry.item.itemName : undefined;
-
-    (this.main.$data.allInfo as InfoTableEntry[]).push(infoEntry);
+  public refresh() {
+    this.trigger = (this.trigger + 1) % 2;
+    this.main.$data.trigger = this.trigger;
   }
 
   private msgID = 0;
   private maxMsgs;
   public addMessage(m: string) {
-    this.main.$data.messages.push({msg: m, id: this.msgID++});
+    this.main.$data.messages.push({ msg: m, id: this.msgID++ });
     this.msgID = this.msgID % this.maxMsgs;
   }
 }
