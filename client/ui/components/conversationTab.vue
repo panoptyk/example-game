@@ -40,7 +40,7 @@
               >{{ item.name }}</option>
             </b-select>
           </b-field>
-          <info-entry v-bind:action="questionData.action" v-bind:terms="questionData.terms"></info-entry>
+          <info-entry v-bind:info="questionData"></info-entry>
         </div>
       </div>
       <footer class="card-footer">
@@ -68,7 +68,7 @@
               <option v-for="info in knowledge" v-bind:key="info" v-bind:value="info">{{ info }}</option>
             </b-select>
           </b-field>
-          <info-entry v-bind:action="tellData.action" v-bind:terms="tellData.terms"></info-entry>
+          <info-entry v-bind:info="tellData"></info-entry>
         </div>
       </div>
       <footer class="card-footer">

@@ -2,7 +2,7 @@
   <div id="info-tab" class="game-tab">
     <template v-for="i of subsetInfo">
       <div class="info-box" v-bind:key="i.id">
-        <info-entry v-bind:action="i.action" v-bind:terms="i.terms"></info-entry>
+        <info-entry v-bind:info="i.info"></info-entry>
       </div>
     </template>
     <b-pagination
@@ -32,6 +32,7 @@ export default class InfoTab extends Vue {
   @Prop() trigger = 0;
   info = [];
   subsetInfo = [];
+  subsetData = [];
   total = 6;
   curPage = 1;
   perPage = 5;
@@ -50,22 +51,28 @@ export default class InfoTab extends Vue {
       : [];
   }
   @Watch("curPage")
+  @Watch("total")
   @Watch("trigger")
   portionOfInfo() {
     const start = (this.curPage - 1) * this.perPage;
     const end = Math.min(start + this.perPage, this.total);
-    this.subsetInfo = this.info.slice(0).splice(start, this.perPage).map(this.processInfo);
+    this.subsetInfo = this.info
+      .slice(0)
+      .splice(start, this.perPage)
+      .map(this.processInfo);
   }
   processInfo(id) {
     const info = Info.getByID(id);
     if (!info) {
-      return {id};
+      return { id };
     }
-    
+
     return {
       id,
-      action: info.action,
-      terms: info.getTerms()
+      info: {
+        action: info.action,
+        terms: info.getTerms()
+      }
     };
   }
 }
