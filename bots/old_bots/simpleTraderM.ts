@@ -9,7 +9,6 @@ import {
   getPanoptykDatetime,
   logger
 } from "panoptyk-engine/dist/";
-import { Time } from "phaser-ce";
 
 // Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "simpleTrader";
@@ -52,7 +51,7 @@ function actWrapper() {
   }
 }
 // Boilerplate agent code ================================================== END
-// set "endBot" to true to exit the script cleanly
+// set "_endBot" to true to exit the script cleanly
 
 function player() {
   return ClientAPI.playerAgent;
@@ -65,11 +64,11 @@ async function switchRoom() {
 }
 
 const SWITCH_ROOM_INTERVAL = 3; // seconds
-let moving = false;
+let moving = true;
 let lastSwitch = 0;
 let switchWait = 0;
 
-let stop = false;
+let stop = true;
 
 // This function is called every 100ms if possible
 //  if it has not completed it will not be called until it has

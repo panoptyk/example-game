@@ -54,6 +54,7 @@ function startApp(): void {
         resolution: 1
     };
 
+    // ClientAPI.init("71.93.55.224:1791");
     ClientAPI.init();
     logger.silence();
     const app = new App(gameConfig);

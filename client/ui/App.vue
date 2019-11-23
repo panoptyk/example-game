@@ -15,10 +15,23 @@
             <item-tab></item-tab>
           </b-tab-item>
           <b-tab-item label="Info">
-            <info-tab v-bind:trigger="trigger"></info-tab>
+            <info-tab
+              v-bind:trigger="trigger"
+              v-bind:defaultActions="listOfActions"
+              v-bind:agents="agents"
+              v-bind:rooms="rooms"
+              v-bind:items="items"
+            ></info-tab>
           </b-tab-item>
           <b-tab-item label="Conversation">
-            <convo-tab ref="convo" v-bind:defaultActions="listOfActions" v-bind:trigger="trigger"></convo-tab>
+            <convo-tab
+              ref="convo"
+              v-bind:trigger="trigger"
+              v-bind:defaultActions="listOfActions"
+              v-bind:agents="agents"
+              v-bind:rooms="rooms"
+              v-bind:items="items"
+            ></convo-tab>
           </b-tab-item>
           <b-tab-item label="Trade">
             <trade-tab></trade-tab>
@@ -32,6 +45,7 @@
 
 <script lang="ts">
 import "buefy/dist/buefy.css";
+import { ClientAPI, Agent, Room, Item } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import infoTab from "./components/infoTab.vue";
 import itemTab from "./components/itemTab.vue";
@@ -49,6 +63,22 @@ import Console from "./components/console.vue";
   }
 })
 export default class App extends Vue {
+  trigger = 0;
+  agents = [];
+  rooms = [];
+  items = [];
+  @Watch("trigger")
+  updateSeenLists() {
+    this.agents = ClientAPI.seenAgents.map((v: Agent) => {
+      return { name: v.agentName, id: v.id };
+    });
+    this.rooms = ClientAPI.seenRooms.map((v: Room) => {
+      return { name: v.roomName, id: v.id };
+    });
+    this.items = ClientAPI.seenItems.map((v: Item) => {
+      return { name: v.itemName, id: v.id };
+    });
+  }
   // Top Bar logic
   showTopBar = false;
   @Watch("room")
@@ -65,7 +95,6 @@ export default class App extends Vue {
   // Sidebar data
   activeSideBarTab = 0;
   listOfActions = [];
-  trigger = 0;
   // Console data
   maxMsgs = 5;
   messages = [];
@@ -82,14 +111,21 @@ $primary-invert: findColorInvert($primary);
 $twitter: #4099ff;
 $twitter-invert: findColorInvert($twitter);
 
+// Panoptyk Colors
 $action: #073269;
 $action-invert: findColorInvert($action);
+$agent: #5b7a38;
+$agent-invert: findColorInvert($action);
 
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 $colors: (
   "action": (
     $action,
     $action-invert
+  ),
+  "agent": (
+    $agent,
+    $agent-invert
   ),
   "white": (
     $white,
@@ -139,7 +175,7 @@ $link-invert: $primary-invert;
 $link-focus-border: $primary;
 
 // Notification element
-$notification-padding: .25rem .25rem .5rem .5rem;
+$notification-padding: 0.25rem 0.25rem 0.5rem 0.5rem;
 
 // Import Bulma and Buefy styles
 // Latches changes made above
@@ -148,6 +184,10 @@ $notification-padding: .25rem .25rem .5rem .5rem;
 
 span.action {
   color: $action;
+  font-weight: bold;
+}
+span.agent {
+  color: $agent;
   font-weight: bold;
 }
 

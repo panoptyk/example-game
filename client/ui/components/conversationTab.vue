@@ -1,6 +1,9 @@
 <template>
   <div id="conversation-tab" class="game-tab" v-if="inConvo">
-    <div class="content" id="conversation-info">You are in a conversation with "".</div>
+    <div class="content" id="conversation-info">
+      You are in a conversation with <span class="agent">{{ otherAgentName }}</span>.
+      <b-button size="is-small" @click="leaveConvo">Leave</b-button>
+    </div>
     <b-collapse class="card" aria-id="ask-question">
       <div
         slot="trigger"
@@ -17,12 +20,24 @@
       <div class="card-content">
         <div class="content">
           <b-field type="is-action">
-            <b-select placeholder="-- action --" size="is-small" v-model="actionSelected">
+            <b-select
+              placeholder="-- action --"
+              size="is-small"
+              v-model="actionSelected"
+            >
               <option disabled value>-- action --</option>
-              <option v-for="act in defaultActions" v-bind:key="act" v-bind:value="act">{{ act }}</option>
+              <option
+                v-for="act in defaultActions"
+                v-bind:key="act"
+                v-bind:value="act"
+                >{{ act }}</option
+              >
             </b-select>
           </b-field>
-          <b-field v-for="field in questionFields" v-bind:key="field + actionSelected">
+          <b-field
+            v-for="field in questionFields"
+            v-bind:key="field + actionSelected"
+          >
             <!--<b-input v-if="field === 'time'" type="number" size="is-small" placeholder="0,00" style= "width: 72px;"></b-input>-->
             <b-select
               v-if="field !== 'time' && field !== 'quantity'"
@@ -37,7 +52,8 @@
                 v-for="item in getFieldItems(field)"
                 v-bind:key="item"
                 v-bind:value="item.id"
-              >{{ item.name }}</option>
+                >{{ item.name }}</option
+              >
             </b-select>
           </b-field>
           <info-entry v-bind:info="questionData"></info-entry>
@@ -63,9 +79,18 @@
       <div class="card-content">
         <div class="content">
           <b-field>
-            <b-select placeholder="-- info --" size="is-small" v-model="tellInfo">
+            <b-select
+              placeholder="-- info --"
+              size="is-small"
+              v-model="tellInfo"
+            >
               <option disabled value>-- info --</option>
-              <option v-for="info in knowledge" v-bind:key="info" v-bind:value="info">{{ info }}</option>
+              <option
+                v-for="info in knowledge"
+                v-bind:key="info"
+                v-bind:value="info"
+                >{{ info }}</option
+              >
             </b-select>
           </b-field>
           <info-entry v-bind:info="tellData"></info-entry>
@@ -90,14 +115,17 @@
       </div>
       <div class="card-content">
         <div class="content">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec
+          iaculis mauris.
           <a>#buefy</a>.
         </div>
       </div>
     </b-collapse>
   </div>
   <!-- Below is for if agent is not in a conversation -->
-  <div id="conversation-tab" class="game-tab" v-else>you are not in a conversation</div>
+  <div id="conversation-tab" class="game-tab" style="text-align: center;" v-else>
+    you are not in a conversation
+  </div>
 </template>
 
 <script lang="ts">
@@ -120,8 +148,10 @@ export default class ConverstaionTab extends Vue {
   inConvo = false;
   @Watch("trigger")
   updateConvo() {
-    this.inConvo = true;
-    //this.inConvo = ClientAPI.playerAgent ? ClientAPI.playerAgent.conversation !== undefined : false;
+    // this.inConvo = true;
+    this.inConvo = ClientAPI.playerAgent
+      ? ClientAPI.playerAgent.conversation !== undefined
+      : false;
   }
   get otherAgentName() {
     if (ClientAPI.playerAgent === undefined) {
@@ -131,9 +161,15 @@ export default class ConverstaionTab extends Vue {
       ClientAPI.playerAgent
     )[0].agentName;
   }
+  leaveConvo() {
+    ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+  }
   // For question asking
-  @Prop() defaultActions = [];
-  @Prop() trigger = 0;
+  @Prop({ default: [] }) defaultActions: string[];
+  @Prop({ default: 0 }) trigger: number;
+  @Prop({ default: [] }) agents;
+  @Prop({ default: [] }) items;
+  @Prop({ default: [] }) rooms;
 
   actionSelected = "";
   questionFields = [];
@@ -171,28 +207,18 @@ export default class ConverstaionTab extends Vue {
     val = val.replace(/\d/, "");
     switch (val) {
       case "agent":
-        return ClientAPI.seenAgents.map((v: Agent) => {
-          return { name: v.agentName, id: v.id };
-        });
+        return this.agents;
       case "loc":
-        return ClientAPI.seenRooms.map((v: Room) => {
-          return { name: v.roomName, id: v.id };
-        });
+        return this.rooms;
       case "item":
-        return ClientAPI.seenItems.map((v: Item) => {
-          return { name: v.itemName, id: v.id };
-        });
+        return this.items;
       case "info":
         return;
         Array.from((ClientAPI.playerAgent as any)._knowledge).map(info => {
           return { name: info, id: info };
         });
       case "faction":
-        return Agent.getByIDs(
-          (ClientAPI.playerAgent as any)._sortedInfo.byAgent.keys()
-        ).map((v: Agent) => {
-          return { name: v.agentName, id: v.id };
-        });
+        return [];
       default:
         return [];
     }
@@ -239,7 +265,9 @@ export default class ConverstaionTab extends Vue {
   tellData = {};
   @Watch("trigger")
   updateKnowledge() {
-    this.knowledge = ClientAPI.playerAgent ? (ClientAPI.playerAgent as any)._knowledge : [];
+    this.knowledge = ClientAPI.playerAgent
+      ? (ClientAPI.playerAgent as any)._knowledge
+      : [];
   }
   @Watch("tellInfo")
   updateTellData() {
@@ -263,6 +291,7 @@ export default class ConverstaionTab extends Vue {
   text-align: left;
 }
 #conversation-info {
+  text-align: center;
   margin-bottom: 12px;
 }
 .field {

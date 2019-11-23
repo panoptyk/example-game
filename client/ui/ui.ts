@@ -1,11 +1,13 @@
 import Vue from "vue";
+import { DialogProgrammatic as Dialog } from "Buefy";
 import App from "./App.vue";
 import {
   Agent,
   Info,
   Room,
   Item,
-  formatPanoptykDatetime
+  formatPanoptykDatetime,
+  ClientAPI
 } from "panoptyk-engine/dist/client";
 
 // useful formats
@@ -33,6 +35,7 @@ export class UI {
   private vm: Vue;
   private main: Vue;
   private trigger = 0;
+  public prompting = false;
   constructor() {
     this.vm = new Vue({
       render: h => h(App)
@@ -60,6 +63,30 @@ export class UI {
     this.main.$data.trigger = this.trigger;
   }
 
+  public convoRequest(requester: Agent) {
+    this.prompting = true;
+    Dialog.confirm({
+      title: "Conversation Requested",
+      message:
+        (requester ? requester.agentName : "Unknown") +
+        " has requested a conversation with you.",
+      cancelText: "Decline",
+      confirmText: "Accept",
+      trapFocus: true,
+      onCancel: () => {
+        ClientAPI.rejectConversation(requester).finally(() => {
+          this.prompting = false;
+        });
+      },
+      onConfirm: () => {
+        ClientAPI.acceptConversation(requester).finally(() => {
+          this.prompting = false;
+        });
+      }
+    });
+  }
+
+  // Console management
   private msgID = 0;
   private maxMsgs;
   public addMessage(m: string) {

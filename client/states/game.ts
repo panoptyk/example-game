@@ -110,6 +110,7 @@ export class Game extends Phaser.State {
     this.updateHUD();
     if (!ClientAPI.isUpdating()) {
       this.handleRoomEvents();
+      this.checkForRequests();
     }
   }
 
@@ -335,7 +336,7 @@ export class Game extends Phaser.State {
 
   private scheduleRoomEvents(info: Info) {
     const playerID = ClientAPI.playerAgent.id;
-    if (info.owner.id !== playerID) {
+    if (!info.owner || info.owner.id !== playerID) {
       return;
     }
     const curRoomID = ClientAPI.playerAgent.room.id;
@@ -406,6 +407,16 @@ export class Game extends Phaser.State {
     const message =
       "Agent " + Agent.getByID(event.agentID).agentName + " left the room";
     this.addConsoleMessage(message);
+  }
+
+  private checkForRequests() {
+    if (this.UI.prompting) {
+      return;
+    }
+    const convoRequesters = ClientAPI.playerAgent.conversationRequesters;
+    if (convoRequesters.length > 0) {
+      this.UI.convoRequest(convoRequesters[0]);
+    }
   }
 
   private handleRoomEvents() {
