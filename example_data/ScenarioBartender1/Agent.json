@@ -1,0 +1,38 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_conversationID": 0,
+      "_rank": 1,
+      "_faction": "SIS",
+      "_agentName": "Bartender",
+      "roomID": 9,
+      "_inventory": [],
+      "_knowledge": [3, 6],
+      "_conversationRequests": []
+    },
+    "2": {
+      "id": 2,
+      "_conversationID": 0,
+      "_rank": 0,
+      "_faction": "KGB",
+      "_agentName": "Joseph Stalin",
+      "roomID": 9,
+      "_inventory": [2],
+      "_knowledge": [2],
+      "_conversationRequests": []
+    },
+    "3": {
+      "id": 3,
+      "_conversationID": 0,
+      "_rank": 0,
+      "_faction": "SIS",
+      "_agentName": "Elizabeth Alexandra Mary Windsor",
+      "roomID": 1,
+      "_inventory": [3],
+      "_knowledge": [5],
+      "_conversationRequests": []
+    }
+  },
+  "nextID": 4
+}

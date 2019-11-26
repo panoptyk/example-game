@@ -11,7 +11,7 @@
     "webpack-client:dist": "webpack --config webpack.dist.config.js --progress --colors",
     "webpack-client-server:dev": "webpack-dev-server --config webpack.dev.config.js --open",
     "webpack-client-server:dist": "webpack-dev-server --config webpack.dist.config.js --open",
-    "bot": "set NODE_ENV=development&&ts-node --project ./bot.tsconfig.json",
+    "bot": "ts-node --project ./bot.tsconfig.json",
     "update": "npm install panoptyk/panoptyk-engine#master",
     "load-scenario": "./loadScenario.sh",
     "assets:dev": "node ./scripts/generateAssetsClass.js --dev",

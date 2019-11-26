@@ -48,18 +48,27 @@ async function turnInItem(targetItem: Item) {
                     await ClientAPI.requestConversation(other).catch(err => {
                         console.log(err.message);
                     });
-                }
-                while (!ClientAPI.playerAgent.trade) {
-                    await ClientAPI.requestTrade(other);
                     // delay next iteration of loop to avoid spinning cpu
                     // tslint:disable-next-line: ban
                     await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 500));
                 }
-                await ClientAPI.offerItemsTrade([targetItem]);
-                while (ClientAPI.playerAgent.trade) {
-                    await ClientAPI.setTradeReadyStatus(true).catch(err => {
+                while (!ClientAPI.playerAgent.trade) {
+                    await ClientAPI.requestTrade(other).catch(err => {
                         console.log(err.message);
                     });
+                    // delay next iteration of loop to avoid spinning cpu
+                    // tslint:disable-next-line: ban
+                    await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 500));
+                }
+                await ClientAPI.offerItemsTrade([targetItem]).catch(err => {
+                    console.log(err.message);
+                });
+                while (ClientAPI.playerAgent.trade) {
+                    if (!ClientAPI.playerAgent.trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
+                        await ClientAPI.setTradeReadyStatus(true).catch(err => {
+                            console.log(err.message);
+                        });
+                    }
                     // delay next iteration of loop to avoid spinning cpu
                     // tslint:disable-next-line: ban
                     await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 500));

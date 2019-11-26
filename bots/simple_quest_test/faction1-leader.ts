@@ -19,11 +19,15 @@ async function assignRetrievalQuest(agent: Agent, target: Item, relevantInfo: In
 }
 
 async function tradeHandler(other: Agent) {
+    await ClientAPI.acceptTrade(other).catch(err => {
+        console.log(err.message);
+    });
     while (ClientAPI.playerAgent.trade) {
-        const trade = ClientAPI.playerAgent.trade;
-        await ClientAPI.setTradeReadyStatus(true).catch(err => {
-            console.log(err.message);
-        });
+        if (!ClientAPI.playerAgent.trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
+            await ClientAPI.setTradeReadyStatus(true).catch(err => {
+                console.log(err.message);
+            });
+        }
         // delay next iteration of loop to avoid spinning cpu
         // tslint:disable-next-line: ban
         await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 500));
@@ -46,7 +50,6 @@ async function conversationHandler() {
     while (ClientAPI.playerAgent.inConversation()) {
         const requests = ClientAPI.playerAgent.tradeRequesters;
         if (requests.length > 0) {
-            await ClientAPI.acceptTrade(requests[0]);
             await tradeHandler(requests[0]);
         }
         // delay next iteration of loop to avoid spinning cpu

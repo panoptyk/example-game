@@ -1,0 +1,75 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_query": false,
+      "_command": false,
+      "_reference": false,
+      "_location": [9],
+      "_agent": [2],
+      "_item": [2],
+      "_quantity": [1],
+      "_mask": {},
+      "_time": 5903,
+      "_predicate": "TAL",
+      "_action": "PICKUP",
+      "_owner": 2
+    },
+    "2": {
+      "id": 2,
+      "_query": false,
+      "_command": false,
+      "_reference": true,
+      "_mask": {},
+      "_time": 5903,
+      "_infoID": 1,
+      "_owner": 2
+    },
+    "3": {
+      "id": 3,
+      "_query": false,
+      "_command": false,
+      "_reference": true,
+      "_mask": {},
+      "_time": 10324,
+      "_infoID": 1,
+      "_owner": 1
+    },
+    "4": {
+      "id": 4,
+      "_query": false,
+      "_command": false,
+      "_reference": false,
+      "_location": [1],
+      "_agent": [3],
+      "_item": [1],
+      "_quantity": [1],
+      "_mask": {},
+      "_time": 10324,
+      "_predicate": "TAL",
+      "_action": "DROP",
+      "_owner": 3
+    },
+    "5": {
+      "id": 5,
+      "_query": false,
+      "_command": false,
+      "_reference": true,
+      "_mask": {},
+      "_time": 10324,
+      "_infoID": 4,
+      "_owner": 3
+    },
+    "6": {
+      "id": 6,
+      "_query": false,
+      "_command": false,
+      "_reference": true,
+      "_mask": {},
+      "_time": 10324,
+      "_infoID": 4,
+      "_owner": 1
+    }
+  },
+  "nextID": 7
+}
