@@ -11,7 +11,7 @@
       "_quantity": [1],
       "_mask": {},
       "_time": 5903,
-      "_predicate": "TAL",
+      "_predicate": "TAILQ",
       "_action": "PICKUP",
       "_owner": 2
     },
@@ -46,7 +46,7 @@
       "_quantity": [1],
       "_mask": {},
       "_time": 10324,
-      "_predicate": "TAL",
+      "_predicate": "TAILQ",
       "_action": "DROP",
       "_owner": 3
     },

@@ -27,7 +27,7 @@ function main() {
         });
     }
     // tslint:disable-next-line: ban
-    setTimeout(main, Helper.randomInt(100, 500));
+    setTimeout(main, Helper.randomInt(100, 200));
 }
 
 /**
@@ -66,8 +66,8 @@ async function patrolHandler() {
 
         if (!talked.has(other)) {
             for (const info of ClientAPI.playerAgent.knowledge) {
-                if (info.action === "TOLD") {
-                    // temporary fix to avoid told recursion
+                // temporary fix to avoid spamming too much info
+                if (info.action === "MOVE") {
                     continue;
                 }
                 // tell other agent everything we know that we have not already told them
@@ -85,7 +85,7 @@ async function patrolHandler() {
 
         // give other agent time to interact and extend timer when they tell us something
         const infoLen = ClientAPI.playerAgent.getInfoByAgent(other).length;
-        if (Date.now() - conUpdate <= 10000 || prevInfoLen < infoLen) {
+        if (Date.now() - conUpdate <= 5000 || prevInfoLen < infoLen) {
             if (prevInfoLen < infoLen) {
                 prevInfoLen = infoLen;
                 conUpdate += 1000;
@@ -120,6 +120,7 @@ async function patrolHandler() {
                     }
                 }
                 await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
+                talked.clear();
             }
         }
     }
