@@ -1,7 +1,9 @@
 <template>
   <div id="conversation-tab" class="game-tab" v-if="inConvo">
     <div class="content" id="conversation-info">
-      You are in a conversation with <span class="agent">{{ otherAgentName }}</span>.
+      You are in a conversation with
+      <span class="agent">{{ otherAgentName }}</span
+      >.
       <b-button size="is-small" @click="leaveConvo">Leave</b-button>
     </div>
     <b-collapse class="card" aria-id="ask-question">
@@ -115,15 +117,20 @@
       </div>
       <div class="card-content">
         <div class="content">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec
-          iaculis mauris.
-          <a>#buefy</a>.
+          <div v-for="q in questions" v-bind:key="q.id"> 
+            <info-entry v-bind:info="{action:q.action, terms:q.getTerms()}"></info-entry>
+          </div>
         </div>
       </div>
     </b-collapse>
   </div>
   <!-- Below is for if agent is not in a conversation -->
-  <div id="conversation-tab" class="game-tab" style="text-align: center;" v-else>
+  <div
+    id="conversation-tab"
+    class="game-tab"
+    style="text-align: center;"
+    v-else
+  >
     you are not in a conversation
   </div>
 </template>
@@ -174,7 +181,7 @@ export default class ConverstaionTab extends Vue {
   actionSelected = "";
   questionFields = [];
   questionInfo = {};
-  questionData = {};
+  questionData = {} as any;
   @Watch("actionSelected")
   onActionSelected() {
     this.questionInfo = {};
@@ -258,6 +265,9 @@ export default class ConverstaionTab extends Vue {
   }
   onAsk() {
     console.log("Asked!");
+    const q: any = Object.assign({}, this.questionInfo);
+    q.action = this.actionSelected === this.defaultActions[0] ? undefined : this.actionSelected;
+    ClientAPI.askQuestion(q);
   }
   // For telling info
   tellInfo = 0;
@@ -271,6 +281,7 @@ export default class ConverstaionTab extends Vue {
   }
   @Watch("tellInfo")
   updateTellData() {
+    this.told = false;
     const info = Info.getByID(this.tellInfo);
     if (!info) {
       return;
@@ -280,8 +291,22 @@ export default class ConverstaionTab extends Vue {
       terms: info.getTerms()
     };
   }
+  told = false;
   onTell() {
     console.log(Info.getByID(this.tellInfo));
+    if (!this.told) {
+      ClientAPI.tellInfo(Info.getByID(this.tellInfo)).finally(() => {
+        this.told = true;
+      });
+    }
+  }
+  questions = [];
+  @Watch("trigger")
+  updateQuestions() {
+    if (!ClientAPI.playerAgent || !ClientAPI.playerAgent.conversation) {
+      return;
+    }
+    this.questions = ClientAPI.playerAgent.conversation.askedQuestions;
   }
 }
 </script>

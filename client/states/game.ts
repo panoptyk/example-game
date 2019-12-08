@@ -336,7 +336,7 @@ export class Game extends Phaser.State {
 
   private scheduleRoomEvents(info: Info) {
     const playerID = ClientAPI.playerAgent.id;
-    if (!info.owner || info.owner.id !== playerID) {
+    if (!info.owner || info.isQuery() || info.owner.id !== playerID) {
       return;
     }
     const curRoomID = ClientAPI.playerAgent.room.id;

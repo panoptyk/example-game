@@ -1,12 +1,17 @@
 <template>
   <div class="info-entry">
     <template v-if="info.action === 'MOVE'">
-     <span class="agent"> {{ agent }}</span>
+      <span class="agent"> {{ agent }}</span>
       <span class="action">moved</span>
       from {{ loc1 }} to {{ loc2 }}.
     </template>
     <template v-else-if="info.action === 'PICKUP'"></template>
     <template v-else-if="info.action === 'DROP'"></template>
+    <template v-else-if="info.action === 'CONVERSE'">
+      <span class="agent"> {{ agent1 }}</span>
+      <span class="action">conversed</span>
+      with <span class="agent"> {{ agent2 }}</span> at {{ loc }}.
+    </template>
   </div>
 </template>
 
@@ -45,5 +50,4 @@ export default class ItemEntry extends Vue {
 }
 </script>
 
-<style>
-</style>
+<style></style>
