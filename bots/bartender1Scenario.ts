@@ -1,6 +1,7 @@
 import { fork } from "child_process";
 const faction1Leader = fork("./bots/bartender_scenario/leader.ts");
 const bartender = fork("./bots/bartender_scenario/bartender.ts");
+const quester = fork("./bots/bartender_scenario/quester.ts");
 // spawn all patroling agents in with a slight delay to avoid overflowing room
 spawnGoons();
 async function spawnGoons() {

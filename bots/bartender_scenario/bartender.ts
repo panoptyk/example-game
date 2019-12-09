@@ -54,14 +54,15 @@ async function conversationHandler() {
     const other: Agent = Helper.getOthersInConversation()[0];
     if (!toldAgents.has(other)) {
         // tell same masked info to everyone
-        await ClientAPI.tellInfo(specialInfo, ["agent", "loc", "time"]);
+        console.log("BARTENDER TOLD SPECIAL INFO");
+        await ClientAPI.tellInfo(specialInfo, ["agent", "time"]);
         toldAgents.add(other);
     }
     // request trade if other wants to know all of specialInfo
     if (!ClientAPI.playerAgent.activeTradeRequestTo(other)) {
         // request trade if other wants to know all of specialInfo
         const specificQuestion: Info = conversation.askedQuestions.find(
-            info => info.id === specialInfo.id);
+            info => specialInfo.isAnswer(info));
         if (specificQuestion) {
             await ClientAPI.requestTrade(other);
             convoQuestion = specificQuestion;
@@ -82,6 +83,7 @@ async function tradeHandler() {
         const desiredInTrade: Item = trade.getAgentItemsData(other).find(item => item === desiredItem);
         if (desiredInTrade) {
             await ClientAPI.setTradeReadyStatus(true);
+            console.log("BARTENDER ACCEPTED TRADE");
             return;
         }
         if (trade.getAgentsRequestedItems(ClientAPI.playerAgent).size < 1) {

@@ -32,7 +32,18 @@
       "_inventory": [3],
       "_knowledge": [5],
       "_conversationRequests": []
+    },
+    "4": {
+      "id": 4,
+      "_conversationID": 0,
+      "_rank": 1,
+      "_faction": "SIS",
+      "_agentName": "James Bond",
+      "roomID": 1,
+      "_inventory": [],
+      "_knowledge": [],
+      "_conversationRequests": []
     }
   },
-  "nextID": 4
+  "nextID": 5
 }

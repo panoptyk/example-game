@@ -1,5 +1,10 @@
 import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI } from "panoptyk-engine/dist/";
 
+/**
+ * Variable that I use in my bots to determine time to wait for input from other agents.
+ */
+export const WAIT_FOR_OTHER = 1000;
+
 export function UCS(start: Room, goal: Room) {
 }
 
@@ -49,4 +54,22 @@ export function getOtherInTrade(): Agent {
  */
 export function getOthersInRoom(): Agent[] {
     return ClientAPI.playerAgent.room.getAgents(ClientAPI.playerAgent);
+}
+
+/**
+ * Gets the last known location of agent based on current knowledge
+ * @param agent
+ */
+export function findLastKnownLocation(agent: Agent): Room {
+    const agentInfo = ClientAPI.playerAgent.getInfoByAgent(agent);
+    let time = 0;
+    let location = undefined;
+    for (const info of agentInfo) {
+        const terms = info.getTerms();
+        if (terms.time > time && terms.loc !== undefined) {
+            location = terms.loc;
+            time = terms.time;
+        }
+    }
+    return location;
 }

@@ -7,6 +7,9 @@ let acting = false;
 // track info for quests
 const forQuest = new Set<Info>();
 const assigned = new Set<Info>();
+// conversation related variables
+let conUpdate: number;
+let prevInfoLen: number;
 
 /**
  * Main triggers act every 100ms when possible
@@ -28,12 +31,74 @@ function main() {
  * Act picks an action to execute based on the bot's perception of the world
  */
 async function act() {
-    if (ClientAPI.playerAgent.conversation) {
-        await conversationHandler();
+    if (!ClientAPI.playerAgent.inConversation() && forQuest.size === 0) {
+        parseInfo();
     }
-    else if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
-        const requesters = ClientAPI.playerAgent.conversationRequesters;
-        await ClientAPI.acceptConversation(requesters[Helper.randomInt(0, requesters.length)]);
+    if (forQuest.size > 0) {
+        await questAssignHandler();
+    }
+    else {
+        await idleHandler();
+    }
+}
+
+async function idleHandler() {
+    if (ClientAPI.playerAgent.conversation) {
+        const other: Agent = Helper.getOthersInConversation()[0];
+        conUpdate = conUpdate ? conUpdate : Date.now();
+        prevInfoLen = prevInfoLen ? prevInfoLen : ClientAPI.playerAgent.getInfoByAgent(other).length;
+
+        // give other agent time to interact and extend timer when they tell us something
+        const infoLen = ClientAPI.playerAgent.getInfoByAgent(other).length;
+        if (Date.now() - conUpdate <= Helper.WAIT_FOR_OTHER || prevInfoLen < infoLen) {
+            if (prevInfoLen < infoLen) {
+                prevInfoLen = infoLen;
+                conUpdate = Date.now();
+            }
+        }
+        else {
+            await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+        }
+    }
+    else {
+        conUpdate = 0;
+        prevInfoLen = 0;
+        // accept conversations from approaching agents if they are in same faction
+        for (const requester of ClientAPI.playerAgent.conversationRequesters) {
+            if (requester.faction === ClientAPI.playerAgent.faction) {
+                await ClientAPI.acceptConversation(requester);
+                return;
+            }
+            else {
+                await ClientAPI.rejectConversation(requester);
+            }
+        }
+    }
+}
+
+async function questAssignHandler() {
+    if (ClientAPI.playerAgent.inConversation()) {
+        const other: Agent = Helper.getOthersInConversation()[0];
+        const partial: Info = Array.from(forQuest)[0];
+        await ClientAPI.giveQuest(other, partial.getTerms(), true);
+        forQuest.delete(partial);
+        assigned.add(partial);
+        console.log("QUEST ASSIGNED!");
+        // tell info relevant to quest
+        const tellInfo: Info[] = ClientAPI.playerAgent.getInfoByAction("TOLD");
+        for (const tell of tellInfo) {
+            if (tell.getTerms().info.equals(partial)) await ClientAPI.tellInfo(tell);
+        }
+    }
+    // leader is lazy and only attemps to assign quest if appropiate member is in same room
+    else if (ClientAPI.playerAgent.conversationRequested.length === 0) {
+        for (const other of Helper.getOthersInRoom()) {
+            if (other.agentName === "James Bond") {
+                await ClientAPI.requestConversation(other);
+                return;
+            }
+        }
+        await idleHandler();
     }
 }
 
@@ -46,17 +111,12 @@ function parseInfo() {
             forQuest.add(info);
         }
     }
-}
-
-async function conversationHandler() {
-    const other: Agent = Helper.getOthersInConversation()[0];
-    parseInfo();
-    if (forQuest.size > 0) {
-        const info = Array.from(forQuest)[0];
-        await ClientAPI.giveQuest(other, info.getTerms(), true);
-        forQuest.delete(info);
-        assigned.add(info);
-        console.log("QUEST ASSIGNED!");
+    // don't re-add assigned quests
+    for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
+        if (forQuest.has(quest.task)) {
+            forQuest.delete(quest.task);
+            assigned.add(quest.task);
+        }
     }
 }
 
