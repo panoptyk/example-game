@@ -3,14 +3,33 @@
     <template v-if="info.action === 'MOVE'">
       <span class="agent"> {{ agent }}</span>
       <span class="action">moved</span>
-      from {{ loc1 }} to {{ loc2 }}.
+      from {{ loc1 }} to {{ loc2 }}
+      at <span class="time"> {{ time }}</span>.
     </template>
-    <template v-else-if="info.action === 'PICKUP'"></template>
-    <template v-else-if="info.action === 'DROP'"></template>
+    <template v-else-if="info.action === 'PICKUP'">
+      <span class ="agent"> {{ agent }}</span>
+      <span class="action">picked up</span>
+      <span class="item"> {{ item }}</span> in {{ loc }}
+      at <span class="time"> {{ time }}</span>.
+    </template>
+    <template v-else-if="info.action === 'DROP'">
+      <span class ="agent"> {{ agent }}</span>
+      <span class="action">dropped</span>
+      <span class="item"> {{ item }}</span> in {{ loc }}
+      at <span class="time"> {{ time }}</span>.
+    </template>
     <template v-else-if="info.action === 'CONVERSE'">
       <span class="agent"> {{ agent1 }}</span>
       <span class="action">conversed</span>
-      with <span class="agent"> {{ agent2 }}</span> at {{ loc }}.
+      with <span class="agent"> {{ agent2 }}</span> in {{ loc }}
+      at <span class="time"> {{ time }}</span>.
+    </template>
+    <template v-else-if="info.action === 'TOLD'">
+      <span class="agent"> {{ agent1 }}</span>
+      <span class="action">told</span>
+      <span class="agent"> {{ agent2 }}</span> 
+      <span class="info"> {{ infoItem }}</span> in {{ loc }}
+      at <span class="time"> {{ time }}</span>.
     </template>
   </div>
 </template>
@@ -20,7 +39,7 @@ import { Info } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 
 @Component({})
-export default class ItemEntry extends Vue {
+export default class InfoEntry extends Vue {
   @Prop({ default: { id: 0, action: "", terms: {} } }) info: {
     id: number;
     action: string;
@@ -46,6 +65,12 @@ export default class ItemEntry extends Vue {
   }
   get item() {
     return this.info.terms.item ? this.info.terms.item.itemName : "???";
+  }
+  get infoItem() {
+    return this.info.terms.info ? "about info #" + this.info.terms.info.id : "???";
+  }
+  get time() {
+    return this.info.terms.time ? this.info.terms.time : "??";
   }
 }
 </script>

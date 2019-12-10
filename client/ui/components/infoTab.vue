@@ -85,11 +85,11 @@ import {
   Info
 } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
-import infoEntry from "./infoEntry.vue";
+import InfoEntry from "./infoEntry.vue";
 
 @Component({
   components: {
-    "info-entry": infoEntry
+    "info-entry": InfoEntry
   }
 })
 export default class InfoTab extends Vue {
