@@ -54,7 +54,7 @@ async function conversationHandler() {
     const other: Agent = Helper.getOthersInConversation()[0];
     if (!toldAgents.has(other)) {
         // tell same masked info to everyone
-        console.log("BARTENDER TOLD SPECIAL INFO");
+        console.log("BARTENDER TOLD SPECIAL INFO to " + other);
         await ClientAPI.tellInfo(specialInfo, ["agent", "time"]);
         toldAgents.add(other);
     }

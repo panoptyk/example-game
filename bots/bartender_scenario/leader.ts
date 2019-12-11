@@ -87,7 +87,10 @@ async function questAssignHandler() {
         // tell info relevant to quest
         const tellInfo: Info[] = ClientAPI.playerAgent.getInfoByAction("TOLD");
         for (const tell of tellInfo) {
-            if (tell.getTerms().info.equals(partial)) await ClientAPI.tellInfo(tell);
+            if (tell.getTerms().info.equals(partial)) {
+                await ClientAPI.tellInfo(tell);
+                console.log("QUEST ASSIGNER TOLD: " + tell.infoID);
+            }
         }
     }
     // leader is lazy and only attemps to assign quest if appropiate member is in same room

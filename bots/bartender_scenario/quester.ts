@@ -146,8 +146,12 @@ async function questQuestionSolver() {
     if (currentTarget === undefined) {
         if (currentLeads.length === 0) {
             for (const told of ClientAPI.playerAgent.getInfoByAction("TOLD")) {
-                if (!exploredInfo.has(told) && told.getTerms().info.isAnswer(activeQuest.task)) {
+                const terms = told.getTerms();
+                if (!exploredInfo.has(told) && terms.info.isAnswer(activeQuest.task) &&
+                !(terms.agent1 === ClientAPI.playerAgent || terms.agent2 === ClientAPI.playerAgent)) {
                     currentLeads.push(told);
+                    exploredInfo.add(told);
+                    console.log("Potential lead: " + told.infoID);
                 }
             }
         }

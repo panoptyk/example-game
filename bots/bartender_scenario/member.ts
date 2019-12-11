@@ -58,28 +58,36 @@ async function dumbNavigate(roomID: number) {
 
 async function patrolHandler() {
     if (ClientAPI.playerAgent.conversation) {
+        const conv: Conversation = ClientAPI.playerAgent.conversation;
         requested.clear(); // we clear our memory of requested conversations here because requests are cancelled when convo starts
         const other: Agent = Helper.getOthersInConversation()[0];
         conUpdate = conUpdate ? conUpdate : Date.now(); // last time convo was updated with something
         prevInfoLen = prevInfoLen ? prevInfoLen : ClientAPI.playerAgent.getInfoByAgent(other).length; // last amount of info we had from/about other agent
 
-        if (!talked.has(other) && other.faction === ClientAPI.playerAgent.faction) {
-            for (const cinfo of ClientAPI.playerAgent.knowledge) {
-                // temporary fix to avoid spamming too much info
-                if (cinfo.action === "MOVE" || cinfo.action === "TOLD" || cinfo.action === "CONVERSE") {
-                    continue;
+        if (other.faction === ClientAPI.playerAgent.faction) {
+            if (!talked.has(other)) {
+                for (const cinfo of ClientAPI.playerAgent.knowledge) {
+                    // temporary fix to avoid spamming too much info
+                    if (cinfo.action === "MOVE" || cinfo.action === "TOLD" || cinfo.action === "CONVERSE") {
+                        continue;
+                    }
+                    // tell other agent everything we know that we have not already told to them or been told by them
+                    const hasTold = ClientAPI.playerAgent.getInfoByAction("TOLD").find(told =>
+                        told.getTerms().info.equals(cinfo) && (told.getTerms().agent1 === other ||
+                        told.getTerms().agent2 === other));
+                    if (!hasTold) {
+                        await ClientAPI.tellInfo(cinfo);
+                    }
                 }
-                // tell other agent everything we know that we have not already told to them or been told by them
-                const hasTold = ClientAPI.playerAgent.getInfoByAction("TOLD").find(told =>
-                    told.getTerms().info.equals(cinfo) && (told.getTerms().agent1 === other ||
-                    told.getTerms().agent2 === other));
-                if (!hasTold) {
-                    await ClientAPI.tellInfo(cinfo);
+            }
+            for (const question of conv.askedQuestions) {
+                const relatedInfo: Info[] = Helper.getAllRelatedInfo(question);
+                for (const rInfo of relatedInfo) {
+                    await ClientAPI.tellInfo(rInfo);
                 }
             }
         }
         talked.add(other);
-
         // give other agent time to interact and extend timer when they tell us something
         const infoLen = ClientAPI.playerAgent.getInfoByAgent(other).length;
         if (Date.now() - conUpdate <= Helper.WAIT_FOR_OTHER || prevInfoLen < infoLen) {

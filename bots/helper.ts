@@ -73,3 +73,19 @@ export function findLastKnownLocation(agent: Agent): Room {
     }
     return location;
 }
+
+/**
+ * Returns all information possibly related to targetInfo
+ * @param targetInfo
+ */
+export function getAllRelatedInfo(targetInfo: Info): Info[] {
+    const relatedInfo = [];
+    for (const info of ClientAPI.playerAgent.knowledge) {
+        const terms = info.getTerms();
+        if (info.isAnswer(targetInfo) ||
+        terms.info !== undefined && terms.info.isAnswer(targetInfo)) {
+            relatedInfo.push(info);
+        }
+    }
+    return relatedInfo;
+}
