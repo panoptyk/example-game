@@ -4,7 +4,8 @@
       "id": 1,
       "_itemName": "Thesis Draft",
       "type": "imaginary",
-      "roomID": 1,
+      "roomID": 0,
+      "agentID": 4,
       "inTransaction": false
     },
     "2": {

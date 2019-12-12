@@ -162,15 +162,8 @@ async function questQuestionSolver() {
         if (ClientAPI.playerAgent.trade) {
             const trade: Trade = ClientAPI.playerAgent.trade;
             const other: Agent = Helper.getOtherInTrade();
-            let targetInfo: Info = undefined;
-            for (const info of trade.getAgentInfosData(other)) {
-                if (info.isAnswer(activeQuest.task, activeQuest.task.getTerms())) {
-                    targetInfo = info;
-                    break;
-                }
-            }
             // offer whatever we need to get info
-            if (targetInfo) {
+            if (trade.agentOfferedAnswer(other, activeQuest.task)) {
                 for (const [item, response] of trade.getAgentsRequestedItems(other)) {
                     if (!trade.agentOfferedItem(ClientAPI.playerAgent, item) && ClientAPI.playerAgent.hasItem(item)) {
                         await ClientAPI.offerItemsTrade([item]);

@@ -89,3 +89,12 @@ export function getAllRelatedInfo(targetInfo: Info): Info[] {
     }
     return relatedInfo;
 }
+
+/**
+ * Returns info that agent has offered in given trade.
+ * TODO: maybe convert to agent's local ref copy
+ * @param trade
+ */
+export function getMyOfferedInfo(trade: Trade): Info[] {
+    return ClientAPI.playerAgent === trade.agentIni ? trade.infoAnsIni : trade.infoAnsRec;
+}

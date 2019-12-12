@@ -40,7 +40,7 @@
       "_faction": "SIS",
       "_agentName": "James Bond",
       "roomID": 1,
-      "_inventory": [],
+      "_inventory": [1],
       "_knowledge": [],
       "_conversationRequests": []
     }

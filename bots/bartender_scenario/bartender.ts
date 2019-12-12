@@ -75,7 +75,7 @@ async function tradeHandler() {
     const other: Agent = Helper.getOtherInTrade();
 
     // offer specialInfo if other agent has asked for it
-    if (trade.getAgentInfosData(ClientAPI.playerAgent).length < 1) {
+    if (Helper.getMyOfferedInfo(trade).length < 1) {
         await ClientAPI.offerAnswerTrade(specialInfo, convoQuestion);
     }
     // attempt to accquire desiredItem
