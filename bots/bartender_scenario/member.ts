@@ -36,23 +36,22 @@ function main() {
  */
 async function act() {
     if (!zoneIDs.has(ClientAPI.playerAgent.room.id)) {
-        await dumbNavigate(zoneIDs.values().next().value);
+        await dumbNavigateStep(Array.from(zoneIDs)[0]);
     }
-    await patrolHandler();
+    else {
+        await patrolHandler();
+    }
 }
 
 /**
  * this should eventually be replaced by a real navigation algorithm
  */
-async function dumbNavigate(roomID: number) {
-    while (ClientAPI.playerAgent.room.id !== roomID) {
+async function dumbNavigateStep(roomID: number) {
+    if (ClientAPI.playerAgent.room.id !== roomID) {
         const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
         const dest = potentialRooms.find(room => room.id === roomID);
         if (dest) await ClientAPI.moveToRoom(dest);
-        else {
-            await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
-            roomUpdate = Date.now();
-        }
+        else await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
     }
 }
 

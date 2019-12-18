@@ -24,7 +24,7 @@ function main() {
         });
     }
     // tslint:disable-next-line: ban
-    setTimeout(main, 100);
+    setTimeout(main, Helper.randomInt(100, 200));
 }
 
 /**
