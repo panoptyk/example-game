@@ -1,12 +1,40 @@
-import { fork } from "child_process";
-const faction1Leader = fork("./bots/bartender_scenario/leader.ts");
-const bartender = fork("./bots/bartender_scenario/bartender.ts");
-const quester = fork("./bots/bartender_scenario/quester.ts");
-// spawn all patroling agents in with a slight delay to avoid overflowing room
-spawnGoons();
+import { fork, ChildProcess } from "child_process";
+const wanderingBartenders = [];
+const goons = [];
+let currentBartender: ChildProcess;
+let faction1Leader;
+let quester;
+startScenario();
+
+async function startScenario() {
+    faction1Leader = fork("./bots/bartender_scenario/leader.ts");
+    quester = fork("./bots/bartender_scenario/quester.ts");
+    quester.on("message", changeBartender);
+    await spawnBartenders();
+    await spawnGoons();
+}
+
+function changeBartender() {
+    currentBartender.send("stand down");
+    wanderingBartenders.push(currentBartender);
+    currentBartender = wanderingBartenders.shift();
+    currentBartender.send("begin quest");
+}
+
+async function spawnBartenders() {
+    for (let i = 1; i <= 4; i++) {
+        const childProcess = fork("./bots/bartender_scenario/wanderingBartender.ts", ["Bartender " + i, "password"]);
+        wanderingBartenders.push(childProcess);
+        // tslint:disable-next-line: ban
+        await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
+    }
+    currentBartender = wanderingBartenders.shift();
+    currentBartender.send("begin quest");
+}
+
 async function spawnGoons() {
     const numBots = 6.0;
-    for (let i = 0; i < numBots; i++) {
+    for (let i = 1; i <= numBots; i++) {
         let zone: string;
         if (i / numBots <= 0.33) {
             zone = "bot";
@@ -17,7 +45,7 @@ async function spawnGoons() {
         else {
             zone = "top";
         }
-        const agent = fork("./bots/bartender_scenario/member.ts", ["Redshirt " + i, "password", zone]);
+        goons.push(fork("./bots/bartender_scenario/member.ts", ["Redshirt " + i, "password", zone]));
         // tslint:disable-next-line: ban
         await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
     }

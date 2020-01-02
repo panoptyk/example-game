@@ -3,7 +3,7 @@
     "1": {
       "id": 1,
       "_itemName": "thesis_draft",
-      "type": "imaginary",
+      "_type": "imaginary",
       "inTransaction": false,
       "roomID": 1
     }

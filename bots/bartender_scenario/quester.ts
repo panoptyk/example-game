@@ -11,6 +11,7 @@ const talked = new Set<Agent>();
 let conUpdate: number;
 let prevInfoLen: number;
 let asked = false;
+let traded = false;
 // quest related variables
 let activeQuest: Quest;
 const exploredInfo = new Set<Info>();
@@ -39,6 +40,7 @@ function prepForConversation() {
     conUpdate = 0;
     prevInfoLen = 0;
     asked = false;
+    traded = false;
 }
 
 /**
@@ -108,6 +110,7 @@ async function completeQuest() {
     if (ClientAPI.playerAgent.inConversation()) {
         await ClientAPI.completeQuest(activeQuest, solution);
         console.log("Quest complete " + activeQuest);
+        process.send("quest complete");
         activeQuest = undefined;
     }
     else if (ClientAPI.playerAgent.room.hasAgent(activeQuest.giver)) {
@@ -160,6 +163,7 @@ async function questQuestionSolver() {
     }
     if (questState === "searching") {
         if (ClientAPI.playerAgent.trade) {
+            traded = true;
             const trade: Trade = ClientAPI.playerAgent.trade;
             const other: Agent = Helper.getOtherInTrade();
             // offer whatever we need to get info
@@ -169,6 +173,11 @@ async function questQuestionSolver() {
                         await ClientAPI.offerItemsTrade([item]);
                     }
                 }
+                // TODO: add feature to process gold/resource requests
+                // temp fix to offer gold by default
+                if (trade.getAgentsOfferedGold(ClientAPI.playerAgent) < 1) {
+                    await ClientAPI.addGoldToTrade(1);
+                }
                 if (!trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
                     conUpdate = Date.now();
                     await ClientAPI.setTradeReadyStatus(true);
@@ -176,7 +185,7 @@ async function questQuestionSolver() {
                 }
             }
         }
-        else if (ClientAPI.playerAgent.inConversation()) {
+        else if (ClientAPI.playerAgent.inConversation() && !traded) {
             const convo: Conversation = ClientAPI.playerAgent.conversation;
             const other: Agent = Helper.getOthersInConversation()[0];
             talked.add(other);
@@ -200,12 +209,14 @@ async function questQuestionSolver() {
                     prevInfoLen = infoLen;
                     conUpdate = Date.now();
                 }
+                return;
             }
-            else {
-                await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
-            }
+            await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
         }
         else if (talked.has(currentTarget)) {
+            if (ClientAPI.playerAgent.inConversation()) {
+                await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+            }
             console.log("Finished talking to " + currentTarget);
             questState = "evaluating";
             currentTarget = undefined;
@@ -237,7 +248,7 @@ async function questHandler() {
         activeQuest = ClientAPI.playerAgent.activeAssignedQuests[0];
         console.log("Starting Quest " + activeQuest);
     }
-    else if (activeQuest.type === "question") {
+    if (activeQuest.type === "question") {
         await questQuestionSolver();
     }
 }

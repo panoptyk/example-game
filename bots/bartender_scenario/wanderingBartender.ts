@@ -1,0 +1,160 @@
+import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, IDObject } from "panoptyk-engine/dist/";
+import * as Helper from "../helper";
+
+const username = process.argv.length >= 3 ? process.argv[2] : "Bartender";
+const password = process.argv.length > 3 ? process.argv[3] : "password";
+let acting = false;
+let state = "idle";
+let convoStart = 0;
+let convoQuestion: Info;
+// special info for quest
+let specialInfo: Info;
+// let desiredItem: Item;
+const toldAgents = new Set<Agent>();
+
+/**
+ * Main triggers act every 100ms when possible
+ */
+function main() {
+    if (!acting) {
+        acting = true;
+        act().catch(err => {
+            console.log(err);
+        }).finally(() => {
+            acting = false;
+        });
+    }
+    // tslint:disable-next-line: ban
+    setTimeout(main, Helper.randomInt(100, 200));
+}
+
+/**
+ * Act picks an action to execute based on the bot's perception of the world
+ */
+async function act() {
+    if (specialInfo === undefined) {
+        // generate information to sell to other factions
+        let otherFactionPresent = false;
+        for (const agent of Helper.getOthersInRoom()) {
+            if (agent.faction !== ClientAPI.playerAgent.faction) {
+                otherFactionPresent = true;
+                break;
+            }
+        }
+        if (!otherFactionPresent) {
+            await ClientAPI.dropGold(1);
+            // pick the most recent of drop events generated
+            for (const dropInfo of ClientAPI.playerAgent.getInfoByAction("DROP")) {
+                const terms = dropInfo.getTerms();
+                if (terms.agent === ClientAPI.playerAgent &&
+                    (specialInfo === undefined || dropInfo.time > specialInfo.time)) {
+                    specialInfo = dropInfo;
+                }
+            }
+        }
+        else {
+            await randomNavigate();
+        }
+    }
+    else if (state === "idle") {
+        // wander aimlessly
+        await randomNavigate();
+    }
+    else if (state === "bartender") {
+        // attempt to sell generated info
+        if (ClientAPI.playerAgent.conversation) {
+            if (Date.now() - convoStart > 60000) {
+                await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+            }
+            else if (ClientAPI.playerAgent.trade) {
+                await tradeHandler();
+            }
+            else {
+                await conversationHandler();
+            }
+        }
+        else if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
+            const requesters = ClientAPI.playerAgent.conversationRequesters;
+            await ClientAPI.acceptConversation(requesters[Helper.randomInt(0, requesters.length)]);
+            convoStart = Date.now();
+        }
+    }
+}
+
+async function randomNavigate() {
+    const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
+    await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
+}
+
+async function conversationHandler() {
+    const conversation: Conversation = ClientAPI.playerAgent.conversation;
+    const other: Agent = Helper.getOthersInConversation()[0];
+    if (!toldAgents.has(other)) {
+        // tell same masked info to everyone
+        console.log(username + " TOLD SPECIAL INFO to " + other);
+        await ClientAPI.tellInfo(specialInfo, ["agent", "time"]);
+        toldAgents.add(other);
+    }
+    // request trade if other wants to know all of specialInfo
+    if (!ClientAPI.playerAgent.activeTradeRequestTo(other)) {
+        // request trade if other wants to know all of specialInfo
+        const specificQuestion: Info = conversation.askedQuestions.find(
+            info => specialInfo.isAnswer(info));
+        if (specificQuestion) {
+            await ClientAPI.requestTrade(other);
+            convoQuestion = specificQuestion;
+        }
+    }
+}
+
+async function tradeHandler() {
+    const trade: Trade = ClientAPI.playerAgent.trade;
+    const other: Agent = Helper.getOtherInTrade();
+
+    // offer specialInfo if other agent has asked for it
+    if (Helper.getMyOfferedInfo(trade).length < 1) {
+        await ClientAPI.offerAnswerTrade(specialInfo, convoQuestion);
+    }
+    // attempt to accquire desiredItem
+    if (!trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
+        // TODO: ability to request gold
+        // const desiredInTrade: Item = trade.getAgentItemsData(other).find(item => item === desiredItem);
+        // if (desiredInTrade) {
+        //     await ClientAPI.setTradeReadyStatus(true);
+        //     console.log(username + " ACCEPTED TRADE");
+        //     return;
+        // }
+        // if (trade.getAgentsRequestedItems(ClientAPI.playerAgent).size < 1) {
+        //     await ClientAPI.requestItemTrade(desiredItem);
+        // }
+        if (trade.getAgentsOfferedGold(other) >= 1) {
+            await ClientAPI.setTradeReadyStatus(true);
+            console.log(username + " ACCEPTED TRADE");
+            return;
+        }
+    }
+}
+
+/**
+ * Handles initial login process for agent
+ */
+function init() {
+    ClientAPI.init();
+    ClientAPI.login(username, password).then(res => {
+        console.log("Login success! " + ClientAPI.playerAgent);
+        main();
+    }).catch(err => {
+        throw new Error("Login fail!");
+    });
+}
+
+process.on("message", (m) => {
+    console.log("command received");
+    if (m === "begin quest") {
+        state = "bartender";
+    }
+    else if (m === "stand down") {
+        state = "idle";
+    }
+});
+init();

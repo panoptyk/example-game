@@ -4,11 +4,12 @@
       "id": 1,
       "_conversationID": 0,
       "_rank": 1,
-      "_faction": "SIS",
-      "_agentName": "Bartender",
+      "_faction": "Neutral",
+      "_agentName": "Bartender 1",
       "roomID": 9,
       "_inventory": [],
       "_knowledge": [3, 6],
+      "_gold": 100000000,
       "_conversationRequests": []
     },
     "2": {
@@ -20,6 +21,7 @@
       "roomID": 9,
       "_inventory": [2],
       "_knowledge": [2],
+      "_gold": 100000000,
       "_conversationRequests": []
     },
     "3": {
@@ -31,6 +33,7 @@
       "roomID": 1,
       "_inventory": [3],
       "_knowledge": [5],
+      "_gold": 100000000,
       "_conversationRequests": []
     },
     "4": {
@@ -42,8 +45,45 @@
       "roomID": 1,
       "_inventory": [1],
       "_knowledge": [],
+      "_gold": 100000000,
+      "_conversationRequests": []
+    },
+    "5": {
+      "id": 5,
+      "_conversationID": 0,
+      "_rank": 1,
+      "_faction": "Neutral",
+      "_agentName": "Bartender 2",
+      "roomID": 9,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 100000000,
+      "_conversationRequests": []
+    },
+    "6": {
+      "id": 6,
+      "_conversationID": 0,
+      "_rank": 1,
+      "_faction": "Neutral",
+      "_agentName": "Bartender 3",
+      "roomID": 9,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 100000000,
+      "_conversationRequests": []
+    },
+    "7": {
+      "id": 7,
+      "_conversationID": 0,
+      "_rank": 1,
+      "_faction": "Neutral",
+      "_agentName": "Bartender 4",
+      "roomID": 9,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 100000000,
       "_conversationRequests": []
     }
   },
-  "nextID": 5
+  "nextID": 8
 }
