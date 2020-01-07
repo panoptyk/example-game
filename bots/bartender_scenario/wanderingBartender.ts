@@ -34,27 +34,22 @@ function main() {
 async function act() {
     if (specialInfo === undefined) {
         // generate information to sell to other factions
-        let otherFactionPresent = false;
-        for (const agent of Helper.getOthersInRoom()) {
-            if (agent.faction !== ClientAPI.playerAgent.faction) {
-                otherFactionPresent = true;
-                break;
-            }
-        }
-        if (!otherFactionPresent) {
+        if (!otherFactionPresent()) {
             await ClientAPI.dropGold(1);
-            // pick the most recent of drop events generated
-            for (const dropInfo of ClientAPI.playerAgent.getInfoByAction("DROP")) {
-                const terms = dropInfo.getTerms();
-                if (terms.agent === ClientAPI.playerAgent &&
-                    (specialInfo === undefined || dropInfo.time > specialInfo.time)) {
-                    specialInfo = dropInfo;
+            // make sure someone did not walk into room as we were dropping
+            if (!otherFactionPresent()) {
+                 // pick the most recent of drop events generated
+                for (const dropInfo of ClientAPI.playerAgent.getInfoByAction("DROP")) {
+                    const terms = dropInfo.getTerms();
+                    if (terms.agent === ClientAPI.playerAgent &&
+                        (specialInfo === undefined || dropInfo.time > specialInfo.time)) {
+                        specialInfo = dropInfo;
+                    }
                 }
+                return;
             }
         }
-        else {
-            await randomNavigate();
-        }
+        await randomNavigate();
     }
     else if (state === "idle") {
         // wander aimlessly
@@ -81,6 +76,15 @@ async function act() {
     }
 }
 
+function otherFactionPresent(): boolean {
+    for (const agent of Helper.getOthersInRoom()) {
+        if (agent.faction !== ClientAPI.playerAgent.faction) {
+            return true;
+        }
+    }
+    return false;
+}
+
 async function randomNavigate() {
     const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
     await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
@@ -91,7 +95,7 @@ async function conversationHandler() {
     const other: Agent = Helper.getOthersInConversation()[0];
     if (!toldAgents.has(other)) {
         // tell same masked info to everyone
-        console.log(username + " TOLD SPECIAL INFO to " + other);
+        console.log(username + " TOLD SPECIAL INFO " + specialInfo.infoID + " to " + other);
         await ClientAPI.tellInfo(specialInfo, ["agent", "time"]);
         toldAgents.add(other);
     }
@@ -152,8 +156,11 @@ process.on("message", (m) => {
     console.log("command received");
     if (m === "begin quest") {
         state = "bartender";
+        console.log("New bartender: " + username);
     }
     else if (m === "stand down") {
+        specialInfo = undefined;
+        toldAgents.clear();
         state = "idle";
     }
 });

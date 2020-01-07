@@ -150,15 +150,20 @@ async function questQuestionSolver() {
         if (currentLeads.length === 0) {
             for (const told of ClientAPI.playerAgent.getInfoByAction("TOLD")) {
                 const terms = told.getTerms();
-                if (!exploredInfo.has(told) && terms.info.isAnswer(activeQuest.task) &&
+                const toldInfo: Info = terms.info; // The contents of the information that was told
+                if (!exploredInfo.has(told) && toldInfo.isAnswer(activeQuest.task) &&
                 !(terms.agent1 === ClientAPI.playerAgent || terms.agent2 === ClientAPI.playerAgent)) {
                     currentLeads.push(told);
                     exploredInfo.add(told);
-                    console.log("Potential lead: " + told.infoID);
                 }
             }
         }
-        currentTarget = currentLeads.pop().getTerms().agent1;
+        // TODO: handle case when we are unable to find any leads
+        currentTarget = currentLeads.pop().getTerms().agent1; // currently assumes an info with 2 agents
+        // we could still be in conversation after previous trade
+        if (ClientAPI.playerAgent.inConversation() && Helper.getOthersInConversation()[0] !== currentTarget) {
+            await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+        }
         console.log("Looking for " + currentTarget);
     }
     if (questState === "searching") {
@@ -213,14 +218,13 @@ async function questQuestionSolver() {
             }
             await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
         }
+        // revaluate after either trading or waiting for too long in conversation
         else if (talked.has(currentTarget)) {
-            if (ClientAPI.playerAgent.inConversation()) {
-                await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
-            }
             console.log("Finished talking to " + currentTarget);
             questState = "evaluating";
             currentTarget = undefined;
         }
+        // attempt to reach and start conversation with target
         else {
             if (ClientAPI.playerAgent.room.hasAgent(currentTarget)) {
                 if (!ClientAPI.playerAgent.activeConversationRequestTo(currentTarget)) {
