@@ -33,8 +33,12 @@ function main() {
  */
 async function act() {
     if (specialInfo === undefined) {
+        // navigate to special room
+        if (ClientAPI.playerAgent.room.id !== 10) {
+            await dumbNavigateStep(10);
+        }
         // generate information to sell to other factions
-        if (!otherFactionPresent()) {
+        else if (!otherFactionPresent()) {
             await ClientAPI.dropGold(1);
             // make sure someone did not walk into room as we were dropping
             if (!otherFactionPresent()) {
@@ -46,18 +50,20 @@ async function act() {
                         specialInfo = dropInfo;
                     }
                 }
-                return;
             }
         }
-        await randomNavigate();
     }
     else if (state === "idle") {
         // wander aimlessly
         await randomNavigate();
     }
     else if (state === "bartender") {
+        // move out of special room if in it
+        if (ClientAPI.playerAgent.room.id === 10) {
+            await randomNavigate();
+        }
         // attempt to sell generated info
-        if (ClientAPI.playerAgent.conversation) {
+        else if (ClientAPI.playerAgent.conversation) {
             if (Date.now() - convoStart > 60000) {
                 await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
             }
@@ -85,6 +91,18 @@ function otherFactionPresent(): boolean {
     return false;
 }
 
+/**
+ * this should eventually be replaced by a real navigation algorithm
+ */
+async function dumbNavigateStep(roomID: number) {
+    if (ClientAPI.playerAgent.room.id !== roomID) {
+        const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
+        const dest = potentialRooms.find(room => room.id === roomID);
+        if (dest) await ClientAPI.moveToRoom(dest);
+        else await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
+    }
+}
+
 async function randomNavigate() {
     const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
     await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
@@ -96,7 +114,7 @@ async function conversationHandler() {
     if (!toldAgents.has(other)) {
         // tell same masked info to everyone
         console.log(username + " TOLD SPECIAL INFO " + specialInfo.infoID + " to " + other);
-        await ClientAPI.tellInfo(specialInfo, ["agent", "time"]);
+        await ClientAPI.tellInfo(specialInfo, ["agent", "loc"]);
         toldAgents.add(other);
     }
     // request trade if other wants to know all of specialInfo

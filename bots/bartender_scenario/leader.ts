@@ -77,13 +77,11 @@ async function idleHandler() {
 }
 
 async function questAssignHandler() {
-    if (ClientAPI.playerAgent.inConversation()) {
+    if (ClientAPI.playerAgent.inConversation() && Helper.getOthersInConversation()[0].agentName === "James Bond") {
         const other: Agent = Helper.getOthersInConversation()[0];
         const partial: Info = Array.from(forQuest)[0];
-        await ClientAPI.giveQuest(other, partial.getTerms(), true);
         forQuest.delete(partial);
         assigned.add(partial);
-        console.log("QUEST ASSIGNED!");
         // tell info relevant to quest
         const tellInfo: Info[] = ClientAPI.playerAgent.getInfoByAction("TOLD");
         for (const tell of tellInfo) {
@@ -92,6 +90,8 @@ async function questAssignHandler() {
                 console.log("QUEST ASSIGNER TOLD: " + tell.infoID);
             }
         }
+        await ClientAPI.giveQuest(other, partial.getTerms(), true);
+        console.log("QUEST ASSIGNED!");
     }
     // leader is lazy and only attemps to assign quest if appropiate member is in same room
     else if (ClientAPI.playerAgent.conversationRequested.length === 0) {

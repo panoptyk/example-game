@@ -75,12 +75,21 @@
     "9": {
       "id": 9,
       "_roomName": "room9",
-      "adjacent": [8],
+      "adjacent": [8, 10],
+      "_occupants": [],
+      "itemIDs": [],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "10": {
+      "id": 10,
+      "_roomName": "room10",
+      "adjacent": [9],
       "_occupants": [],
       "itemIDs": [],
       "conversationIDs": [],
       "_maxOccupants": 15
     }
   },
-  "nextID": 10
+  "nextID": 11
 }

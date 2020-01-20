@@ -4,7 +4,18 @@ const goons = [];
 let currentBartender: ChildProcess;
 let faction1Leader;
 let quester;
+let lastQuestStart = 0;
 startScenario();
+
+function main() {
+    // restart bartender if stuck
+    if (Date.now() - lastQuestStart > 600000) {
+        console.log("POTENTIAL STUCK BARTENDER!!");
+        changeBartender();
+    }
+    // tslint:disable-next-line: ban
+    setTimeout(main, 1000);
+}
 
 async function startScenario() {
     faction1Leader = fork("./bots/bartender_scenario/leader.ts");
@@ -12,6 +23,8 @@ async function startScenario() {
     quester.on("message", changeBartender);
     await spawnBartenders();
     await spawnGoons();
+    lastQuestStart = Date.now();
+    main();
 }
 
 function changeBartender() {
@@ -19,6 +32,7 @@ function changeBartender() {
     wanderingBartenders.push(currentBartender);
     currentBartender = wanderingBartenders.shift();
     currentBartender.send("begin quest");
+    lastQuestStart = Date.now();
 }
 
 async function spawnBartenders() {
