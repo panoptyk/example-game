@@ -2,8 +2,8 @@ import { fork, ChildProcess } from "child_process";
 const wanderingBartenders = [];
 const goons = [];
 let currentBartender: ChildProcess;
-let faction1Leader;
-let quester;
+let faction1Leader: ChildProcess;
+let quester: ChildProcess;
 let lastQuestStart = 0;
 startScenario();
 

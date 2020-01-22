@@ -10,5 +10,8 @@
   },
   "include": [
     "./bots"
+  ],
+  "exclude" : [
+    "./bots/old_bots"
   ]
 }

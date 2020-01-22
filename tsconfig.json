@@ -8,6 +8,10 @@
     },
     "include": [
       "."
+    ],
+    "exclude" : [
+      "./bots/old_bots",
+      "./build"
     ]
   }
   
