@@ -47,13 +47,20 @@ function prepForConversation() {
  * Act picks an action to execute based on the bot's perception of the world
  */
 async function act() {
-    state = ClientAPI.playerAgent.activeAssignedQuests.length ? "quest" : "wait";
     if (state === "wait") {
         if (ClientAPI.playerAgent.room.id !== HOME_ID && !ClientAPI.playerAgent.inConversation()) {
             await dumbNavigateStep(HOME_ID);
         }
         else {
             await waitHandler();
+        }
+    }
+    else if (state === "check") {
+        if (ClientAPI.playerAgent.inConversation()) {
+            await leaderConversation();
+        }
+        else {
+            state = ClientAPI.playerAgent.activeAssignedQuests.length ? "quest" : "wait";
         }
     }
     else if (state === "quest") {
@@ -73,35 +80,35 @@ async function dumbNavigateStep(roomID: number) {
     }
 }
 
-async function waitHandler() {
-    if (ClientAPI.playerAgent.conversation) {
-        const other: Agent = Helper.getOthersInConversation()[0];
-        conUpdate = conUpdate ? conUpdate : Date.now();
-        prevInfoLen = prevInfoLen ? prevInfoLen : ClientAPI.playerAgent.getInfoByAgent(other).length;
+async function leaderConversation() {
+    const other: Agent = Helper.getOthersInConversation()[0];
+    conUpdate = conUpdate ? conUpdate : Date.now();
+    prevInfoLen = prevInfoLen ? prevInfoLen : ClientAPI.playerAgent.getInfoByAgent(other).length;
 
-        // give other agent time to interact and extend timer when they tell us something
-        const infoLen = ClientAPI.playerAgent.getInfoByAgent(other).length;
-        if (Date.now() - conUpdate <= Helper.WAIT_FOR_OTHER || prevInfoLen < infoLen) {
-            if (prevInfoLen < infoLen) {
-                prevInfoLen = infoLen;
-                conUpdate = Date.now();
-            }
-        }
-        else {
-            await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+    // give other agent time to interact and extend timer when they tell us something
+    const infoLen = ClientAPI.playerAgent.getInfoByAgent(other).length;
+    if (Date.now() - conUpdate <= Helper.WAIT_FOR_OTHER || prevInfoLen < infoLen) {
+        if (prevInfoLen < infoLen) {
+            prevInfoLen = infoLen;
+            conUpdate = Date.now();
         }
     }
     else {
-        // accept conversations from approaching agents if they are a high ranking member in same faction
-        for (const requester of ClientAPI.playerAgent.conversationRequesters) {
-            if (requester.rank === 0 && requester.faction === ClientAPI.playerAgent.faction) {
-                prepForConversation();
-                await ClientAPI.acceptConversation(requester);
-                return;
-            }
-            else {
-                await ClientAPI.rejectConversation(requester);
-            }
+        await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+    }
+}
+
+async function waitHandler() {
+    // accept conversations from approaching agents if they are a high ranking member in same faction
+    for (const requester of ClientAPI.playerAgent.conversationRequesters) {
+        if (requester.rank === 0 && requester.faction === ClientAPI.playerAgent.faction) {
+            prepForConversation();
+            await ClientAPI.acceptConversation(requester);
+            state = "check";
+            return;
+        }
+        else {
+            await ClientAPI.rejectConversation(requester);
         }
     }
 }
@@ -112,6 +119,7 @@ async function completeQuest() {
         console.log("Quest complete " + activeQuest);
         process.send("quest complete");
         activeQuest = undefined;
+        state = "check";
     }
     else if (ClientAPI.playerAgent.room.hasAgent(activeQuest.giver)) {
         if (!ClientAPI.playerAgent.activeConversationRequestTo(activeQuest.giver)) {

@@ -5,6 +5,7 @@ let currentBartender: ChildProcess;
 let faction1Leader: ChildProcess;
 let quester: ChildProcess;
 let lastQuestStart = 0;
+const childExecArgv = process.execArgv;
 startScenario();
 
 function main() {
@@ -18,8 +19,8 @@ function main() {
 }
 
 async function startScenario() {
-    faction1Leader = fork("./bots/bartender_scenario/leader.ts");
-    quester = fork("./bots/bartender_scenario/quester.ts");
+    faction1Leader = fork("./bots/bartender_scenario/leader.ts", [], {execArgv: childExecArgv});
+    quester = fork("./bots/bartender_scenario/quester.ts", [], {execArgv: childExecArgv});
     quester.on("message", changeBartender);
     await spawnBartenders();
     await spawnGoons();
@@ -37,7 +38,8 @@ function changeBartender() {
 
 async function spawnBartenders() {
     for (let i = 1; i <= 4; i++) {
-        const childProcess = fork("./bots/bartender_scenario/wanderingBartender.ts", ["Bartender " + i, "password"]);
+        const childProcess = fork("./bots/bartender_scenario/wanderingBartender.ts",
+            ["Bartender " + i, "password"], {execArgv: childExecArgv});
         wanderingBartenders.push(childProcess);
         // tslint:disable-next-line: ban
         await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
@@ -59,7 +61,8 @@ async function spawnGoons() {
         else {
             zone = "top";
         }
-        goons.push(fork("./bots/bartender_scenario/member.ts", ["Redshirt " + i, "password", zone]));
+        goons.push(fork("./bots/bartender_scenario/member.ts",
+            ["Redshirt " + i, "password", zone], {execArgv: childExecArgv}));
         // tslint:disable-next-line: ban
         await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
     }
