@@ -110,7 +110,7 @@ export class Game extends Phaser.State {
     this.updateHUD();
     if (!ClientAPI.isUpdating()) {
       this.handleRoomEvents();
-      this.checkForRequests();
+      // this.checkForRequests();
     }
   }
 
@@ -415,7 +415,11 @@ export class Game extends Phaser.State {
     }
     const convoRequesters = ClientAPI.playerAgent.conversationRequesters;
     if (convoRequesters.length > 0) {
-      this.UI.convoRequest(convoRequesters[0]);
+      return;
+    }
+    const tradeRequesters = ClientAPI.playerAgent.tradeRequesters;
+    if (tradeRequesters.length > 0) {
+      return;
     }
   }
 

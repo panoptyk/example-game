@@ -5,7 +5,7 @@
     aria-close-label="Close notification"
     v-on:close="removeIndex"
   >
-    <slot></slot>
+  <slot></slot>
   </b-notification>
 </template>
 

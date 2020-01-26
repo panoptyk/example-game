@@ -11,6 +11,11 @@
       </div>
       <div id="game-sidebar">
         <b-tabs v-model="activeSideBarTab" type="is-boxed" position="is-centered">
+          <b-tab-item label="Requests">
+            <request-tab
+              v-bind:trigger="trigger"
+            ></request-tab>
+          </b-tab-item>
           <b-tab-item label="Items">
             <item-tab></item-tab>
           </b-tab-item>
@@ -47,6 +52,7 @@
 import "buefy/dist/buefy.css";
 import { ClientAPI, Agent, Room, Item } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import requestTab from "./components/requestTab.vue";
 import infoTab from "./components/infoTab.vue";
 import itemTab from "./components/itemTab.vue";
 import conversationTab from "./components/conversationTab.vue";
@@ -55,6 +61,7 @@ import Console from "./components/console.vue";
 
 @Component({
   components: {
+    "request-tab": requestTab,
     "info-tab": infoTab,
     "item-tab": itemTab,
     "convo-tab": conversationTab,

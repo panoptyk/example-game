@@ -9,7 +9,7 @@
     <template v-else-if="info.action === 'PICKUP'">
       <span class ="agent"> {{ agent }}</span>
       <span class="action">picked up</span>
-      <span class="item"> {{ item }}</span> in {{ loc }}
+      <span class="item"> {{ item }}</span> at the {{ loc }}
       at <span class="time"> {{ time }}</span>.
     </template>
     <template v-else-if="info.action === 'DROP'">

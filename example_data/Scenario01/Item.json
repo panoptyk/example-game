@@ -3,28 +3,28 @@
     "1": {
       "id": 1,
       "_itemName": "thesis_draft",
-      "type": "imaginary",
+      "_type": "imaginary",
       "roomID": 1,
       "inTransaction": false
     },
     "2": {
       "id": 2,
       "_itemName": "Sword",
-      "type": "Weapon",
+      "_type": "Weapon",
       "agentID": 1,
       "inTransaction": false
     },
     "3": {
       "id": 3,
       "_itemName": "Wooden Breastplate",
-      "type": "Armor",
+      "_type": "Armor",
       "agentID": 1,
       "inTransaction": false
     },
     "4": {
       "id": 4,
       "_itemName": "Iron Shield",
-      "type": "Weapon",
+      "_type": "Weapon",
       "agentID": 1,
       "inTransaction": false
     }
