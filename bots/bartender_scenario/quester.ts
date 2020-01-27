@@ -19,6 +19,8 @@ let currentLeads: Info[] = [];
 let currentTarget: Agent;
 let questState: string;
 let solution: Info;
+let lastLoc: Room;
+let visitedLastLoc = false;
 
 /**
  * Main triggers act at random time interval when possible
@@ -114,6 +116,21 @@ async function waitHandler() {
     }
 }
 
+/**
+ * Assumes that agent is not in current room
+ * @param agent
+ */
+async function navigateToAgentStep(agent: Agent) {
+    if (lastLoc === undefined) {
+        lastLoc = Helper.findLastKnownLocation(agent);
+    }
+    if (ClientAPI.playerAgent.room === lastLoc) {
+        visitedLastLoc = true;
+    }
+    const nextDest = visitedLastLoc || lastLoc === undefined ? 0 : lastLoc.id;
+    await dumbNavigateStep(nextDest);
+}
+
 async function completeQuest() {
     if (ClientAPI.playerAgent.inConversation()) {
         await ClientAPI.completeQuest(activeQuest, solution);
@@ -130,9 +147,8 @@ async function completeQuest() {
         }
     }
     else {
-        // attempt to find agent
-        const lastLoc = Helper.findLastKnownLocation(activeQuest.giver);
-        await dumbNavigateStep(lastLoc ? lastLoc.id : 0);
+        // attempt to navigate to agent
+        await navigateToAgentStep(activeQuest.giver);
     }
 }
 
@@ -157,10 +173,9 @@ async function locateCurrentTarget() {
             await ClientAPI.requestConversation(currentTarget);
         }
     }
-    // attempt to find agent
     else {
-        const lastLoc = Helper.findLastKnownLocation(currentTarget);
-        await dumbNavigateStep(lastLoc ? lastLoc.id : 0);
+        // attempt to navigate to agent
+        await navigateToAgentStep(currentTarget);
     }
 }
 
@@ -263,6 +278,8 @@ async function questQuestionSolver() {
             console.log("Finished talking to " + currentTarget);
             questState = "evaluating";
             currentTarget = undefined;
+            lastLoc = undefined;
+            visitedLastLoc = false;
         }
         // attempt to reach and start conversation with target
         else {
@@ -278,6 +295,8 @@ async function questHandler() {
         questState = "evaluating";
         currentLeads = [];
         currentTarget = undefined;
+        lastLoc = undefined;
+        visitedLastLoc = false;
         solution = undefined;
         activeQuest = ClientAPI.playerAgent.activeAssignedQuests[0];
         console.log("Starting Quest " + activeQuest);
