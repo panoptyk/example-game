@@ -13,7 +13,30 @@ const requested = new Set<Agent>();
 // conversation related variables
 let conUpdate: number;
 let prevInfoLen: number;
+const answeredQuestions = new Set<Info>();
 
+function prepForConversation() {
+    conUpdate = 0;
+    prevInfoLen = 0;
+    answeredQuestions.clear();
+}
+
+function hasNewInfoToTell(other: Agent): boolean {
+    for (const cinfo of ClientAPI.playerAgent.knowledge) {
+        // temporary fix to avoid spamming too much info
+        if (cinfo.action === "MOVE" || cinfo.action === "TOLD" || cinfo.action === "CONVERSE") {
+            continue;
+        }
+        // tell other agent everything we know that we have not already told to them or been told by them
+        const hasTold = ClientAPI.playerAgent.getInfoByAction("TOLD").find(told =>
+            told.getTerms().info.equals(cinfo) && (told.getTerms().agent1 === other ||
+            told.getTerms().agent2 === other));
+        if (!hasTold) {
+           return true;
+        }
+    }
+    return false;
+}
 
 /**
  * Main triggers act at random time interval when possible
@@ -80,9 +103,14 @@ async function patrolHandler() {
                 }
             }
             for (const question of conv.askedQuestions) {
-                const relatedInfo: Info[] = Helper.getAllRelatedInfo(question);
-                for (const rInfo of relatedInfo) {
-                    await ClientAPI.tellInfo(rInfo);
+                if (!answeredQuestions.has(question)) {
+                    console.log(username + " received question: " + question);
+                    const relatedInfo: Info[] = Helper.getAllRelatedInfo(question);
+                    for (const rInfo of relatedInfo) {
+                        console.log(username + " telling answer: " + rInfo);
+                        await ClientAPI.tellInfo(rInfo);
+                    }
+                    answeredQuestions.add(question);
                 }
             }
         }
@@ -96,12 +124,12 @@ async function patrolHandler() {
             }
         }
         else {
+            // console.log(username + " leaving conversation with " + other + " due to inactivity");
             await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
         }
     }
     else {
-        conUpdate = 0;
-        prevInfoLen = 0;
+        prepForConversation();
         // accept conversations from approaching agents if we havent already talked to them in this room
         for (const requester of ClientAPI.playerAgent.conversationRequesters) {
             if (!talked.has(requester)) {
@@ -113,15 +141,21 @@ async function patrolHandler() {
                 await ClientAPI.rejectConversation(requester);
             }
         }
-        // attempt to start conversation with agents we have not told everything
+        // attempt to start conversations with suitable agents
         let done = true;
         for (const other of Helper.getOthersInRoom()) {
-            if (!requested.has(other) && !talked.has(other) && !other.inConversation()) {
-                await ClientAPI.requestConversation(other);
+            if (other.faction === ClientAPI.playerAgent.faction &&
+            !requested.has(other) && !talked.has(other) && !other.inConversation()) {
+                // only request conversation if we have new info to tell agent
+                const needToTell: boolean = hasNewInfoToTell(other);
+                if (needToTell) {
+                    await ClientAPI.requestConversation(other);
+                }
                 roomUpdate = Date.now();
                 requested.add(other);
                 return;
             }
+            // delay leaving room as long as we have active conversation requests that have not been rejected
             else if (!talked.has(other) && ClientAPI.playerAgent.activeConversationRequestTo(other)) done = false;
         }
         // continue patrol if there is no one left to interact with

@@ -11,6 +11,8 @@ let convoQuestion: Info;
 let specialInfo: Info;
 // let desiredItem: Item;
 const toldAgents = new Set<Agent>();
+const alreadyRequested = new Set<Agent>();
+let requestRefresh = Date.now();
 
 /**
  * Main triggers act every 100ms when possible
@@ -64,7 +66,7 @@ async function act() {
         }
         // attempt to sell generated info
         else if (ClientAPI.playerAgent.conversation) {
-            if (Date.now() - convoStart > 60000) {
+            if (convoStart !== 0 && Date.now() - convoStart > 60000) {
                 await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
             }
             else if (ClientAPI.playerAgent.trade) {
@@ -74,10 +76,27 @@ async function act() {
                 await conversationHandler();
             }
         }
-        else if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
-            const requesters = ClientAPI.playerAgent.conversationRequesters;
-            await ClientAPI.acceptConversation(requesters[Helper.randomInt(0, requesters.length)]);
-            convoStart = Date.now();
+        else {
+            convoStart = 0;
+            if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
+                const requesters = ClientAPI.playerAgent.conversationRequesters;
+                await ClientAPI.acceptConversation(requesters[Helper.randomInt(0, requesters.length)]);
+            }
+            else {
+                // periodically forget that agents have refused a conversation
+                if (Date.now() - requestRefresh > 10 * Helper.WAIT_FOR_OTHER) {
+                    alreadyRequested.clear();
+                    requestRefresh = Date.now();
+                }
+                for (const other of Helper.getOthersInRoom()) {
+                    if (other.faction !== ClientAPI.playerAgent.faction && !other.inConversation() &&
+                    !toldAgents.has(other) && !alreadyRequested.has(other)) {
+                        await ClientAPI.requestConversation(other);
+                        alreadyRequested.add(other);
+                        return;
+                    }
+                }
+            }
         }
     }
 }
@@ -109,6 +128,7 @@ async function randomNavigate() {
 }
 
 async function conversationHandler() {
+    if (convoStart === 0) convoStart = Date.now();
     const conversation: Conversation = ClientAPI.playerAgent.conversation;
     const other: Agent = Helper.getOthersInConversation()[0];
     if (!toldAgents.has(other)) {

@@ -94,6 +94,7 @@ async function leaderConversation() {
         }
     }
     else {
+        console.log(username + " leaving conversation with " + other + " due to inactivity");
         await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
     }
 }
@@ -135,6 +136,34 @@ async function completeQuest() {
     }
 }
 
+async function locateCurrentTarget() {
+    // pick a random target if we don't have one
+    if (currentTarget === undefined) {
+        for (const agent of Helper.getOthersInRoom()) {
+            if (!talked.has(agent)) {
+                currentTarget = agent;
+                break;
+            }
+        }
+        // switch rooms if we found no valid target
+        if (currentTarget === undefined) {
+            await dumbNavigateStep(0);
+            return;
+        }
+    }
+    if (ClientAPI.playerAgent.room.hasAgent(currentTarget)) {
+        if (!ClientAPI.playerAgent.activeConversationRequestTo(currentTarget)) {
+            prepForConversation();
+            await ClientAPI.requestConversation(currentTarget);
+        }
+    }
+    // attempt to find agent
+    else {
+        const lastLoc = Helper.findLastKnownLocation(currentTarget);
+        await dumbNavigateStep(lastLoc ? lastLoc.id : 0);
+    }
+}
+
 async function questQuestionSolver() {
     if (questState === "evaluating") {
         // Check if we have obtained answer
@@ -149,32 +178,33 @@ async function questQuestionSolver() {
         }
         // if we didnt find solution with info we have
         questState = "searching";
-    }
-    if (questState === "turnIn") {
-        await completeQuest();
-        return;
-    }
-    if (currentTarget === undefined) {
-        if (currentLeads.length === 0) {
-            for (const told of ClientAPI.playerAgent.getInfoByAction("TOLD")) {
-                const terms = told.getTerms();
-                const toldInfo: Info = terms.info; // The contents of the information that was told
-                if (!exploredInfo.has(told) && toldInfo.isAnswer(activeQuest.task) &&
-                !(terms.agent1 === ClientAPI.playerAgent || terms.agent2 === ClientAPI.playerAgent)) {
-                    currentLeads.push(told);
-                    exploredInfo.add(told);
+        if (currentTarget === undefined) {
+            if (currentLeads.length === 0) {
+                for (const told of ClientAPI.playerAgent.getInfoByAction("TOLD")) {
+                    const terms = told.getTerms();
+                    const toldInfo: Info = terms.info; // The contents of the information that was told
+                    if (!exploredInfo.has(told) && !talked.has(terms.agent1) &&
+                    !(terms.agent1 === ClientAPI.playerAgent || terms.agent2 === ClientAPI.playerAgent)
+                    && toldInfo.isAnswer(activeQuest.task)) {
+                        currentLeads.push(told);
+                        exploredInfo.add(told);
+                    }
                 }
             }
+            if (currentLeads.length > 0) {
+                currentTarget = currentLeads.pop().getTerms().agent1; // 2 agents since we are exploring TOLD event
+                // we could still be in conversation after previous trade
+                if (ClientAPI.playerAgent.inConversation() && Helper.getOthersInConversation()[0] !== currentTarget) {
+                    await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+                }
+                console.log("Looking for " + currentTarget);
+            }
         }
-        // TODO: handle case when we are unable to find any leads
-        currentTarget = currentLeads.pop().getTerms().agent1; // currently assumes an info with 2 agents
-        // we could still be in conversation after previous trade
-        if (ClientAPI.playerAgent.inConversation() && Helper.getOthersInConversation()[0] !== currentTarget) {
-            await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
-        }
-        console.log("Looking for " + currentTarget);
     }
-    if (questState === "searching") {
+    else if (questState === "turnIn") {
+        await completeQuest();
+    }
+    else if (questState === "searching") {
         if (ClientAPI.playerAgent.trade) {
             traded = true;
             const trade: Trade = ClientAPI.playerAgent.trade;
@@ -222,9 +252,11 @@ async function questQuestionSolver() {
                     prevInfoLen = infoLen;
                     conUpdate = Date.now();
                 }
-                return;
             }
-            await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+            else {
+                console.log(username + " leaving conversation with " + other + " due to inactivity");
+                await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+            }
         }
         // revaluate after either trading or waiting for too long in conversation
         else if (talked.has(currentTarget)) {
@@ -234,17 +266,7 @@ async function questQuestionSolver() {
         }
         // attempt to reach and start conversation with target
         else {
-            if (ClientAPI.playerAgent.room.hasAgent(currentTarget)) {
-                if (!ClientAPI.playerAgent.activeConversationRequestTo(currentTarget)) {
-                    prepForConversation();
-                    await ClientAPI.requestConversation(currentTarget);
-                }
-            }
-            // attempt to find agent
-            else {
-                const lastLoc = Helper.findLastKnownLocation(currentTarget);
-                await dumbNavigateStep(lastLoc ? lastLoc.id : 0);
-            }
+            await locateCurrentTarget();
         }
     }
 }

@@ -57,6 +57,7 @@ async function idleHandler() {
             }
         }
         else {
+            console.log(username + " leaving conversation with " + other + " due to inactivity");
             await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
         }
     }
@@ -94,13 +95,15 @@ async function questAssignHandler() {
         console.log("QUEST ASSIGNED!");
     }
     // leader is lazy and only attemps to assign quest if appropiate member is in same room
-    else if (ClientAPI.playerAgent.conversationRequested.length === 0) {
+    else if (!ClientAPI.playerAgent.inConversation() && ClientAPI.playerAgent.conversationRequested.length === 0) {
         for (const other of Helper.getOthersInRoom()) {
             if (other.agentName === "James Bond") {
                 await ClientAPI.requestConversation(other);
                 return;
             }
         }
+    }
+    else {
         await idleHandler();
     }
 }
