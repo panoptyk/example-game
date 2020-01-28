@@ -48,7 +48,7 @@ async function act() {
                 for (const dropInfo of ClientAPI.playerAgent.getInfoByAction("DROP")) {
                     const terms = dropInfo.getTerms();
                     if (terms.agent === ClientAPI.playerAgent &&
-                        (specialInfo === undefined || dropInfo.time > specialInfo.time)) {
+                        (specialInfo === undefined || dropInfo.time >= specialInfo.time)) {
                         specialInfo = dropInfo;
                     }
                 }
@@ -133,7 +133,7 @@ async function conversationHandler() {
     const other: Agent = Helper.getOthersInConversation()[0];
     if (!toldAgents.has(other)) {
         // tell same masked info to everyone
-        console.log(username + " TOLD SPECIAL INFO " + specialInfo.infoID + " to " + other);
+        console.log(ClientAPI.playerAgent + " TOLD SPECIAL INFO " + specialInfo.infoID + " to " + other);
         await ClientAPI.tellInfo(specialInfo, ["agent", "loc"]);
         toldAgents.add(other);
     }
@@ -163,7 +163,7 @@ async function tradeHandler() {
         // const desiredInTrade: Item = trade.getAgentItemsData(other).find(item => item === desiredItem);
         // if (desiredInTrade) {
         //     await ClientAPI.setTradeReadyStatus(true);
-        //     console.log(username + " ACCEPTED TRADE");
+        //     console.log(ClientAPI.playerAgent + " ACCEPTED TRADE");
         //     return;
         // }
         // if (trade.getAgentsRequestedItems(ClientAPI.playerAgent).size < 1) {
@@ -171,7 +171,7 @@ async function tradeHandler() {
         // }
         if (trade.getAgentsOfferedGold(other) >= 1) {
             await ClientAPI.setTradeReadyStatus(true);
-            console.log(username + " ACCEPTED TRADE");
+            console.log(ClientAPI.playerAgent + " ACCEPTED TRADE");
             return;
         }
     }
