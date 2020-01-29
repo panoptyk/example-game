@@ -11,7 +11,10 @@ import { Game } from "./states/game";
 import * as Utils from "./utils/utils";
 import * as Assets from "./assets";
 
-import { ClientAPI } from "panoptyk-engine/dist/client";
+import { ClientAPI, Room, logger } from "panoptyk-engine/dist/client";
+import Vue from "vue";
+import Buefy from "Buefy";
+import { UI } from "./ui/ui";
 
 class App extends Phaser.Game {
     constructor(config: Phaser.IGameConfig) {
@@ -27,11 +30,16 @@ class App extends Phaser.Game {
 }
 
 function startApp(): void {
-    let gameWidth: number = DEFAULT_GAME_WIDTH;
-    let gameHeight: number = DEFAULT_GAME_HEIGHT;
+    Vue.config.productionTip = false;
+    Vue.use(Buefy, {
+        defaultIconPack: "mdi"
+    });
+    const ui = UI.instance;
+    let gameWidth = 900;
+    let gameHeight = 600;
 
     if (SCALE_MODE === "USER_SCALE") {
-        const screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.calculateScreenMetrics(gameWidth, gameHeight, MAX_GAME_WIDTH, MAX_GAME_HEIGHT);
+        const screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.calculateScreenMetrics(gameWidth, gameHeight, gameWidth, gameHeight);
 
         gameWidth = screenMetrics.gameWidth;
         gameHeight = screenMetrics.gameHeight;
@@ -42,13 +50,18 @@ function startApp(): void {
         width: gameWidth,
         height: gameHeight,
         renderer: Phaser.AUTO,
-        parent: "",
+        parent: "phaser-game",
         resolution: 1
     };
 
+    // ClientAPI.init("71.93.55.224:1791");
     ClientAPI.init();
+    logger.silence();
     const app = new App(gameConfig);
 }
+
+(window as any).ClientAPI = ClientAPI;
+(window as any).Room = Room;
 
 window.onload = () => {
     let webFontLoaderOptions: any = undefined;

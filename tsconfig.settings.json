@@ -3,6 +3,8 @@
     "moduleResolution": "node",
     "downlevelIteration": true,
     "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "noImplicitThis": true,
     "target": "es2018",
     "module": "es6",
     "declaration": true,

@@ -4,9 +4,30 @@
       "id": 1,
       "_itemName": "thesis_draft",
       "_type": "imaginary",
-      "inTransaction": false,
-      "roomID": 1
+      "roomID": 1,
+      "inTransaction": false
+    },
+    "2": {
+      "id": 2,
+      "_itemName": "Sword",
+      "_type": "Weapon",
+      "agentID": 1,
+      "inTransaction": false
+    },
+    "3": {
+      "id": 3,
+      "_itemName": "Wooden Breastplate",
+      "_type": "Armor",
+      "agentID": 1,
+      "inTransaction": false
+    },
+    "4": {
+      "id": 4,
+      "_itemName": "Iron Shield",
+      "_type": "Weapon",
+      "agentID": 1,
+      "inTransaction": false
     }
   },
-  "nextID": 2
+  "nextID": 5
 }

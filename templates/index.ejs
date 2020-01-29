@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
     <title><%= htmlWebpackPlugin.options.title %></title>
 
     <style>
-        body {
-            margin: 0px;/*This removes the border around the canvas that Phaser adds, making the game actually take up all the available space*/
-        }
+      html, body {
+        margin: 0px;
+        height: 100%;
+      }
     </style>
-</head>
-<body>
-</body>
+  </head>
+  <body>
+      <!-- vue app injected here game + ui insertion point-->
+      <div id="app"></div>
+  </body>
 </html>

@@ -2,6 +2,7 @@ var webpack = require("webpack");
 var path = require("path");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 var CleanWebpackPlugin = require("clean-webpack-plugin");
+var VueLoaderPlugin = require("vue-loader/lib/plugin");
 var WebpackSynchronizableShellPlugin = require("webpack-synchronizable-shell-plugin");
 
 module.exports = {
@@ -14,7 +15,7 @@ module.exports = {
     filename: "game.js"
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".vue", ".js"],
     alias: {
       pixi: path.join(__dirname, "node_modules/phaser-ce/build/custom/pixi.js"),
       phaser: path.join(
@@ -22,7 +23,8 @@ module.exports = {
         "node_modules/phaser-ce/build/custom/phaser-split.js"
       ),
       p2: path.join(__dirname, "node_modules/phaser-ce/build/custom/p2.js"),
-      assets: path.join(__dirname, "assets/")
+      assets: path.join(__dirname, "assets/"),
+      vue$: "vue/dist/vue.esm.js"
     }
   },
   plugins: [
@@ -62,13 +64,17 @@ module.exports = {
         "flac",
         "mp4",
         "wav"
-      ])
+      ]),
+      "process.env": {
+        NODE_ENV: '"production"'
+      }
     }),
     new CleanWebpackPlugin([path.join(__dirname, "dist")]),
     new HtmlWebpackPlugin({
       title: "DEV MODE: example panoptyk game",
       template: path.join(__dirname, "templates/index.ejs")
-    })
+    }),
+    new VueLoaderPlugin()
   ],
   devServer: {
     contentBase: path.join(__dirname, "dist"),
@@ -83,7 +89,7 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.ts$/, enforce: "pre", loader: "tslint-loader" },
+      { test: /\.ts$/, enforce: "pre", exclude: /node_modules/, loader: "tslint-loader" },
       {
         test: /assets(\/|\\)/,
         type: "javascript/auto",
@@ -93,12 +99,32 @@ module.exports = {
       { test: /phaser-split\.js$/, loader: "expose-loader?Phaser" },
       { test: /p2\.js$/, loader: "expose-loader?p2" },
       {
+        test: /\.vue$/,
+        loader: "vue-loader",
+        options: {
+          loaders: {
+            scss: "vue-style-loader!css-loader!sass-loader",
+            sass: "vue-style-loader!css-loader!sass-loader?indentedSyntax"
+          }
+        }
+      },
+      {
+        test: /\.scss$/,
+        use: ["vue-style-loader", "css-loader", "sass-loader"]
+      },
+      {
+        test: /\.css$/,
+        use: ["vue-style-loader", "css-loader"]
+      },
+
+      {
         test: /\.ts$/,
         loader: "ts-loader",
         options: {
+          appendTsSuffixTo: [/\.vue$/],
           configFile: path.join(__dirname, "client.tsconfig.json")
         },
-        exclude: "/node_modules/"
+        exclude: "/node_modules"
       }
     ]
   },
