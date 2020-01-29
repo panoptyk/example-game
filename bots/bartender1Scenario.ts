@@ -5,12 +5,13 @@ let currentBartender: ChildProcess;
 let faction1Leader: ChildProcess;
 let quester: ChildProcess;
 let lastQuestStart = 0;
+let questDiscovered = false;
 const childExecArgv = process.execArgv;
 startScenario();
 
 function main() {
     // restart bartender if stuck
-    if (Date.now() - lastQuestStart > 600000) {
+    if (!questDiscovered && Date.now() - lastQuestStart > 600000) {
         console.log("POTENTIAL STUCK BARTENDER!!");
         changeBartender();
     }
@@ -20,6 +21,11 @@ function main() {
 
 async function startScenario() {
     faction1Leader = fork("./bots/bartender_scenario/leader.ts", [], {execArgv: childExecArgv});
+    faction1Leader.on("message", (m) => {
+        if (m === "quest assigned") {
+            questDiscovered = true;
+        }
+    });
     quester = fork("./bots/bartender_scenario/quester.ts", [], {execArgv: childExecArgv});
     quester.on("message", changeBartender);
     await spawnBartenders();
@@ -34,6 +40,7 @@ function changeBartender() {
     currentBartender = wanderingBartenders.shift();
     currentBartender.send("begin quest");
     lastQuestStart = Date.now();
+    questDiscovered = false;
 }
 
 async function spawnBartenders() {

@@ -93,6 +93,7 @@ async function questAssignHandler() {
         }
         await ClientAPI.giveQuest(other, partial.getTerms(), true);
         console.log("QUEST ASSIGNED!");
+        process.send("quest assigned");
     }
     // leader is lazy and only attemps to assign quest if appropiate member is in same room
     else if (!ClientAPI.playerAgent.inConversation() && ClientAPI.playerAgent.conversationRequested.length === 0) {
