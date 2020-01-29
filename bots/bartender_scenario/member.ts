@@ -5,6 +5,7 @@ const username = process.argv[2];
 const password = process.argv[3];
 let acting = false;
 let roomUpdate: number;
+let state = "patrol";
 // patrol related variables
 const zone = process.argv[4];
 let zoneIDs: Set<number>;
@@ -61,8 +62,11 @@ async function act() {
     if (!zoneIDs.has(ClientAPI.playerAgent.room.id)) {
         await dumbNavigateStep(Array.from(zoneIDs)[0]);
     }
-    else {
+    else if (state === "patrol") {
         await patrolHandler();
+    }
+    else if (state === "converse") {
+        await patrolConversationHandler();
     }
 }
 
@@ -78,15 +82,27 @@ async function dumbNavigateStep(roomID: number) {
     }
 }
 
-async function patrolHandler() {
+async function patrolConversationHandler() {
     if (ClientAPI.playerAgent.conversation) {
         const conv: Conversation = ClientAPI.playerAgent.conversation;
         requested.clear(); // we clear our memory of requested conversations here because requests are cancelled when convo starts
         const other: Agent = Helper.getOthersInConversation()[0];
         conUpdate = conUpdate ? conUpdate : Date.now(); // last time convo was updated with something
         prevInfoLen = prevInfoLen ? prevInfoLen : ClientAPI.playerAgent.getInfoByAgent(other).length; // last amount of info we had from/about other agent
-
         if (other.faction === ClientAPI.playerAgent.faction) {
+            // answer any questions that allied agent asks
+            for (const question of conv.askedQuestions) {
+                if (!answeredQuestions.has(question)) {
+                    console.log(username + " received question: " + question);
+                    const relatedInfo: Info[] = Helper.getAllRelatedInfo(question);
+                    for (const rInfo of relatedInfo) {
+                        console.log(username + " telling answer: " + rInfo);
+                        await ClientAPI.tellInfo(rInfo);
+                    }
+                    answeredQuestions.add(question);
+                }
+            }
+            // tell allied agent any new info
             if (!talked.has(other)) {
                 for (const cinfo of ClientAPI.playerAgent.knowledge) {
                     // temporary fix to avoid spamming too much info
@@ -100,17 +116,6 @@ async function patrolHandler() {
                     if (!hasTold) {
                         await ClientAPI.tellInfo(cinfo);
                     }
-                }
-            }
-            for (const question of conv.askedQuestions) {
-                if (!answeredQuestions.has(question)) {
-                    console.log(username + " received question: " + question);
-                    const relatedInfo: Info[] = Helper.getAllRelatedInfo(question);
-                    for (const rInfo of relatedInfo) {
-                        console.log(username + " telling answer: " + rInfo);
-                        await ClientAPI.tellInfo(rInfo);
-                    }
-                    answeredQuestions.add(question);
                 }
             }
         }
@@ -129,7 +134,18 @@ async function patrolHandler() {
         }
     }
     else {
+        state = "patrol";
+        await patrolHandler();
+    }
+}
+
+async function patrolHandler() {
+    if (ClientAPI.playerAgent.conversation) {
         prepForConversation();
+        state = "converse";
+        await patrolConversationHandler();
+    }
+    else {
         // accept conversations from approaching agents if we havent already talked to them in this room
         for (const requester of ClientAPI.playerAgent.conversationRequesters) {
             if (!talked.has(requester)) {
