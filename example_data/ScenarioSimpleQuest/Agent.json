@@ -3,8 +3,6 @@
     "1": {
       "id": 1,
       "_conversationID": 0,
-      "_rank": 0,
-      "_faction": "SIS",
       "_agentName": "Elizabeth Alexandra Mary Windsor",
       "roomID": 1,
       "_inventory": [],
@@ -14,8 +12,6 @@
     "2": {
       "id": 2,
       "_conversationID": 0,
-      "_rank": 0,
-      "_faction": "KGB",
       "_agentName": "Joseph Stalin",
       "roomID": 4,
       "_inventory": [],
@@ -25,8 +21,6 @@
     "3": {
       "id": 3,
       "_conversationID": 0,
-      "_rank": 1,
-      "_faction": "SIS",
       "_agentName": "James Bond",
       "roomID": 1,
       "_inventory": [3],

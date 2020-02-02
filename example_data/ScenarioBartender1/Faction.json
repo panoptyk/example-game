@@ -1,0 +1,26 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_factionName": "KGB",
+      "_factionType": "police",
+      "_members": [[2, 0]]
+    },
+    "2": {
+      "id": 2,
+      "_factionName": "SIS",
+      "_factionType": "spy",
+      "_members": [
+        [3, 0],
+        [4, 1],
+        [8, 2],
+        [9, 2],
+        [10, 2],
+        [11, 2],
+        [12, 2],
+        [13, 2]
+      ]
+    }
+  },
+  "nextID": 3
+}

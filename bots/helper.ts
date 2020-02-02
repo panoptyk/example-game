@@ -98,3 +98,14 @@ export function getAllRelatedInfo(targetInfo: Info): Info[] {
 export function getMyOfferedInfo(trade: Trade): Info[] {
     return ClientAPI.playerAgent === trade.agentIni ? trade.infoAnsIni : trade.infoAnsRec;
 }
+
+/**
+ * Returns an agent's numeric rank or undefined if they are not in a faction or their rank is unknown
+ * @param agent
+ */
+export function getPlayerRank(agent: Agent): number {
+    if (agent.faction) {
+        return agent.faction.getAgentRank(agent);
+    }
+    return undefined;
+}
