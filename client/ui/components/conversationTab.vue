@@ -266,6 +266,9 @@ export default class ConverstaionTab extends Vue {
   onAsk() {
     console.log("Asked!");
     const q: any = Object.assign({}, this.questionInfo);
+    Object.keys(q).forEach(key => {
+      q[key] = {id: q[key]};
+    });
     q.action = this.actionSelected === this.defaultActions[0] ? undefined : this.actionSelected;
     ClientAPI.askQuestion(q);
   }
