@@ -7,7 +7,7 @@
       <div class="item-box" v-bind:key="i.id">
         <div class="item-id">#{{ i.id }}</div>
         <div class="item-text">
-          <item-entry v-bind:info="i.item"></item-entry>
+          <item-entry v-bind:item="i.item"></item-entry>
         </div>
       </div>
     </template>
@@ -81,21 +81,36 @@ export default class ItemTab extends Vue {
       .splice(start, this.perPage)
       .map(this.processItem);
   }
-  processItem(id) {
-    const item = Item.getByID(id);
+  processItem(item: Item) {
     if (!item) {
-      return { id };
+      return { id: 0 };
     }
 
     return {
-      id,
-      item: {
-        id
-      }
+      id: item.id,
+      item
     };
   }
 }
 </script>
 
 <style>
+.item-box {
+  border: 2px;
+  border-style: solid;
+  border-color: antiquewhite;
+  background-color: dimgrey;
+  display: flex;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.item-id {
+  flex: 0;
+  text-align: left;
+  padding-left: 10px;
+  min-width: 100px;
+}
+.item-text {
+  flex: 1;
+}
 </style>

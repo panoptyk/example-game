@@ -17,7 +17,9 @@
             ></request-tab>
           </b-tab-item>
           <b-tab-item label="Items">
-            <item-tab></item-tab>
+            <item-tab
+              v-bind:trigger="trigger"
+              ></item-tab>
           </b-tab-item>
           <b-tab-item label="Info">
             <info-tab
