@@ -1,10 +1,12 @@
 import * as Assets from "../assets";
 import { ClientAPI, Agent } from "panoptyk-engine/dist/client";
+import { ActionSel } from "./actionSel";
 
 export class AgentSprite extends Phaser.Sprite {
   public animating = false;
-  public id = 0;
+  public model: Agent;
   public standLocIndex = -1;
+  private menu: ActionSel;
 
   constructor(game: Phaser.Game, x: number, y: number, enableInput = true) {
     super(game, x, y, Assets.Spritesheets.SpritesheetsPlayerSpriteSheet484844.getName(), 0);
@@ -15,10 +17,31 @@ export class AgentSprite extends Phaser.Sprite {
     this.animations.add("walking_back", [17, 18, 19, 20], 4, true);
     this.animations.play("standing", 3, true);
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
+
     this.inputEnabled = enableInput;
-    this.events.onInputDown.add(() => {
-      console.log("Converse with " + this.id);
-      ClientAPI.requestConversation(Agent.getByID(this.id));
-    });
+    this.events.onInputDown.add(this.onDown);
+  }
+
+  private onDown(sprite) {
+    if (sprite.menuCreated()) {
+      sprite.destroyMenu();
+    }
+    else {
+      sprite.createMenu();
+    }
+  }
+
+  public menuCreated(): boolean {
+    return this.menu !== undefined;
+  }
+
+  public createMenu() {
+    this.menu = new ActionSel(this);
+    this.menu.createAgentActions();
+  }
+
+  public destroyMenu() {
+    this.menu.destroy();
+    this.menu = undefined;
   }
 }

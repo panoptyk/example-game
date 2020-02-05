@@ -324,7 +324,7 @@ export class Game extends Phaser.State {
         standLoc.pos.x,
         standLoc.pos.y
       );
-      agentSprite.id = agent.id;
+      agentSprite.model = agent;
       agentSprite.standLocIndex = standLoc.index;
       agentSprite.inputEnabled = true;
       this.otherAgents.add(agentSprite);
@@ -370,7 +370,7 @@ export class Game extends Phaser.State {
     }
     const agentSprite = new AgentSprite(this.game, 0, 0);
     agentSprite.visible = false;
-    agentSprite.id = event.agentID;
+    agentSprite.model = Agent.getByID(event.agentID);
     agentSprite.standLocIndex = end.index;
     agentSprite.inputEnabled = true;
     this.otherAgents.add(agentSprite);
