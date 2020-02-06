@@ -1,5 +1,5 @@
 import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, Quest, IDObject } from "panoptyk-engine/dist/";
-import * as Helper from "../helper";
+import * as Helper from "../utils/helper";
 
 const username = process.argv.length >= 3 ? process.argv[2] : "James Bond";
 const password = process.argv.length > 3 ? process.argv[3] : "password";

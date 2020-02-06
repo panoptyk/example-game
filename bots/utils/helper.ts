@@ -137,3 +137,15 @@ export function getQuestsGivenToAgent(agent: Agent) {
     }
     return quests;
 }
+
+/**
+ * This should eventually be replaced by a real navigation algorithm
+ */
+export async function dumbNavigateStep(roomName: string) {
+    if (ClientAPI.playerAgent.room.roomName !== roomName) {
+        const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
+        const dest = potentialRooms.find(room => room.roomName === roomName);
+        if (dest) await ClientAPI.moveToRoom(dest);
+        else await ClientAPI.moveToRoom(potentialRooms[randomInt(0, potentialRooms.length)]);
+    }
+}
