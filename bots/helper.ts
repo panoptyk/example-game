@@ -1,4 +1,4 @@
-import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI } from "panoptyk-engine/dist/";
+import { Agent, Room, Info, Trade, Item, Conversation, Quest, Faction, ClientAPI } from "panoptyk-engine/dist/";
 
 /**
  * Variable that I use in my bots to determine time to wait for input from other agents.
@@ -108,4 +108,32 @@ export function getPlayerRank(agent: Agent): number {
         return agent.faction.getAgentRank(agent);
     }
     return undefined;
+}
+
+/**
+ * Retreives quests that have been assigned to the playerAgent by agent
+ * @param agent
+ */
+export function getAssignedQuestsFromAgent(agent: Agent) {
+    const quests: Quest[] = [];
+    for (const quest of agent.activeAssignedQuests) {
+        if (quest.giver === agent) {
+            quests.push(quest);
+        }
+    }
+    return quests;
+}
+
+/**
+ * Retreives quests that have been assigned to agent by the playerAgent
+ * @param agent
+ */
+export function getQuestsGivenToAgent(agent: Agent) {
+    const quests: Quest[] = [];
+    for (const quest of agent.activeGivenQuests) {
+        if (quest.giver === agent) {
+            quests.push(quest);
+        }
+    }
+    return quests;
 }
