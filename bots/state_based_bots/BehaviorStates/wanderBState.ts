@@ -1,6 +1,6 @@
 import { BehaviorState } from "./behaviorState";
 
-export class IdleBehavior extends BehaviorState {
+export class WanderBehavior extends BehaviorState {
 
   public nextState (): BehaviorState {
     return this;
