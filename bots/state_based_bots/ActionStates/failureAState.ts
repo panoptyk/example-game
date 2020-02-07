@@ -1,4 +1,4 @@
-import { ActionState } from "../action_state";
+import { ActionState } from "../actionState";
 
 /**
  * FailureAction is an endcap for Action FSMs denoting it has completed.
