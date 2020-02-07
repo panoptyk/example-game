@@ -1,19 +1,19 @@
+import { State } from "./state";
 import { ActionState } from "./action_state";
-import { IdleState } from "./ActionStates/idle_state";
 
-export abstract class BehaviourState {
+export abstract class BehaviorState extends State {
 
   public currentActionState: ActionState;
 
-  constructor (initialState: ActionState) {
-      this.currentActionState = initialState;
+  constructor (initialState: ActionState, nextState: () => BehaviorState = undefined) {
+    super(nextState);
+    this.currentActionState = initialState;
   }
 
   public async act () {
-      await this.currentActionState.act ();
-      this.currentActionState = this.currentActionState.nextState ();
+      this.currentActionState = await this.currentActionState.tick();
   }
 
-  public abstract nextBehavior (): BehaviourState;
+  public abstract nextState (): BehaviorState;
 
 }

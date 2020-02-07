@@ -1,8 +1,8 @@
-import { BehaviourState } from "../behavior_state";
+import { BehaviorState } from "../behavior_state";
 
-export class IdleBehavior extends BehaviourState {
+export class IdleBehavior extends BehaviorState {
 
-  public nextBehavior (): BehaviourState {
+  public nextState (): BehaviorState {
     return this;
   }
 

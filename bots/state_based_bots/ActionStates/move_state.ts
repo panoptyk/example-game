@@ -1,14 +1,19 @@
 import { ActionState } from "../action_state";
 import { Room, ClientAPI, ValidationResult } from "panoptyk-engine/dist/client";
 import { IdleState } from "./idle_state";
+import { SuccessAction } from "./successAState";
 
 export class MoveState extends ActionState {
   private destination: Room;
   private completed = false;
 
-  constructor(dest: Room) {
-    super();
+  constructor(dest: Room, nextState: () => ActionState = undefined) {
+    super(nextState);
     this.destination = dest;
+  }
+
+  public successfullyMoved() {
+    return this.completed;
   }
 
   public async act() {
@@ -23,9 +28,6 @@ export class MoveState extends ActionState {
   }
 
   public nextState(): ActionState {
-    if (this.completed) {
-      return new IdleState();
-    }
-    return this;
+    return SuccessAction.instance;
   }
 }
