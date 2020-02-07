@@ -9,11 +9,12 @@ import {
   getPanoptykDatetime,
   logger
 } from "panoptyk-engine/dist/client";
-import { IdleBehavior } from "./BehaviorStates/idleBState";
+import { WanderBehavior } from "./BehaviorStates/wanderBState";
 import { IdleState } from "./ActionStates/idleAState";
 import { MoveState } from "./ActionStates/moveAState";
 import { ActionState } from "./ActionStates/actionState";
 import { State } from "./state";
+import { WanderStrategy } from "./Strategy/WanderStrategy";
 
 // Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "idle";
@@ -22,7 +23,7 @@ const address = process.argv[4] ? process.argv[4] : "http://localhost:8080";
 
 const MAX_RETRY = 10;
 const RETRY_INTERVAL = 100; // ms before attempLogin() is called again to retry logging in
-const ACT_INTERVAL = 100; // ms before act() is called again(possibly)
+const ACT_INTERVAL = 2000; // ms before act() is called again(possibly)
 
 function init() {
   console.log("Logging in as: " + username + " to server: " + address);
@@ -70,30 +71,10 @@ function actWrapper() {
 // Boilerplate agent code ================================================== END
 // set "_endBot" to true to exit the script cleanly
 
-const newIdleTransition = function(this: IdleState): ActionState {
-  if (Math.random() * 1000 < this.delay) {
-    const adjacentRooms: Room[] = ClientAPI.playerAgent.room.getAdjacentRooms();
-    return new MoveState(
-      adjacentRooms[Math.floor(Math.random() * adjacentRooms.length)],
-      function(this: MoveState): ActionState {
-        if (this.successfullyMoved()) {
-          return new IdleState(newIdleTransition);
-        }
-        else {
-          return this;
-        }
-      }
-    );
-  } else {
-    this.delay += this.deltaTime;
-    return this;
-  }
-};
-const idle = new IdleState(newIdleTransition);
-let currentBehaviour: State = new IdleBehavior(idle);
+const wanderStrategy: WanderStrategy = new WanderStrategy();
 
 async function act() {
-  currentBehaviour = await currentBehaviour.tick();
+  await wanderStrategy.act();
 }
 
 // =======Start Bot========== //
