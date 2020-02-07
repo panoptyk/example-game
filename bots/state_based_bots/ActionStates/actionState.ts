@@ -12,4 +12,8 @@ export abstract class ActionState extends State {
 
   public abstract nextState(): ActionState;
 
+  public async tick (): Promise<ActionState> {
+    return (await super.tick () as any);
+  }
+
 }

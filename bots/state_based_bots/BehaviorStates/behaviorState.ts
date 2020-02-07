@@ -16,4 +16,8 @@ export abstract class BehaviorState extends State {
 
   public abstract nextState (): BehaviorState;
 
+  public async tick(): Promise<BehaviorState> {
+    return (await super.tick () as any);
+  }
+
 }
