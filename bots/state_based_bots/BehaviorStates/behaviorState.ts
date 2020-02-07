@@ -1,5 +1,5 @@
-import { State } from "./state";
-import { ActionState } from "./actionState";
+import { State } from "../state";
+import { ActionState } from "../ActionStates/actionState";
 
 export abstract class BehaviorState extends State {
 

@@ -1,5 +1,4 @@
-import { ActionState } from "../action_state";
-
+import { ActionState } from "./actionState";
 
 /**
  * SuccessAction is an endcap for FSMs denoting it has completed.

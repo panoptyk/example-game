@@ -1,6 +1,4 @@
-import { ActionState } from "../actionState";
-import { MoveState } from "./moveAState";
-import { ClientAPI, Room } from "panoptyk-engine/dist/client";
+import { ActionState } from "./actionState";
 
 export class IdleState extends ActionState {
 

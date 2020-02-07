@@ -1,4 +1,4 @@
-import { BehaviorState } from "../behaviorState";
+import { BehaviorState } from "./behaviorState";
 
 export class IdleBehavior extends BehaviorState {
 

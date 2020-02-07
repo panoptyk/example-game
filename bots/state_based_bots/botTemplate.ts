@@ -11,9 +11,9 @@ import {
 } from "panoptyk-engine/dist/client";
 import { IdleBehavior } from "./BehaviorStates/idleBState";
 import { IdleState } from "./ActionStates/idleAState";
-import { BehaviorState } from "./behaviorState";
+import { BehaviorState } from "./BehaviorStates/behaviorState";
 import { MoveState } from "./ActionStates/moveAState";
-import { ActionState } from "./actionState";
+import { ActionState } from "./ActionStates/actionState";
 
 // Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "idle";
