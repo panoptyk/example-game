@@ -11,9 +11,9 @@ import {
 } from "panoptyk-engine/dist/client";
 import { IdleBehavior } from "./BehaviorStates/idleBState";
 import { IdleState } from "./ActionStates/idleAState";
-import { BehaviorState } from "./BehaviorStates/behaviorState";
 import { MoveState } from "./ActionStates/moveAState";
 import { ActionState } from "./ActionStates/actionState";
+import { State } from "./state";
 
 // Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "idle";
@@ -90,11 +90,10 @@ const newIdleTransition = function(this: IdleState): ActionState {
   }
 };
 const idle = new IdleState(newIdleTransition);
-let currentBehaviour: BehaviorState = new IdleBehavior(idle);
+let currentBehaviour: State = new IdleBehavior(idle);
 
 async function act() {
-  await currentBehaviour.act();
-  currentBehaviour = currentBehaviour.nextState();
+  currentBehaviour = await currentBehaviour.tick();
 }
 
 // =======Start Bot========== //

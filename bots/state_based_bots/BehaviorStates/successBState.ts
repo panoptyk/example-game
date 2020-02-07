@@ -1,4 +1,4 @@
-import { BehaviorState } from "../behavior_state";
+import { BehaviorState } from "./behaviorState";
 
 /**
  * SuccessBehavior is an endcap for FSMs denoting it has completed.
