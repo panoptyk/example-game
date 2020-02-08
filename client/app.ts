@@ -35,7 +35,7 @@ function startApp(): void {
         defaultIconPack: "mdi"
     });
     const ui = UI.instance;
-    let gameWidth = 900;
+    let gameWidth = 700;
     let gameHeight = 600;
 
     if (SCALE_MODE === "USER_SCALE") {
