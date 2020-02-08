@@ -1,26 +1,14 @@
 <template>
   <div id="app">
     <div id="game-top-row">
-      <div id="game-outline">
-        <div id="game-top-bar">
-          <div
-            v-if="showTopBar"
-          >Room: {{ room }} | Year: {{ time.year }} | Day: {{ time.day }} | Hour: {{ time.hour }}</div>
-        </div>
-        <div id="phaser-game"></div>
-      </div>
-      <div id="game-sidebar">
-        <b-tabs v-model="activeSideBarTab" type="is-boxed" position="is-centered">
-          <b-tab-item label="Requests">
-            <request-tab
-              v-bind:trigger="trigger"
-            ></request-tab>
-          </b-tab-item>
+      <div id="game-leftbar" class="game-sidebar">
+        <b-tabs v-model="activeLSideBarTab" type="is-boxed" position="is-centered">
           <b-tab-item label="Items">
             <item-tab
               v-bind:trigger="trigger"
               ></item-tab>
           </b-tab-item>
+
           <b-tab-item label="Info">
             <info-tab
               v-bind:trigger="trigger"
@@ -30,6 +18,26 @@
               v-bind:items="items"
             ></info-tab>
           </b-tab-item>
+
+        </b-tabs>
+      </div>
+      <div id="game-outline">
+        <div id="game-top-bar">
+          <div
+            v-if="showTopBar"
+          >Room: {{ room }} | Year: {{ time.year }} | Day: {{ time.day }} | Hour: {{ time.hour }}</div>
+        </div>
+        <div id="phaser-game"></div>
+        <console id="console" v-bind:messages="messages" v-bind:max="maxMsgs"></console>
+      </div>
+      <div id="game-rightbar" class="game-sidebar">
+        <b-tabs v-model="activeRSideBarTab" type="is-boxed" position="is-centered">
+          <b-tab-item label="Requests">
+            <request-tab
+              v-bind:trigger="trigger"
+            ></request-tab>
+          </b-tab-item>
+
           <b-tab-item label="Conversation">
             <convo-tab
               ref="convo"
@@ -40,13 +48,14 @@
               v-bind:items="items"
             ></convo-tab>
           </b-tab-item>
+
           <b-tab-item label="Trade">
             <trade-tab></trade-tab>
           </b-tab-item>
         </b-tabs>
       </div>
     </div>
-    <console v-bind:messages="messages" v-bind:max="maxMsgs"></console>
+    
   </div>
 </template>
 
@@ -102,7 +111,8 @@ export default class App extends Vue {
     hour: ""
   };
   // Sidebar data
-  activeSideBarTab = 0;
+  activeLSideBarTab = 0;
+  activeRSideBarTab = 0;
   listOfActions = [];
   // Console data
   maxMsgs = 5;
@@ -209,21 +219,13 @@ body {
   width: 1600px;
   margin-left: auto;
   margin-right: auto;
+  padding-top: 25px;
 }
 #game-top-row {
   width: inherit;
   height: auto;
   display: flex;
   align-items: stretch;
-}
-#game-outline {
-  margin-right: 5px;
-  border: 5px;
-  border-color: antiquewhite;
-  border-style: solid;
-}
-#phaser-game {
-  display: inline-block;
 }
 #game-top-bar {
   height: 30px;
@@ -233,9 +235,24 @@ body {
   border-style: solid;
   color: aliceblue;
 }
-#game-sidebar {
-  width: 100%;
+#game-outline {
+  margin-right: 5px;
   margin-left: 5px;
+  border: 5px;
+  border-color: antiquewhite;
+  border-style: solid;
+}
+#phaser-game {
+  display: inline-block;
+}
+#game-leftbar {
+  margin-right: 5px;
+}
+#game-rightbar {
+  margin-left: 5px;
+}
+.game-sidebar {
+  width: 100%;
   padding-top: 10px;
   flex: 1;
 

@@ -32,15 +32,17 @@ export default class Console extends Vue {
 <style>
 #console {
   width: 100%;
+  height: 250px;
   max-width: auto;
   max-height: 250px;
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */
-  margin-top: 10px;
+  margin-top: 5px;
   padding: 10px;
 
-  border: 5px;
+  border: 0px;
+  border-top: 2px;
   border-color: antiquewhite;
   border-style: solid;
 }

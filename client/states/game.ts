@@ -73,7 +73,7 @@ export class Game extends Phaser.State {
 
     // load map and set gameWorld location
     this.loadMap(ClientAPI.playerAgent.room);
-    // this.gameWorld.scale.set(2, 2);
+    this.gameWorld.scale.set(1.7, 1.7);
     this.gameWorld.position.set(
       this.world.centerX - this.gameWorld.width / 2,
       this.world.centerY - this.gameWorld.height / 2
