@@ -43,6 +43,7 @@ export default class Request extends Vue {
   onAccept() {
     if (this.trade) {
       ClientAPI.acceptTrade(this.agent);
+      UI.instance.setRightTab(UI.RTABS.TRADE);
     } else {
       ClientAPI.acceptConversation(this.agent);
       UI.instance.setRightTab(UI.RTABS.CONVERSATION);
@@ -54,7 +55,6 @@ export default class Request extends Vue {
       ClientAPI.rejectTrade(this.agent);
     } else {
       ClientAPI.rejectConversation(this.agent);
-      UI.instance.setRightTab(UI.RTABS.TRADE);
     }
   }
 }
