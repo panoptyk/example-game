@@ -2,11 +2,13 @@
   <div id="app">
     <div id="game-top-row">
       <div id="game-leftbar" class="game-sidebar">
-        <b-tabs v-model="activeLSideBarTab" type="is-boxed" position="is-centered">
+        <b-tabs
+          v-model="activeLSideBarTab"
+          type="is-boxed"
+          position="is-centered"
+        >
           <b-tab-item label="Items">
-            <item-tab
-              v-bind:trigger="trigger"
-              ></item-tab>
+            <item-tab v-bind:trigger="trigger"></item-tab>
           </b-tab-item>
 
           <b-tab-item label="Info">
@@ -18,24 +20,30 @@
               v-bind:items="items"
             ></info-tab>
           </b-tab-item>
-
         </b-tabs>
       </div>
       <div id="game-outline">
         <div id="game-top-bar">
-          <div
-            v-if="showTopBar"
-          >Room: {{ room }} | Year: {{ time.year }} | Day: {{ time.day }} | Hour: {{ time.hour }}</div>
+          <div v-if="showTopBar">
+            Room: {{ room }} | Year: {{ time.year }} | Day: {{ time.day }} |
+            Hour: {{ time.hour }}
+          </div>
         </div>
         <div id="phaser-game"></div>
-        <console id="console" v-bind:messages="messages" v-bind:max="maxMsgs"></console>
+        <console
+          id="console"
+          v-bind:messages="messages"
+          v-bind:max="maxMsgs"
+        ></console>
       </div>
       <div id="game-rightbar" class="game-sidebar">
-        <b-tabs v-model="activeRSideBarTab" type="is-boxed" position="is-centered">
+        <b-tabs
+          v-model="activeRSideBarTab"
+          type="is-boxed"
+          position="is-centered"
+        >
           <b-tab-item label="Requests">
-            <request-tab
-              v-bind:trigger="trigger"
-            ></request-tab>
+            <request-tab v-bind:trigger="trigger"></request-tab>
           </b-tab-item>
 
           <b-tab-item label="Conversation">
@@ -50,12 +58,13 @@
           </b-tab-item>
 
           <b-tab-item label="Trade">
-            <trade-tab></trade-tab>
+            <trade-tab 
+              v-bind:trigger="trigger"
+            ></trade-tab>
           </b-tab-item>
         </b-tabs>
       </div>
     </div>
-    
   </div>
 </template>
 
