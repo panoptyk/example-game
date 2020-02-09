@@ -27,6 +27,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
+import { UI } from "../ui";
 import { Agent, ClientAPI } from "panoptyk-engine/dist/client";
 
 @Component({})
@@ -44,6 +45,7 @@ export default class Request extends Vue {
       ClientAPI.acceptTrade(this.agent);
     } else {
       ClientAPI.acceptConversation(this.agent);
+      UI.instance.setRightTab(UI.RTABS.CONVERSATION);
     }
   }
 
@@ -52,6 +54,7 @@ export default class Request extends Vue {
       ClientAPI.rejectTrade(this.agent);
     } else {
       ClientAPI.rejectConversation(this.agent);
+      UI.instance.setRightTab(UI.RTABS.TRADE);
     }
   }
 }

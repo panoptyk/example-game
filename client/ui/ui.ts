@@ -32,6 +32,17 @@ export class UI {
     return UI._instance;
   }
 
+  public static readonly RTABS = {
+    REQUESTS: 0,
+    CONVERSATION: 1,
+    TRADE: 2
+  };
+
+  public static readonly LTABS = {
+    ITEMS: 0,
+    INFO: 1
+  };
+
   private vm: Vue;
   private main: Vue;
   private trigger = 0;
@@ -69,5 +80,13 @@ export class UI {
   public addMessage(m: string) {
     this.main.$data.messages.push({ msg: m, id: this.msgID++ });
     this.msgID = this.msgID % this.maxMsgs;
+  }
+
+  public setLeftTab(index) {
+    this.main.$data.activeLSideBarTab = index;
+  }
+
+  public setRightTab(index) {
+    this.main.$data.activeRSideBarTab = index;
   }
 }
