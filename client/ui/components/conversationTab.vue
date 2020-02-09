@@ -152,6 +152,8 @@ import infoEntry from "./infoEntry.vue";
   }
 })
 export default class ConverstaionTab extends Vue {
+  @Prop({ default: 0 }) trigger: number;
+  // Toggle what to display depending on if in a trade
   inConvo = false;
   @Watch("trigger")
   updateConvo() {
@@ -171,9 +173,9 @@ export default class ConverstaionTab extends Vue {
   leaveConvo() {
     ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
   }
+
   // For question asking
   @Prop({ default: [] }) defaultActions: string[];
-  @Prop({ default: 0 }) trigger: number;
   @Prop({ default: [] }) agents;
   @Prop({ default: [] }) items;
   @Prop({ default: [] }) rooms;
@@ -272,6 +274,7 @@ export default class ConverstaionTab extends Vue {
     q.action = this.actionSelected === this.defaultActions[0] ? undefined : this.actionSelected;
     ClientAPI.askQuestion(q);
   }
+
   // For telling info
   tellInfo = 0;
   knowledge = [];
@@ -303,6 +306,8 @@ export default class ConverstaionTab extends Vue {
       });
     }
   }
+
+  // Update asked questions in conversation
   questions = [];
   @Watch("trigger")
   updateQuestions() {
