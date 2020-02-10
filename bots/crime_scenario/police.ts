@@ -324,6 +324,7 @@ class PoliceDetective extends PoliceMember {
     public async act() {
         switch (this.state) {
             case "turnIn":
+                await this.turnInQuest();
                 break;
             case "basicConv":
                 await this.convoHanlder();
