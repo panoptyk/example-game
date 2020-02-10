@@ -1,9 +1,8 @@
 import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, Quest, IDObject } from "panoptyk-engine/dist/";
-import * as Helper from "../helper";
+import * as Helper from "../utils/helper";
 
 const username = process.argv[2];
 const password = process.argv[3];
-const HOME_ID = 1;
 let acting = false;
 let state = "wait";
 const markedAgents = new Set<Agent>();
@@ -39,7 +38,7 @@ function main() {
         });
     }
     // tslint:disable-next-line: ban
-    setTimeout(main, Helper.randomInt(100, 200));
+    setTimeout(main, 100);
 }
 
 function prepForConversation() {
@@ -51,7 +50,6 @@ function prepForConversation() {
 }
 
 function clearRoomData() {
-    roomUpdate = 0;
     requestedAgents.clear();
     roomUpdate = Date.now();
     talked.clear();

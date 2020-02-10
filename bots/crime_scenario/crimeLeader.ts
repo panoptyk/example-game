@@ -1,5 +1,5 @@
 import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, Quest, IDObject } from "panoptyk-engine/dist/";
-import * as Helper from "../helper";
+import * as Helper from "../utils/helper";
 import e = require("express");
 
 const username = process.argv[2];
@@ -29,7 +29,7 @@ function main() {
         });
     }
     // tslint:disable-next-line: ban
-    setTimeout(main, Helper.randomInt(100, 200));
+    setTimeout(main, 100);
 }
 
 /**

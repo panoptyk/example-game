@@ -66,9 +66,15 @@ export function findLastKnownLocation(agent: Agent): Room {
     let location = undefined;
     for (const info of agentInfo) {
         const terms = info.getTerms();
-        if (terms.time > time && terms.loc !== undefined) {
-            location = terms.loc;
-            time = terms.time;
+        if (terms.time > time) {
+            if (terms.loc !== undefined) {
+                location = terms.loc;
+                time = terms.time;
+            }
+            else if (terms.loc2 !== undefined) {
+                location = terms.loc;
+                time = terms.time;
+            }
         }
     }
     return location;
