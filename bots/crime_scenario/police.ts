@@ -80,6 +80,7 @@ class PoliceMember {
             }
             await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
         }
+        this.clearRoomData();
     }
 
     public async act() {}
@@ -317,6 +318,9 @@ class PoliceDetective extends PoliceMember {
             }
             else if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
                 await ClientAPI.acceptConversation(ClientAPI.playerAgent.conversationRequesters[0]);
+            }
+            else if (Date.now() - this.roomUpdate > Helper.WAIT_FOR_OTHER) {
+                await this.policeNavigateStep("random");
             }
         }
     }
