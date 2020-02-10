@@ -116,7 +116,7 @@
         </a>
       </div>
       <div class="card-content">
-        <div class="content">
+        <div class="content" style="max-height: 200px; overflow-y:auto;">
           <div v-for="q in questions" v-bind:key="q.id"> 
             <info-entry v-bind:info="{action:q.action, terms:q.getTerms()}"></info-entry>
           </div>
