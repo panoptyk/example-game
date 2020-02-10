@@ -107,12 +107,57 @@ class MerchantMember {
 
     public async convHanlder() {
         if (ClientAPI.playerAgent.trade) {
-            // TODO: some trade logic
+            // very basic trade logic
+            const trade = ClientAPI.playerAgent.trade;
+            const other = Helper.getOtherInTrade();
+            for (const [desiredItem, passed] of trade.getAgentsRequestedItems(other)) {
+                if (ClientAPI.playerAgent.hasItem(desiredItem)) {
+                    await ClientAPI.offerItemsTrade([desiredItem]);
+                }
+                else if (!trade.getAgentItemsData(ClientAPI.playerAgent).includes(desiredItem)) {
+                    await ClientAPI.passItemRequestTrade(desiredItem);
+                }
+            }
+
+            const desiredGold = trade.getAgentItemsData(ClientAPI.playerAgent).length;
+            if (trade.getAgentsOfferedGold(other) >= desiredGold) {
+                await ClientAPI.setTradeReadyStatus(true);
+            }
+            else {
+                await ClientAPI.setTradeReadyStatus(false);
+            }
         }
         else if (ClientAPI.playerAgent.conversation) {
             const other = Helper.getOthersInConversation()[0];
             if (!this.conUpdate) this.conUpdate = Date.now();
             if (!this.prevInfoLen) this.prevInfoLen = ClientAPI.playerAgent.getInfoByAgent(other).length;
+            // see if other agent wants to buy anything that we have
+            // TODO: rework this with a more appropiate info tag
+            if (!this.asked) {
+                // all the items we have already informed agent about
+                const toldItems = new Set<Item>();
+                for (const info of ClientAPI.playerAgent.getInfoByAction("GAVE")) {
+                    const terms = info.getTerms();
+                    if (terms.agent2 === other) {
+                        toldItems.add(terms.item);
+                    }
+                }
+                for (const item of ClientAPI.playerAgent.inventory) {
+                    if (!toldItems.has(item)) {
+                        // temporary way of communicating that we have an item to sell
+                        const informSale = Info.ACTIONS.GAVE.question({
+                            agent1: ClientAPI.playerAgent, agent2: other,
+                            time: undefined, loc: undefined, item, quantity: 1
+                        });
+                        await ClientAPI.askQuestion(informSale);
+                    }
+                }
+                this.asked = true;
+            }
+
+            if (ClientAPI.playerAgent.tradeRequesters.length > 0) {
+                await ClientAPI.acceptTrade(other);
+            }
 
             // give other agent time to interact and extend timer when they tell us something
             const infoLen = ClientAPI.playerAgent.getInfoByAgent(other).length;

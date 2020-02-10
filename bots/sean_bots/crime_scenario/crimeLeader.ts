@@ -48,10 +48,20 @@ async function act() {
 }
 
 async function idleHandler() {
-    if (ClientAPI.playerAgent.conversation) {
+    if (ClientAPI.playerAgent.trade) {
+        // only here to accept items
+        await ClientAPI.setTradeReadyStatus(true);
+    }
+    else if (ClientAPI.playerAgent.conversation) {
         const other: Agent = Helper.getOthersInConversation()[0];
         conUpdate = conUpdate ? conUpdate : Date.now();
         prevInfoLen = prevInfoLen ? prevInfoLen : ClientAPI.playerAgent.getInfoByAgent(other).length;
+
+        // accept trades so we can accept items from agents
+        if (ClientAPI.playerAgent.tradeRequesters.includes(other)) {
+            await ClientAPI.acceptTrade(other);
+            conUpdate = Date.now();
+        }
 
         // give other agent time to interact and extend timer when they tell us something
         const infoLen = ClientAPI.playerAgent.getInfoByAgent(other).length;
@@ -157,7 +167,7 @@ function parseInfo() {
         }
         else {
             const item: Item = info.getTerms().item;
-            if (!ClientAPI.playerAgent.hasItem(item)
+            if (item && !ClientAPI.playerAgent.hasItem(item)
             && !assignedItemQuest.has(item)) {
                 unassignedItemQuest.add(item);
             }
