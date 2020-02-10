@@ -232,6 +232,7 @@ body {
 }
 #game-top-row {
   width: inherit;
+  max-height: 900px;
   height: auto;
   display: flex;
   align-items: stretch;
