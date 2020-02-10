@@ -11,37 +11,51 @@ export class RoomMap {
     return RoomMap._instance;
   }
 
-  private nodes: Room[] = [];
-  private edges: Map<Room, Room> = new Map<Room, Room> ();
+  private nodes: Set<Room> = new Set<Room> ();
+  private edges: Map<Room, Room[]> = new Map<Room, Room[]> ();
 
   public addRoom(room: Room): void {
-    this.nodes.push (room);
+    this.nodes.add (room);
   }
 
   public addConnection (room1: Room, room2: Room): void {
-    if (!this.nodes.includes (room1) || !this.nodes.includes (room2)) {
+    if (!this.nodes.has (room1) || !this.nodes.has (room2)) {
       return;
     }
-    this.edges.set (room1, room2);
-    this.edges.set (room2, room1);
+
+    if (this.edges.has (room1)) {
+      this.edges.get (room1).push (room2);
+    } else{
+      this.edges.set (room1, [room2]);
+    }
   }
 
   public findDisconnectedGraphs (): Room[] {
-    const startPoints: Room[] = [];
-    const nodeCopy = Object.assign ([], this.nodes);
-    let next: Room;
+    const startPoints: Set<Room> = new Set<Room> ();
+    const visited: Set<Room> = new Set<Room> ();
+    const toVisit: Set<Room> = new Set<Room> ();
+    let setDifference = new Set([...this.nodes].filter (x => !visited.has(x)));
 
-    for (let i = 0; nodeCopy.length > 0; i++) {
-      startPoints.push (nodeCopy [0]);
-      next = startPoints [i];
-      do {
-        const index = nodeCopy.indexOf (next);
-        nodeCopy.splice (index, 1);
-        next = this.edges.get (next);
-      } while (next !== startPoints [i]);
+    while (visited.size < this.nodes.size) {
+      const room: Room = setDifference.values [0];
+      startPoints.add (room);
+      toVisit.add (room);
+
+      while (toVisit.size > 0) {
+        const r: Room = toVisit.values [0];
+        toVisit.delete (r);
+        visited.add (r);
+        this.edges.get(r).forEach(element => {
+          if (!visited.has (element)) {
+            toVisit.add (element);
+          }
+        });
+      }
+
+      setDifference = new Set([...this.nodes].filter (x => !visited.has(x)));
     }
 
-    return startPoints;
+    return Array.from (startPoints);
   }
 
 }
