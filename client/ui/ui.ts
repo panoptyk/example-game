@@ -79,7 +79,7 @@ export class UI {
   private maxMsgs;
   public addMessage(m: string) {
     this.main.$data.messages.push({ msg: m, id: this.msgID++ });
-    this.msgID = this.msgID % this.maxMsgs;
+    this.msgID = this.msgID % (this.maxMsgs * 2);
   }
 
   public setLeftTab(index) {

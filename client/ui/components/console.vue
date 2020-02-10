@@ -4,7 +4,8 @@
       v-for="(message, index) in messages.slice().reverse()"
       v-bind:key="message.id"
       v-bind:index="messages.length - index - 1"
-    >{{ message.msg }}</console-entry>
+      >{{ message.msg }}</console-entry
+    >
   </div>
 </template>
 
@@ -18,8 +19,8 @@ import consoleEntry from "./consoleEntry.vue";
   }
 })
 export default class Console extends Vue {
-  @Prop() max = 5;
-  @Prop() messages = [];
+  @Prop({ default: 5 }) max;
+  @Prop({ default: [] }) messages;
   @Watch("messages")
   enforceMaxNotifications() {
     while (this.messages.length > this.max) {
@@ -32,9 +33,9 @@ export default class Console extends Vue {
 <style>
 #console {
   width: 100%;
-  height: 250px;
+  height: auto;
   max-width: auto;
-  max-height: 250px;
+  max-height: auto;
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */

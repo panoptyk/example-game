@@ -124,7 +124,7 @@ export default class App extends Vue {
   activeRSideBarTab = 0;
   listOfActions = [];
   // Console data
-  maxMsgs = 5;
+  maxMsgs = 8;
   messages = [];
 }
 </script>
@@ -226,14 +226,15 @@ body {
 }
 #app {
   width: 1600px;
+  height: 900px;
   margin-left: auto;
   margin-right: auto;
   padding-top: 25px;
 }
 #game-top-row {
   width: inherit;
+  height: inherit;
   max-height: 900px;
-  height: auto;
   display: flex;
   align-items: stretch;
 }
