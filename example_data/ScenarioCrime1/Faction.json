@@ -1,0 +1,32 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_factionName": "Friendly Police",
+      "_factionType": "police",
+      "_members": [
+        [2, 0],
+        [15, 1],
+        [16, 101],
+        [17, 102]
+      ]
+    },
+    "2": {
+      "id": 2,
+      "_factionName": "Friendly Mafia",
+      "_factionType": "crime",
+      "_members": [
+        [3, 0],
+        [4, 1],
+        [8, 1],
+        [9, 200],
+        [10, 200],
+        [11, 200],
+        [12, 200],
+        [13, 200],
+        [14, 200]
+      ]
+    }
+  },
+  "nextID": 3
+}
