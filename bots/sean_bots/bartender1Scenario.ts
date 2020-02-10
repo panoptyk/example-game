@@ -20,13 +20,13 @@ function main() {
 }
 
 async function startScenario() {
-    faction1Leader = fork("./bots/bartender_scenario/leader.ts", [], {execArgv: childExecArgv});
+    faction1Leader = fork("./bots/sean_bots/bartender_scenario/leader.ts", [], {execArgv: childExecArgv});
     faction1Leader.on("message", (m) => {
         if (m === "quest assigned") {
             questDiscovered = true;
         }
     });
-    quester = fork("./bots/bartender_scenario/quester.ts", [], {execArgv: childExecArgv});
+    quester = fork("./bots/sean_bots/bartender_scenario/quester.ts", [], {execArgv: childExecArgv});
     quester.on("message", changeBartender);
     await spawnBartenders();
     await spawnGoons();
@@ -45,7 +45,7 @@ function changeBartender() {
 
 async function spawnBartenders() {
     for (let i = 1; i <= 4; i++) {
-        const childProcess = fork("./bots/bartender_scenario/wanderingBartender.ts",
+        const childProcess = fork("./bots/sean_bots/bartender_scenario/wanderingBartender.ts",
             ["Bartender " + i, "password"], {execArgv: childExecArgv});
         wanderingBartenders.push(childProcess);
         // tslint:disable-next-line: ban
@@ -68,7 +68,7 @@ async function spawnGoons() {
         else {
             zone = "top";
         }
-        goons.push(fork("./bots/bartender_scenario/member.ts",
+        goons.push(fork("./bots/sean_bots/bartender_scenario/member.ts",
             ["Redshirt " + i, "password", zone], {execArgv: childExecArgv}));
         // tslint:disable-next-line: ban
         await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
