@@ -7,6 +7,10 @@
           type="is-boxed"
           position="is-centered"
         >
+          <b-tab-item label="Inspect">
+            <inspect-tab v-bind:trigger="trigger"></inspect-tab>
+          </b-tab-item>
+
           <b-tab-item label="Items">
             <item-tab v-bind:trigger="trigger"></item-tab>
           </b-tab-item>
@@ -19,6 +23,10 @@
               v-bind:rooms="rooms"
               v-bind:items="items"
             ></info-tab>
+          </b-tab-item>
+
+          <b-tab-item label="Quests">
+            <quest-tab v-bind:trigger="trigger"></quest-tab>
           </b-tab-item>
         </b-tabs>
       </div>
@@ -60,6 +68,8 @@
           <b-tab-item label="Trade">
             <trade-tab 
               v-bind:trigger="trigger"
+              v-bind:items="items"
+              v-bind:knowledge="knowledge"
             ></trade-tab>
           </b-tab-item>
         </b-tabs>
@@ -77,6 +87,8 @@ import infoTab from "./components/infoTab.vue";
 import itemTab from "./components/itemTab.vue";
 import conversationTab from "./components/conversationTab.vue";
 import tradeTab from "./components/tradeTab.vue";
+import questTab from "./components/questTab.vue";
+import inspectTab from "./components/inspectTab.vue";
 import Console from "./components/console.vue";
 
 @Component({
@@ -86,6 +98,8 @@ import Console from "./components/console.vue";
     "item-tab": itemTab,
     "convo-tab": conversationTab,
     "trade-tab": tradeTab,
+    "quest-tab": questTab,
+    "inspect-tab": inspectTab,
     console: Console
   }
 })
@@ -94,17 +108,13 @@ export default class App extends Vue {
   agents = [];
   rooms = [];
   items = [];
+  knowledge = [];
   @Watch("trigger")
-  updateSeenLists() {
-    this.agents = ClientAPI.seenAgents.map((v: Agent) => {
-      return { name: v.agentName, id: v.id };
-    });
-    this.rooms = ClientAPI.seenRooms.map((v: Room) => {
-      return { name: v.roomName, id: v.id };
-    });
-    this.items = ClientAPI.seenItems.map((v: Item) => {
-      return { name: v.itemName, id: v.id };
-    });
+  updateLists() {
+    this.agents = ClientAPI.seenAgents;
+    this.rooms = ClientAPI.seenRooms;
+    this.items = ClientAPI.seenItems;
+    this.knowledge = ClientAPI.playerAgent.knowledge;
   }
   // Top Bar logic
   showTopBar = false;
@@ -202,8 +212,23 @@ $link: $primary;
 $link-invert: $primary-invert;
 $link-focus-border: $primary;
 
-// Notification element
+// Notification element (used in console.vue)
 $notification-padding: 0.25rem 0.25rem 0.5rem 0.5rem;
+
+// Card(collapse) element (used in conversationTab.vue, tradeTab.vue)
+$card-content-padding: 0.5rem;
+
+span.select.is-small {
+  font-size: 0.6rem;
+}
+
+button.button.is-small {
+  font-size: 0.6rem;
+}
+
+input.is-small.input {
+  font-size: 0.6rem;
+}
 
 // Import Bulma and Buefy styles
 // Latches changes made above

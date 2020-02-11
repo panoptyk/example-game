@@ -52,13 +52,13 @@
               <option v-bind:value="0">???</option>
               <option
                 v-for="item in getFieldItems(field)"
-                v-bind:key="item"
-                v-bind:value="item.id"
-                >{{ item.name }}</option
+                v-bind:key="item.id"
+                v-bind:value="item.model"
+                >{{ item.text }}</option
               >
             </b-select>
           </b-field>
-          <info-entry v-bind:info="questionData"></info-entry>
+          <info-entry v-bind:info="questionInfoEntry"></info-entry>
         </div>
       </div>
       <footer class="card-footer">
@@ -89,9 +89,9 @@
               <option disabled value>-- info --</option>
               <option
                 v-for="info in knowledge"
-                v-bind:key="info"
+                v-bind:key="info.id"
                 v-bind:value="info"
-                >{{ info }}</option
+                >{{ info.id }}</option
               >
             </b-select>
           </b-field>
@@ -131,7 +131,7 @@
     style="text-align: center;"
     v-else
   >
-    you are not in a conversation
+    you are not in a conversation...
   </div>
 </template>
 
@@ -179,11 +179,11 @@ export default class ConverstaionTab extends Vue {
   @Prop({ default: [] }) agents;
   @Prop({ default: [] }) items;
   @Prop({ default: [] }) rooms;
+  @Prop({ default: [] }) knowledge;
 
   actionSelected = "";
   questionFields = [];
   questionInfo = {};
-  questionData = {} as any;
   @Watch("actionSelected")
   onActionSelected() {
     this.questionInfo = {};
@@ -213,78 +213,45 @@ export default class ConverstaionTab extends Vue {
     if (ClientAPI.playerAgent === undefined) {
       return [];
     }
+    let items: {name: string, id: number, model: any}[];
     val = val.replace(/\d/, "");
     switch (val) {
       case "agent":
-        return this.agents;
+        items = this.agents.map(a => {return {id: a.id, text: a.agentName, model: a}; });
+        break;
       case "loc":
-        return this.rooms;
+        items = this.rooms.map(r => {return {id: r.id, text: r.roomName, model: r}; });
+        break;
       case "item":
-        return this.items;
+        items = this.items.map(i => {return {id: i.id, text: i.itemName, model: i}; });
+        break;
       case "info":
-        return;
-        Array.from((ClientAPI.playerAgent as any)._knowledge).map(info => {
-          return { name: info, id: info };
-        });
+        items = this.knowledge.map(k => {return {id: k.id, text: k.id, model: k}; });
+        break;
       case "faction":
-        return [];
+        items = [];
+        break;
       default:
-        return [];
+        items = [];
+        break;
     }
+    console.log(items);
+    return items;
   }
-  infoEntryData() {
-    const terms = Object.assign({}, this.questionInfo);
-    for (const key in this.questionInfo) {
-      switch (key.replace(/\d/, "")) {
-        case "agent":
-          terms[key] = Agent.getByID(terms[key]);
-          break;
-        case "loc":
-          terms[key] = Room.getByID(terms[key]);
-          break;
-        case "item":
-          terms[key] = Item.getByID(terms[key]);
-          break;
-        case "info":
-          terms[key] = Info.getByID(terms[key]);
-          break;
-        case "faction":
-          break;
-        case "quantity":
-          break;
-        case "time":
-          break;
-        case "quest":
-          break;
-        default:
-          break;
-      }
-    }
-    this.questionData = {
-      action: this.actionSelected,
-      terms
-    };
+  get questionInfoEntry() {
+    return {id:"", action: this.actionSelected, terms: this.questionInfo};
   }
   onAsk() {
     console.log("Asked!");
     const q: any = Object.assign({}, this.questionInfo);
-    Object.keys(q).forEach(key => {
-      q[key] = {id: q[key]};
-    });
     q.action = this.actionSelected === this.defaultActions[0] ? undefined : this.actionSelected;
     ClientAPI.askQuestion(q);
   }
 
   // For telling info
   tellInfo = 0;
-  knowledge = [];
   tellData = {};
-  @Watch("trigger")
-  updateKnowledge() {
-    this.knowledge = ClientAPI.playerAgent
-      ? (ClientAPI.playerAgent as any)._knowledge
-      : [];
-  }
+  told = false;
   @Watch("tellInfo")
   updateTellData() {
     this.told = false;
@@ -297,7 +264,6 @@ export default class ConverstaionTab extends Vue {
       terms: info.getTerms()
     };
   }
-  told = false;
   onTell() {
     console.log(Info.getByID(this.tellInfo));
     if (!this.told) {
