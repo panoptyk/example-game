@@ -14,10 +14,6 @@ export class FailureBehavior extends BehaviorState {
         return FailureBehavior._instance;
     }
 
-    constructor(nextState: () => BehaviorState = undefined) {
-        super(undefined, nextState);
-    }
-
     public async act() {
       return;
     }
