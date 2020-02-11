@@ -33,10 +33,7 @@
       </div>
       <div id="game-outline">
         <div id="game-top-bar">
-          <div v-if="showTopBar">
-            Room: {{ room }} | Year: {{ time.year }} | Day: {{ time.day }} |
-            Hour: {{ time.hour }}
-          </div>
+          <div v-if="showTopBar">Room: {{ room }} | {{ dateString }}</div>
         </div>
         <div id="phaser-game"></div>
         <console
@@ -68,7 +65,7 @@
           </b-tab-item>
 
           <b-tab-item label="Trade">
-            <trade-tab 
+            <trade-tab
               v-bind:trigger="trigger"
               v-bind:items="items"
               v-bind:knowledge="knowledge"
@@ -120,17 +117,24 @@ export default class App extends Vue {
   }
   // Top Bar logic
   showTopBar = false;
+  room = "";
+  time = 0;
+  dateString = "";
   @Watch("room")
   @Watch("time")
   displayTopBar() {
     this.showTopBar = true;
+    const date = new Date(Date.UTC(0, 0, 0, this.time));
+    this.dateString =
+      date.getMonth() +
+      "-" +
+      date.getDate() +
+      "-" +
+      (date.getFullYear() - 1900) +
+      " " +
+      date.getHours() +
+      ":00";
   }
-  room = "";
-  time = {
-    year: "",
-    day: "",
-    hour: ""
-  };
   // Sidebar data
   activeLSideBarTab = 0;
   activeRSideBarTab = 0;

@@ -106,7 +106,7 @@ export class Game extends Phaser.State {
   // PHASER UPDATE FUNCTION //
   public update(): void {
     // Update time
-    this.UI.setTime(formatPanoptykDatetime(getPanoptykDatetime(offset)));
+    this.UI.setTime(getPanoptykDatetime(offset));
     this.updateHUD();
     if (!ClientAPI.isUpdating()) {
       this.handleRoomEvents();
