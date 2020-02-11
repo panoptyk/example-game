@@ -137,7 +137,7 @@ export function getAssignedQuestsFromAgent(agent: Agent) {
 export function getQuestsGivenToAgent(agent: Agent) {
     const quests: Quest[] = [];
     for (const quest of agent.activeGivenQuests) {
-        if (quest.giver === agent) {
+        if (quest.receiver === agent) {
             quests.push(quest);
         }
     }
