@@ -1,7 +1,7 @@
 <template>
   <div id="info-tab" class="game-tab">
     <div class="container">
-      Filters: 
+      Filters:
       <b-field type="is-action">
         <b-select
           placeholder="-- action --"
@@ -11,7 +11,12 @@
         >
           <option disabled value>-- action --</option>
           <option v-bind:value="'NONE'">NONE</option>
-          <option v-for="act in filteredActions" v-bind:key="act" v-bind:value="act">{{ act }}</option>
+          <option
+            v-for="act in filteredActions"
+            v-bind:key="act"
+            v-bind:value="act"
+            >{{ act }}</option
+          >
         </b-select>
       </b-field>
       <b-field type="is-agent">
@@ -22,12 +27,13 @@
           @input="onAgentChange"
         >
           <option disabled value>-- agent --</option>
-          <option v-bind:value="0">none</option>
+          <option v-bind:value="undefined">none</option>
           <option
             v-for="val in filterAgents"
-            v-bind:key="val.id"
-            v-bind:value="val.id"
-          >{{ val.name }}</option>
+            v-bind:key="val.model.id"
+            v-bind:value="val.model"
+            >{{ val.name }}</option
+          >
         </b-select>
       </b-field>
       <b-field type="is-room">
@@ -38,8 +44,10 @@
           @input="onRoomChange"
         >
           <option disabled value>-- loc --</option>
-          <option v-bind:value="0">none</option>
-          <option v-for="val in rooms" v-bind:key="val.id" v-bind:value="val.id">{{ val.name }}</option>
+          <option v-bind:value="undefined">none</option>
+          <option v-for="val in rooms" v-bind:key="val.id" v-bind:value="val">{{
+            val.roomName
+          }}</option>
         </b-select>
       </b-field>
       <b-field type="is-item">
@@ -50,8 +58,10 @@
           @input="onItemChange"
         >
           <option disabled value>-- item --</option>
-          <option v-bind:value="0">none</option>
-          <option v-for="val in items" v-bind:key="val.id" v-bind:value="val.id">{{ val.name }}</option>
+          <option v-bind:value="undefined">none</option>
+          <option v-for="val in items" v-bind:key="val.id" v-bind:value="val">{{
+            val.itemName
+          }}</option>
         </b-select>
       </b-field>
     </div>
@@ -59,7 +69,7 @@
       <div class="info-box" v-bind:key="i.id">
         <div class="info-id">#{{ i.id }}</div>
         <div class="info-text">
-          <info-entry v-bind:info="i.info"></info-entry>
+          <info-entry v-bind:info="i"></info-entry>
         </div>
       </div>
     </template>
@@ -95,30 +105,28 @@ import InfoEntry from "./infoEntry.vue";
 export default class InfoTab extends Vue {
   @Prop({ default: 0 }) trigger: number;
   @Prop({ default: [] }) defaultActions: string[];
+  @Prop({ default: [] }) agents;
+  @Prop({ default: [] }) items;
+  @Prop({ default: [] }) rooms;
+  @Prop({ default: [] }) knowledge;
   get filteredActions() {
+    // slices out the "???" used for conversationTab
     return this.defaultActions.slice(1);
   }
-  @Prop({ default: [] }) agents;
   get filterAgents() {
     if (!ClientAPI.playerAgent) {
       return this.agents;
     }
-    return this.agents.map(val => {
-      return val.name === ClientAPI.playerAgent.agentName
-        ? { name: "(you)", id: val.id }
-        : val;
+    return this.agents.map(a => {
+      return a.agentName === ClientAPI.playerAgent.agentName
+        ? { name: "(you)", model: a }
+        : { name: a.agentName, model: a };
     });
   }
-  @Prop({ default: [] }) items;
-  @Prop({ default: [] }) rooms;
 
+  // Page controls
   info = [];
   subsetInfo = [];
-
-  filterAction = "NONE";
-  filterAgent;
-  filterItem;
-  filterRoom;
 
   total = 1;
   curPage = 1;
@@ -126,6 +134,29 @@ export default class InfoTab extends Vue {
   onPageChange(page) {
     this.curPage = page;
   }
+  @Watch("info")
+  updateTotal() {
+    this.total = this.info.length;
+  }
+  @Watch("curPage")
+  @Watch("total")
+  portionOfInfo() {
+    const start = (this.curPage - 1) * this.perPage;
+    const end = Math.min(start + this.perPage, this.total);
+    this.subsetInfo = this.info
+      .sort((a, b) => {
+        return b - a;
+      })
+      .slice(0)
+      .splice(start, this.perPage);
+  }
+
+  // Filter controls
+  filterAction = "NONE";
+  filterAgent;
+  filterItem;
+  filterRoom;
+
   onFilterChange() {
     this.updateInfo();
   }
@@ -145,10 +176,6 @@ export default class InfoTab extends Vue {
     this.updateInfo();
   }
 
-  @Watch("info")
-  updateTotal() {
-    this.total = this.info.length;
-  }
   @Watch("trigger")
   updateInfo() {
     if (!ClientAPI.playerAgent) {
@@ -156,11 +183,9 @@ export default class InfoTab extends Vue {
       return;
     }
     let filterInfo;
-    const agent = this.filterAgent
-      ? Agent.getByID(this.filterAgent)
-      : undefined;
-    const room = this.filterRoom ? Room.getByID(this.filterRoom) : undefined;
-    const item = this.filterItem ? Item.getByID(this.filterItem) : undefined;
+    const agent = this.filterAgent ? this.filterAgent : undefined;
+    const room = this.filterRoom ? this.filterRoom : undefined;
+    const item = this.filterItem ? this.filterItem : undefined;
 
     if (agent) {
       filterInfo = ClientAPI.playerAgent.getInfoByAgent(agent);
@@ -171,7 +196,7 @@ export default class InfoTab extends Vue {
     } else if (this.filterAction !== "NONE") {
       filterInfo = ClientAPI.playerAgent.getInfoByAction(this.filterAction);
     } else {
-      filterInfo = Array.from((ClientAPI.playerAgent as any)._knowledge);
+      filterInfo = this.knowledge;
       this.info = filterInfo;
       return;
     }
@@ -181,35 +206,7 @@ export default class InfoTab extends Vue {
       });
     }
 
-    this.info = filterInfo ? filterInfo.map(i => i.id) : [];
-  }
-  @Watch("curPage")
-  @Watch("total")
-  portionOfInfo() {
-    const start = (this.curPage - 1) * this.perPage;
-    const end = Math.min(start + this.perPage, this.total);
-    this.subsetInfo = this.info
-      .sort((a, b) => {
-        return b - a;
-      })
-      .slice(0)
-      .splice(start, this.perPage)
-      .map(this.processInfo);
-  }
-  processInfo(id) {
-    const info = Info.getByID(id);
-    if (!info) {
-      return { id };
-    }
-
-    return {
-      id,
-      info: {
-        id,
-        action: info.action,
-        terms: info.getTerms()
-      }
-    };
+    this.info = filterInfo ? filterInfo : [];
   }
 }
 </script>

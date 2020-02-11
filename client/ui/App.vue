@@ -22,6 +22,7 @@
               v-bind:agents="agents"
               v-bind:rooms="rooms"
               v-bind:items="items"
+              v-bind:knowledge="knowledge"
             ></info-tab>
           </b-tab-item>
 
@@ -62,6 +63,7 @@
               v-bind:agents="agents"
               v-bind:rooms="rooms"
               v-bind:items="items"
+              v-bind:knowledge="knowledge"
             ></convo-tab>
           </b-tab-item>
 

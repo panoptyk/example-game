@@ -46,10 +46,9 @@
               v-bind:placeholder="'-- ' + field + ' --'"
               size="is-small"
               v-model="questionInfo[field]"
-              @input="infoEntryData"
             >
               <option disabled value>-- {{ field }} --</option>
-              <option v-bind:value="0">???</option>
+              <option v-bind:value="undefined">???</option>
               <option
                 v-for="item in getFieldItems(field)"
                 v-bind:key="item.id"
@@ -58,14 +57,14 @@
               >
             </b-select>
           </b-field>
-          <info-entry v-bind:info="questionInfoEntry"></info-entry>
+          <info-entry v-bind:newFoundQuery="true" v-bind:query="questionInfoEntry"></info-entry>
         </div>
       </div>
       <footer class="card-footer">
         <a class="card-footer-item" @click="onAsk">Ask</a>
       </footer>
     </b-collapse>
-    <b-collapse class="card" aria-id="tell-info" v-bind:key="trigger">
+    <b-collapse class="card" aria-id="tell-info">
       <div
         slot="trigger"
         slot-scope="props"
@@ -85,6 +84,7 @@
               placeholder="-- info --"
               size="is-small"
               v-model="tellInfo"
+              @input="onTellSelect"
             >
               <option disabled value>-- info --</option>
               <option
@@ -95,7 +95,7 @@
               >
             </b-select>
           </b-field>
-          <info-entry v-bind:info="tellData"></info-entry>
+          <info-entry v-bind:key="tellInfo.id" v-bind:info="tellInfo"></info-entry>
         </div>
       </div>
       <footer class="card-footer">
@@ -118,7 +118,7 @@
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
           <div v-for="q in questions" v-bind:key="q.id"> 
-            <info-entry v-bind:info="{action:q.action, terms:q.getTerms()}"></info-entry>
+            <info-entry v-bind:info="q"></info-entry>
           </div>
         </div>
       </div>
@@ -235,11 +235,12 @@ export default class ConverstaionTab extends Vue {
         items = [];
         break;
     }
-    console.log(items);
     return items;
   }
   get questionInfoEntry() {
-    return {id:"", action: this.actionSelected, terms: this.questionInfo};
+    const q: any = Object.assign({}, this.questionInfo);
+    q.action = this.actionSelected === this.defaultActions[0] ? undefined : this.actionSelected;
+    return q;
   }
   onAsk() {
     console.log("Asked!");
@@ -249,25 +250,14 @@ export default class ConverstaionTab extends Vue {
   }
 
   // For telling info
-  tellInfo = 0;
-  tellData = {};
+  tellInfo: Info = {} as any;
   told = false;
-  @Watch("tellInfo")
-  updateTellData() {
+  onTellSelect(val) {
     this.told = false;
-    const info = Info.getByID(this.tellInfo);
-    if (!info) {
-      return;
-    }
-    this.tellData = {
-      action: info.action,
-      terms: info.getTerms()
-    };
   }
   onTell() {
-    console.log(Info.getByID(this.tellInfo));
     if (!this.told) {
-      ClientAPI.tellInfo(Info.getByID(this.tellInfo)).finally(() => {
+      ClientAPI.tellInfo(this.tellInfo).finally(() => {
         this.told = true;
       });
     }
