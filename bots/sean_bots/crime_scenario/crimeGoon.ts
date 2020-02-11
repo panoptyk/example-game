@@ -32,7 +32,7 @@ function main() {
     if (!acting) {
         acting = true;
         act().catch(err => {
-            console.log(err);
+            if (!err.message.includes("is already in a conversation!")) console.log(err);
         }).finally(() => {
             acting = false;
         });

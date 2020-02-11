@@ -87,6 +87,7 @@ class MerchantMember {
                     this.crimesToReport.delete(info);
                 }
             }
+            console.log(ClientAPI.playerAgent + " reported cimes to " + other);
             this.state = "conversation";
             this.prepForConversation();
         }
@@ -199,8 +200,16 @@ class MerchantMember {
             }
             if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
                 await ClientAPI.acceptConversation(ClientAPI.playerAgent.conversationRequesters[0]);
+                return;
             }
-            else if (Date.now() - this.roomUpdate > Helper.WAIT_FOR_OTHER) {
+            for (const agent of Helper.getOthersInRoom()) {
+                // try to sell goods to people
+                if (!agent.conversation && !this.requestedAgents.has(agent)) {
+                    await ClientAPI.requestConversation(agent);
+                    this.requestedAgents.add(agent);
+                }
+            }
+            if (Date.now() - this.roomUpdate > Helper.WAIT_FOR_OTHER) {
                 await this.dumbNavigateStep("random");
                 this.state = "";
             }
@@ -269,7 +278,7 @@ function main() {
     if (!acting) {
         acting = true;
         act().catch(err => {
-            console.log(err);
+            if (!err.message.includes("is already in a conversation!")) console.log(err);
         }).finally(() => {
             acting = false;
         });
