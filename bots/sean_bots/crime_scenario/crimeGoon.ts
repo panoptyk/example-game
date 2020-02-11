@@ -4,7 +4,7 @@ import * as Helper from "../../utils/helper";
 const username = process.argv[2];
 const password = process.argv[3];
 let acting = false;
-let state = "wait";
+let state = "idle";
 const markedAgents = new Set<Agent>();
 // conversation related variables
 let conUpdate: number;
@@ -222,12 +222,10 @@ async function completeQuest() {
     if (ClientAPI.playerAgent.inConversation() && Helper.getOthersInConversation()[0] === activeQuest.giver) {
         await ClientAPI.completeQuest(activeQuest, solution);
         console.log(ClientAPI.playerAgent + ": Quest complete " + activeQuest);
-        process.send("quest complete");
         activeQuest = undefined;
-        state = "check";
     }
     else if (ClientAPI.playerAgent.room.hasAgent(activeQuest.giver)) {
-        if (!ClientAPI.playerAgent.activeConversationRequestTo(activeQuest.giver)) {
+        if (!ClientAPI.playerAgent.activeConversationRequestTo(activeQuest.giver) && !activeQuest.giver.conversation) {
             console.log(ClientAPI.playerAgent + ": Requesting quest giver: " + activeQuest.giver);
             prepForConversation();
             await ClientAPI.requestConversation(activeQuest.giver);
@@ -358,7 +356,7 @@ async function questQuestionSolver() {
         }
         // attempt to reach and start conversation with target
         else if (ClientAPI.playerAgent.room.hasAgent(currentTarget)) {
-            if (!ClientAPI.playerAgent.activeConversationRequestTo(currentTarget)) {
+            if (!ClientAPI.playerAgent.activeConversationRequestTo(currentTarget) && !currentTarget.conversation) {
                 await ClientAPI.requestConversation(currentTarget);
             }
         }
@@ -422,6 +420,7 @@ async function questItemSteal(questItem: Item) {
             // try not to pickup when item is illegal and police are around
             if (questItem.itemTags.has("illegal") && !policePresent) {
                 await ClientAPI.takeItems([questItem]);
+                console.log(username + " picked up illegal item " + questItem);
             }
         }
         else {
@@ -431,6 +430,7 @@ async function questItemSteal(questItem: Item) {
     else if (questItem.agent) {
         if (ClientAPI.playerAgent.room.hasAgent(questItem.agent)) {
             await ClientAPI.stealItem(questItem.agent, questItem);
+            console.log(username + " STOLE item " + questItem + " from " + questItem.agent);
             questState = "evaluating";
         }
         else {
@@ -510,8 +510,14 @@ async function questHandler() {
         lastLoc = undefined;
         visitedLastLoc = false;
         solution = undefined;
-        activeQuest = ClientAPI.playerAgent.activeAssignedQuests[0];
-        console.log(ClientAPI.playerAgent + ": Starting Quest " + activeQuest);
+        if (ClientAPI.playerAgent.activeAssignedQuests[0]) {
+            activeQuest = ClientAPI.playerAgent.activeAssignedQuests[0];
+            console.log(ClientAPI.playerAgent + ": Starting Quest " + activeQuest);
+        }
+        else {
+            state = "idle";
+            return;
+        }
     }
     if (activeQuest.type === "question") {
         await questQuestionSolver();

@@ -19,7 +19,7 @@ class MerchantMember {
     answeredQuestions = new Set<Info>();
     // room related variables
     talked = new Set<Agent>();
-    roomUpdate: number;
+    roomUpdate = 0;
     requestedAgents = new Set<Agent>();
     // travel related variables
     lastLoc: Room;
@@ -228,8 +228,8 @@ class MerchantMember {
 
     protected markCrimeAndCriminal(criminal: Agent, crime: Info) {
         // may need reworking as we manage the way death is handled and reported
-        if (!(criminal.agentStatus.has("dead"))) {
-            this.criminals.add(criminal);
+        if (criminal === undefined || !(criminal.agentStatus.has("dead"))) {
+            if (criminal) this.criminals.add(criminal);
             this.crimesToReport.add(crime);
         }
     }

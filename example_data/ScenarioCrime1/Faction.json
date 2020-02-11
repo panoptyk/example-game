@@ -14,7 +14,7 @@
     "2": {
       "id": 2,
       "_factionName": "Friendly Mafia",
-      "_factionType": "crime",
+      "_factionType": "criminal",
       "_members": [
         [3, 0],
         [4, 1],

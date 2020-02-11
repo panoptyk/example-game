@@ -18,7 +18,7 @@ class PoliceMember {
     answeredQuestions = new Set<Info>();
     // room related variables
     talked = new Set<Agent>();
-    roomUpdate: number;
+    roomUpdate = 0;
     requestedAgents = new Set<Agent>();
     // travel related variables
     lastLoc: Room;
@@ -87,7 +87,7 @@ class PoliceMember {
 
     protected addCriminalIfAlive(criminal: Agent) {
         // may need reworking as we manage the way death is handled and reported
-        if (!(criminal.agentStatus.has("dead"))) {
+        if (criminal && !(criminal.agentStatus.has("dead"))) {
             this.criminals.add(criminal);
         }
     }
@@ -187,7 +187,7 @@ class PoliceLeader extends PoliceMember {
         else {
             for (const agent of Helper.getOthersInRoom()) {
                 if (agent.faction === ClientAPI.playerAgent.faction && !this.assignedQuest.has(agent)
-                && !ClientAPI.playerAgent.activeConversationRequestTo(agent)) {
+                && !ClientAPI.playerAgent.activeConversationRequestTo(agent) && !agent.conversation) {
                     await ClientAPI.requestConversation(agent);
                     return;
                 }
