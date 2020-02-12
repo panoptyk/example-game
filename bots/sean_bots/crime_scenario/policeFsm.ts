@@ -1,16 +1,9 @@
-import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, Quest, Faction, IDObject } from "panoptyk-engine/dist/";
+import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, Quest, Faction, IDObject, ActionArrestAgent } from "panoptyk-engine/dist/";
 import * as Helper from "../../utils/helper";
-import { State } from "../../lib/state";
-import { ActionState } from "../../lib/ActionStates/actionState";
-import { BehaviorState } from "../../lib/BehaviorStates/behaviorState";
-import { Strategy } from "../../lib/Strategy/strategy";
-import { SuccessAction } from "../../lib/ActionStates/successAState";
-import { FailureAction } from "../../lib/ActionStates/failureAState";
+import { Strategy, ActionState, BehaviorState, SuccessAction, SuccessBehavior, FailureAction, FailureBehavior } from "../../lib/index";
+import { RequestConersationState, LeaveConersationState } from "../../utils/index";
 import { IdleState } from "../../john_bots/idleAState";
 import { MoveState } from "../../john_bots/moveAState";
-import { SuccessBehavior } from "../../lib/BehaviorStates/successBState";
-import { FailureBehavior } from "../../lib/BehaviorStates/failureBState";
-import { RequestConersationState } from "../reqConvoAState";
 
 const username = process.argv[2];
 const password = process.argv[3];
@@ -29,7 +22,7 @@ class PoliceMember extends Strategy {
 
     protected addCriminalIfAlive(criminal: Agent) {
         // may need reworking as we manage the way death is handled and reported
-        if (!(criminal.agentStatus.has("dead"))) {
+        if (criminal && !(criminal.agentStatus.has("dead"))) {
             this.criminals.add(criminal);
         }
     }
@@ -62,55 +55,118 @@ class PoliceMember extends Strategy {
 
 class PoliceLeader extends PoliceMember {
     public async act() {
+        this.currentBehavior.act();
     }
 }
 
 class PoliceDetective extends PoliceMember {
     public async act() {
-        if (this.currentBehavior !== undefined) {
-
-        }
-        else {
-            this.currentBehavior = new PolicePatrol(undefined);
-        }
         this.currentBehavior.act();
     }
 }
 
 class PolicePatrol extends BehaviorState {
-    public nextState() {
-        return this;
-    }
-}
+    idleTimeRoom: number;
+    knownCriminals: Set<Agent>;
+    lastUpdate: number;
 
-class PoliceReportIn extends BehaviorState {
-    private _complete = false;
-    private static _leader: Agent;
-    static get leader(): Agent {
-        if (!PoliceReportIn._leader) {
-            for (const agent of ClientAPI.seenAgents) {
-                if (agent.faction === ClientAPI.playerAgent.faction &&
-                Helper.getPlayerRank(agent) === 0) {
-                    PoliceReportIn._leader = agent;
-                    break;
-                }
-            }
-        }
-        return this._leader;
+    constructor(knownCriminals: Set<Agent>, idleTimeRoom = 10000, nextState?: () => BehaviorState) {
+        super(nextState);
+        this.knownCriminals = knownCriminals;
+        this.idleTimeRoom = idleTimeRoom;
+        this.lastUpdate = Date.now();
     }
 
     public async act() {
-        if (this.currentActionState === undefined ||
-        this.currentActionState instanceof SuccessAction ||
-        this.currentActionState instanceof FailureAction) {
-            
+        if (ClientAPI.playerAgent.conversation) {
+            if (!(this.currentActionState instanceof ListenToOther)) {
+                this.currentActionState = new ListenToOther(Helper.WAIT_FOR_OTHER);
+            }
+        }
+        else {
+            for (const agent of ClientAPI.playerAgent.room.occupants) {
+                if (this.knownCriminals.has(agent)) {
+                    this.currentActionState = new PoliceArrestAgent(agent);
+                    break;
+                }
+            }
+
+            if (this.currentActionState && !(this.currentActionState instanceof SuccessAction) &&
+            !(this.currentActionState instanceof FailureAction)) {
+                this.lastUpdate = Date.now();
+            }
+            else if (Date.now() - this.lastUpdate > this.idleTimeRoom) {
+                this.currentActionState = new PoliceNavigate("random");
+            }
         }
         this.currentActionState = await this.currentActionState.tick();
     }
 
     public nextState() {
-        if (this._complete) return new PolicePatrol(undefined);
         return this;
+    }
+}
+
+class ListenToOther extends ActionState {
+    other: Agent;
+    timeout: number;
+    lastUpdate: number;
+    infoAboutOther: number;
+
+    constructor(timeout: number, nextState?: () => ActionState) {
+        super(nextState);
+        this.other = ClientAPI.playerAgent.conversation.getAgents(ClientAPI.playerAgent)[0];
+        this.timeout = timeout;
+        this.infoAboutOther = ClientAPI.playerAgent.getInfoByAgent(this.other).length;
+        this.lastUpdate = Date.now();
+    }
+
+    public async act() {
+        const currentInfo = ClientAPI.playerAgent.getInfoByAgent(this.other).length;
+        if (this.infoAboutOther < currentInfo) {
+            this.lastUpdate = Date.now();
+            this.infoAboutOther = currentInfo;
+        }
+    }
+
+    public nextState() {
+        if (Date.now() - this.lastUpdate > this.timeout) {
+            return new LeaveConersationState();
+        }
+        return this;
+    }
+}
+
+class PoliceArrestAgent extends ActionState {
+    private targetAgent: Agent;
+    private _completed = false;
+    public get completed() {
+        return this._completed;
+    }
+    private _impossible = false;
+    public get impossible() {
+        return this._impossible;
+    }
+
+    constructor(targetAgent: Agent, nextState: () => ActionState = undefined) {
+        super(nextState);
+        this.targetAgent = targetAgent;
+    }
+
+    public async act() {
+        if (ClientAPI.playerAgent.room.hasAgent(this.targetAgent)) {
+            await ClientAPI.arrestAgent(this.targetAgent);
+            this._completed = true;
+        }
+        else {
+            this._impossible = true;
+        }
+    }
+
+    public nextState(): ActionState {
+        if (this._completed) return SuccessAction.instance;
+        else if (this._impossible) return FailureAction.instance;
+        else return this;
     }
 }
 
@@ -122,7 +178,7 @@ class ConverseWithAgent extends BehaviorState {
     failed = false;
 
     constructor(agent: Agent, acceptRejection = true, timeout = Infinity, nextState?: () => BehaviorState) {
-        super(undefined, nextState);
+        super(nextState);
         this.agent = agent;
         this.timeout = timeout;
         this.acceptRejection = acceptRejection;
@@ -133,10 +189,11 @@ class ConverseWithAgent extends BehaviorState {
             const conversation = ClientAPI.playerAgent.conversation;
             if (conversation.contains_agent(this.agent)) {
                 this.conversing = true;
+                this.currentActionState = SuccessAction.instance;
             }
             else {
                 this.conversing = false;
-                await ClientAPI.leaveConversation(conversation);
+                this.currentActionState = new LeaveConersationState();
             }
         }
         else {
@@ -161,22 +218,34 @@ class ConverseWithAgent extends BehaviorState {
     }
 }
 
-class NavigateToAgent extends BehaviorState {
+class PoliceNavigateToAgent extends BehaviorState {
     agent: Agent;
     timeout: number;
     lastKnownLoc: Room;
     visitedLastLoc = false;
     found = false;
 
+    canVisitRoom(room: Room): boolean {
+        if (room && room.roomTags.has("private") &&
+        Helper.getPlayerRank(ClientAPI.playerAgent) > 100) {
+            return false;
+        }
+        return true;
+    }
+
     constructor(agent: Agent, timeout = Infinity, nextState?: () => BehaviorState) {
-        super(undefined, nextState);
+        super(nextState);
         this.agent = agent;
         this.timeout = timeout;
         this.lastKnownLoc = Helper.findLastKnownLocation(this.agent);
     }
 
     public async act() {
-        if (!ClientAPI.playerAgent.room.hasAgent(this.agent)) {
+        if (ClientAPI.playerAgent.room.hasAgent(this.agent)) {
+            this.found = true;
+            this.currentActionState = SuccessAction.instance;
+        }
+        else {
             if (this.found) {
                 // we found the agent and they moved
                 this.found = false;
@@ -187,16 +256,12 @@ class NavigateToAgent extends BehaviorState {
             if (this.currentActionState === undefined ||
                 this.currentActionState instanceof SuccessAction ||
                 this.currentActionState instanceof FailureAction) {
-                if (!this.visitedLastLoc) {
+                if (!this.visitedLastLoc && this.canVisitRoom(this.lastKnownLoc)) {
                     if (ClientAPI.playerAgent.room === this.lastKnownLoc) this.visitedLastLoc = true;
                     else this.currentActionState = new PoliceNavigate(this.lastKnownLoc.roomName);
                 }
                 else this.currentActionState = new PoliceNavigate("random");
             }
-        }
-        else {
-            this.found = true;
-            this.currentActionState = SuccessAction.instance;
         }
         this.currentActionState = await this.currentActionState.tick();
     }
@@ -210,14 +275,14 @@ class NavigateToAgent extends BehaviorState {
 
 class PoliceNavigate extends ActionState {
     destName: string;
-    moveAttempts: number;
+    timeout: number;
     completed = false;
     cannotComplete = false;
 
-    constructor(dest: string, moveAttempts = Infinity, nextState: () => ActionState = undefined) {
+    constructor(dest: string, timeout = Infinity, nextState: () => ActionState = undefined) {
         super(nextState);
         this.destName = dest;
-        this.moveAttempts = moveAttempts;
+        this.timeout = timeout;
     }
 
     public async act() {
@@ -237,7 +302,6 @@ class PoliceNavigate extends ActionState {
                 potentialRooms = potentialRooms.filter(room => !room.roomTags.has("private"));
             }
             await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
-            this.moveAttempts--;
         }
     }
 
@@ -245,7 +309,7 @@ class PoliceNavigate extends ActionState {
         if (this.completed) {
             return SuccessAction.instance;
         }
-        else if (this.moveAttempts === 0 || this.cannotComplete) {
+        else if (this.deltaTime > this.timeout || this.cannotComplete) {
             return FailureAction.instance;
         }
     }

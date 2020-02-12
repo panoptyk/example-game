@@ -24,7 +24,7 @@ export class RequestConersationState extends ActionState {
         !this.targetAgent.conversation) {
             await ClientAPI.requestConversation(this.targetAgent)
             .catch((res: ValidationResult) => {
-                console.log (res.message);
+                console.log(res.message);
             })
             .then(() => {
                 this._completed = true;
