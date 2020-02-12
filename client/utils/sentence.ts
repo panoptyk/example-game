@@ -101,8 +101,16 @@ class Sentence {
           text: "dropped "
         });
         arr.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.item + " "
+        });
+        arr.push({
           type: Sentence.BlockType.NONE,
-          text: "<incomplete> "
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
         });
         break;
       case Info.ACTIONS.GAVE.name:
@@ -111,8 +119,24 @@ class Sentence {
           text: "gave "
         });
         arr.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.item + " "
+        });
+        arr.push({
           type: Sentence.BlockType.NONE,
-          text: "<incomplete> "
+          text: "to "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
         });
         break;
       case Info.ACTIONS.GREET.name:
@@ -179,6 +203,96 @@ class Sentence {
         arr.push({
           type: Sentence.BlockType.ACTION,
           text: "told "
+        });
+        arr.push({
+          type: Sentence.BlockType.INFO,
+          text: "info#" + terms.info.id + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "to "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
+      case Info.ACTIONS.QUEST.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "assigned a quest "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "regarding "
+        });
+        arr.push({
+          type: Sentence.BlockType.INFO,
+          text: "info#" + terms.info.id + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "to "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
+      case Info.ACTIONS.QUEST_COMPLETE.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "completed a quest "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "regarding "
+        });
+        arr.push({
+          type: Sentence.BlockType.INFO,
+          text: "info#" + terms.info.id + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "to "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
+      case Info.ACTIONS.QUEST_FAILED.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "failed a quest "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "regarding "
         });
         arr.push({
           type: Sentence.BlockType.INFO,
