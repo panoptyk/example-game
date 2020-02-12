@@ -47,7 +47,7 @@ export default class QuestTab extends Vue {
   quests = [];
   subsetQuests = [];
 
-  total = 1;
+  total = 0;
   curPage = 1;
   perPage = 10;
   onPageChange(page) {
@@ -79,7 +79,7 @@ export default class QuestTab extends Vue {
         return b - a;
       })
       .slice(0)
-      .splice(start, this.perPage);
+      .slice(start, end);
   }
 }
 </script>

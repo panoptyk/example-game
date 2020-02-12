@@ -128,7 +128,7 @@ export default class InfoTab extends Vue {
   info = [];
   subsetInfo = [];
 
-  total = 1;
+  total = 0;
   curPage = 1;
   perPage = 10;
   onPageChange(page) {
@@ -148,7 +148,7 @@ export default class InfoTab extends Vue {
         return b - a;
       })
       .slice(0)
-      .splice(start, this.perPage);
+      .slice(start, end);
   }
 
   // Filter controls

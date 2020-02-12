@@ -7,7 +7,7 @@
       <div class="item-box" v-bind:key="i.id">
         <div class="item-id">#{{ i.id }}</div>
         <div class="item-text">
-          <item-entry v-bind:item="i.item"></item-entry>
+          <item-entry v-bind:item="i"></item-entry>
         </div>
       </div>
     </template>
@@ -46,7 +46,7 @@ export default class ItemTab extends Vue {
   items = [];
   subsetItems = [];
 
-  total = 1;
+  total = 0;
   curPage = 1;
   perPage = 10;
   onPageChange(page) {
@@ -73,23 +73,13 @@ export default class ItemTab extends Vue {
   portionOfInfo() {
     const start = (this.curPage - 1) * this.perPage;
     const end = Math.min(start + this.perPage, this.total);
+    console.log(start, end);
     this.subsetItems = this.items
       .sort((a, b) => {
         return b - a;
       })
       .slice(0)
-      .splice(start, this.perPage)
-      .map(this.processItem);
-  }
-  processItem(item: Item) {
-    if (!item) {
-      return { id: 0 };
-    }
-
-    return {
-      id: item.id,
-      item
-    };
+      .slice(start, end)
   }
 }
 </script>
