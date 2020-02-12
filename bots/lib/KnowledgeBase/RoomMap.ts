@@ -57,4 +57,63 @@ export class RoomMap {
 
     return Array.from(startPoints);
   }
+
+  public findPath(start: Room, end: Room): Room[] {
+    const openSet: Set<Room> = new Set<Room>();
+    openSet.add(start);
+    const cameFrom: Map<Room, Room> = new Map<Room, Room>();
+    const gScore: Map<Room, number> = new Map<Room, number>();
+    const fScore: Map<Room, number> = new Map<Room, number>();
+    let current: Room;
+
+    this.nodes.forEach(room => {
+      gScore.set(room, Infinity);
+      fScore.set(room, Infinity);
+    });
+
+    fScore.set(start, 0);
+
+    while (openSet.size > 0) {
+      current = this.minFScore(fScore);
+      if (current === end) {
+        return this.reconstruct(cameFrom, current, start);
+      }
+      openSet.delete(current);
+      this.edges.get(current).forEach(neighbor => {
+        const tempG = gScore.get(current) + 1;
+        if (tempG < gScore.get(neighbor)) {
+          cameFrom.set(neighbor, current);
+          gScore.set(neighbor, tempG);
+          fScore.set(neighbor, gScore.get(neighbor));
+          if (!openSet.has(neighbor)) {
+            openSet.add(neighbor);
+          }
+        }
+      });
+    }
+    return undefined;
+  }
+
+  private reconstruct(cameFrom: Map<Room, Room>, current: Room, start: Room): Room[] {
+    const totalPath = new Array<Room> ();
+    totalPath.push (current);
+    while (current !== start) {
+      current = cameFrom.get (current);
+      totalPath.push (current);
+    }
+    totalPath.reverse ();
+    return totalPath;
+  }
+
+  private minFScore(fScore: Map<Room, number>): Room {
+    let min: Room;
+
+    this.nodes.forEach(room => {
+      if (fScore.get(room) < fScore.get(min)) {
+        min = room;
+      }
+    });
+
+    return min;
+  }
 }
