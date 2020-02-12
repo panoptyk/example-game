@@ -39,8 +39,10 @@ export class UI {
   };
 
   public static readonly LTABS = {
-    ITEMS: 0,
-    INFO: 1
+    INSPECT: 0,
+    ITEMS: 1,
+    INFO: 2,
+    QUEST: 3
   };
 
   private vm: Vue;
@@ -59,6 +61,8 @@ export class UI {
     for (const act in Info.ACTIONS) {
       this.main.$data.listOfActions.push(Info.ACTIONS[act].name);
     }
+    // initial tabs positions
+    this.setLeftTab(UI.LTABS.INFO);
   }
 
   public setTime(time) {
