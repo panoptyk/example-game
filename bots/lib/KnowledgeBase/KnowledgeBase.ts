@@ -15,7 +15,7 @@ export class KnowledgeBase {
 
   private conversationRequest = false;
 
-  public isConversationRequested(): boolean {
+  public get isConversationRequested(): boolean {
     return this.conversationRequest;
   }
 
