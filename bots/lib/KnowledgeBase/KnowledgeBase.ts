@@ -11,20 +11,19 @@ export class KnowledgeBase {
     return KnowledgeBase._instance;
   }
 
-  public roomMap: RoomMap = new RoomMap ();
+  public roomMap: RoomMap = new RoomMap();
 
-  
   private conversationRequest = false;
 
-  public isConversationRequested (): boolean {
+  public isConversationRequested(): boolean {
     return this.conversationRequest;
   }
 
-  public conversationRequested (): void {
+  public conversationRequested(): void {
     this.conversationRequest = true;
   }
 
-  public conversationAccepted (): void {
+  public conversationAccepted(): void {
     this.conversationRequest = true;
   }
 }
