@@ -163,8 +163,8 @@ class Sentence {
           text: "knows "
         });
         arr.push({
-          type: Sentence.BlockType.NONE,
-          text: "<incomplete> "
+          type: Sentence.BlockType.INFO,
+          text: "info#" + terms.info.id + " "
         });
         break;
       case Info.ACTIONS.MOVE.name:
@@ -195,8 +195,16 @@ class Sentence {
           text: "picked up "
         });
         arr.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.item + " "
+        });
+        arr.push({
           type: Sentence.BlockType.NONE,
-          text: "<incomplete> "
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
         });
         break;
       case Info.ACTIONS.TOLD.name:
