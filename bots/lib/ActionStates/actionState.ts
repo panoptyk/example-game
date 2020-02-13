@@ -6,10 +6,6 @@ export abstract class ActionState extends State {
     super(nextState);
   }
 
-  public async act () {
-    return;
-  }
-
   public abstract nextState(): ActionState;
 
   public async tick (): Promise<ActionState> {
