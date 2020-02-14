@@ -92,6 +92,11 @@ export class Game extends Phaser.State {
       models.Info.forEach(i => {
         this.scheduleRoomEvents(i);
       });
+      models.Agent.forEach(a => {
+        if (this.agentSpriteMap.has(a.id)) {
+          this.agentSpriteMap.get(a.id).updateAgent();
+        }
+      });
       this.UI.refresh();
     });
 

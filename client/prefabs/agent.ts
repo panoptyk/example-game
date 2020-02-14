@@ -40,6 +40,12 @@ export class AgentSprite extends Phaser.Sprite {
     this.menu.createAgentActions();
   }
 
+  public updateAgent() {
+    if (this.menu) {
+      this.menu.updateAgentActions();
+    }
+  }
+
   public destroyMenu() {
     this.menu.destroy();
     this.menu = undefined;
