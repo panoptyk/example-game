@@ -1,4 +1,5 @@
 import { RoomMap } from "./RoomMap";
+import { ClientAPI } from "panoptyk-engine";
 
 export class KnowledgeBase {
   // Singleton Pattern
@@ -13,17 +14,10 @@ export class KnowledgeBase {
 
   public roomMap: RoomMap = new RoomMap();
 
-  private conversationRequest = false;
-
-  public get isConversationRequested(): boolean {
-    return this.conversationRequest;
-  }
-
-  public conversationRequested(): void {
-    this.conversationRequest = true;
-  }
-
-  public conversationAccepted(): void {
-    this.conversationRequest = true;
+  public isConversationRequested(): boolean {
+    if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
+      return true;
+    }
+    return false;
   }
 }
