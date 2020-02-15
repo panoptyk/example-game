@@ -1,6 +1,10 @@
-import { BehaviorState, SuccessAction, ActionState, KnowledgeBase } from "../../../lib";
+import {
+  BehaviorState,
+  SuccessAction,
+  ActionState,
+  KnowledgeBase
+} from "../../../lib";
 import { Room, ClientAPI } from "panoptyk-engine/dist/client";
-import { TalkBehavior } from "./talkBehavior";
 import { MoveAction } from "../Actions/moveAction";
 
 export class MoveBehavior extends BehaviorState {
@@ -10,12 +14,18 @@ export class MoveBehavior extends BehaviorState {
 
   constructor(nextState: () => BehaviorState) {
     super(nextState);
-    this.currentActionState = new MoveAction(MoveBehavior.moveActionTransition, MoveBehavior.path[MoveBehavior.pathPos]);
+    this.currentActionState = new MoveAction(
+      MoveBehavior.moveActionTransition,
+      MoveBehavior.path[MoveBehavior.pathPos]
+    );
   }
 
-  public static assignNewDestinationRoom (newDest: Room): void {
+  public static assignNewDestinationRoom(newDest: Room): void {
     MoveBehavior.destination = newDest;
-    MoveBehavior.path = KnowledgeBase.instance.roomMap.findPath (ClientAPI.playerAgent.room, MoveBehavior.destination);
+    MoveBehavior.path = KnowledgeBase.instance.roomMap.findPath(
+      ClientAPI.playerAgent.room,
+      MoveBehavior.destination
+    );
     MoveBehavior.pathPos = 0;
   }
 
@@ -27,7 +37,10 @@ export class MoveBehavior extends BehaviorState {
       return SuccessAction.instance;
     } else if (this.isMoveCompleted) {
       MoveBehavior.pathPos++;
-      return new MoveAction(MoveBehavior.moveActionTransition, MoveBehavior.path[MoveBehavior.pathPos]); // TODO: KnowledgeBase pathfinding tie in here
+      return new MoveAction(
+        MoveBehavior.moveActionTransition,
+        MoveBehavior.path[MoveBehavior.pathPos]
+      );
     }
     return this;
   }
