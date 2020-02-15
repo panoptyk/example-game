@@ -34,7 +34,7 @@ export class MapAndMoveStrategy extends Strategy {
       if (KnowledgeBase.instance.roomMap.findDisconnectedGraphs.length > 1) {
         return new MapBehavior(MapAndMoveStrategy.mapBehaviorTransition);
       } else {
-        MoveBehavior.assignNewDestinationRoom (TalkBehavior.useRoom ());
+        MoveBehavior.assignNewDestinationRoom(TalkBehavior.useRoom());
         return new MoveBehavior(MapAndMoveStrategy.moveBehaviorTransition);
       }
     }
