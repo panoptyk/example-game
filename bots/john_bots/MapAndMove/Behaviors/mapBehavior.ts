@@ -10,10 +10,7 @@ export class MapBehavior extends BehaviorState {
 
   constructor(nextState: () => BehaviorState) {
     super(nextState);
-    this.currentActionState = new MoveAction(
-      MapBehavior.moveActionTransition,
-      MapBehavior.path[MapBehavior.pathPos]
-    );
+    this.currentActionState = new ExploreRoomAction (MapBehavior.exploreRoomActionTransition);
   }
 
   public static assignNewDestinationRoom(newDest: Room): void {
