@@ -1,8 +1,14 @@
 import { BehaviorState } from "../../../lib";
-import { Room } from "panoptyk-engine";
+import { Room, Agent } from "panoptyk-engine/dist/client";
 
 export class TalkBehavior extends BehaviorState {
   private static room: Room = undefined;
+  private static agent: Agent;
+
+  constructor(nextState: () => BehaviorState) {
+    super (nextState);
+  }
+
 
   public static get receivedRoom(): Room {
     return TalkBehavior.receivedRoom;
@@ -18,6 +24,14 @@ export class TalkBehavior extends BehaviorState {
     if (TalkBehavior.receivedRoom === undefined) {
       TalkBehavior.room = room;
     }
+  }
+
+  public static get agentToTalkTo(): Agent {
+    return TalkBehavior.agent;
+  }
+
+  public static assignAgentToTalkTo (agent: Agent) {
+    TalkBehavior.agent = agent;
   }
 
   public nextState(): BehaviorState {
