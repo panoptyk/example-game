@@ -1,6 +1,7 @@
 import { BehaviorState, KnowledgeBase, SuccessAction, ActionState } from "../../../lib";
 import { ClientAPI, Room } from "panoptyk-engine/dist/client";
 import { MoveAction } from "../Actions/moveAction";
+import { ExploreRoomAction } from "../Actions/exploreRoomAction"
 
 export class MapBehavior extends BehaviorState {
   public static destination: Room;
@@ -29,7 +30,7 @@ export class MapBehavior extends BehaviorState {
       this.isMoveCompleted &&
       this.moveDestination === MapBehavior.destination
     ) {
-      return SuccessAction.instance;
+      return new ExploreRoomAction (MapBehavior.exploreRoomActionTransition);
     } else if (this.isMoveCompleted) {
       MapBehavior.pathPos++;
       return new MoveAction(
@@ -39,6 +40,20 @@ export class MapBehavior extends BehaviorState {
     }
     return this;
   }
+
+  public static exploreRoomActionTransition(this: ExploreRoomAction): ActionState {
+    if (this.isExplored) {
+      const roomsToExplore = KnowledgeBase.instance.roomMap.checkForUnexploredRooms ();
+      if (roomsToExplore.length > 0) {
+        MapBehavior.assignNewDestinationRoom (roomsToExplore [0]);
+        return new MoveAction(MapBehavior.moveActionTransition, MapBehavior.path[MapBehavior.pathPos]);
+      } else {
+        return SuccessAction.instance;
+      }
+    }
+    return this;
+  }
+
   public nextState(): BehaviorState {
     return undefined;
   }
