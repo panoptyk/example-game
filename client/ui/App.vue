@@ -108,12 +108,16 @@ export default class App extends Vue {
   rooms = [];
   items = [];
   knowledge = [];
+  assignedQuests = [];
+  givenQuests = [];
   @Watch("trigger")
   updateLists() {
     this.agents = ClientAPI.seenAgents;
     this.rooms = ClientAPI.seenRooms;
     this.items = ClientAPI.seenItems;
     this.knowledge = ClientAPI.playerAgent.knowledge;
+    this.assignedQuests = ClientAPI.playerAgent.activeAssignedQuests;
+    this.givenQuests = ClientAPI.playerAgent.activeGivenQuests;
   }
   // Top Bar logic
   showTopBar = false;

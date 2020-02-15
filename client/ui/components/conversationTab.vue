@@ -123,6 +123,60 @@
         </div>
       </div>
     </b-collapse>
+    <b-collapse class="card" aria-id="complete-quest">
+      <div
+        slot="trigger"
+        slot-scope="props"
+        class="card-header"
+        role="button"
+        aria-controls="complete-quest"
+      >
+        <p class="card-header-title">Turn in Quest</p>
+        <a class="card-header-icon">
+          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+        </a>
+      </div>
+      <div class="card-content">
+        <div class="content">
+          <b-field>
+            <b-select
+              placeholder="-- quest --"
+              size="is-small"
+              v-model="completeQuest"
+              @input="onQuestSelect"
+            >
+              <option disabled value>-- quest --</option>
+              <option
+                v-for="quest in assignedQuests"
+                v-bind:key="quest.id"
+                v-bind:value="quest"
+                >{{ quest.id }}</option
+              >
+            </b-select>
+          </b-field>
+          <quest-entry v-bind:key="completeQuest.id" v-bind:quest="completeQuest"></quest-entry>
+          <b-field>
+            <b-select
+              placeholder="-- info --"
+              size="is-small"
+              v-model="questInfo"
+            >
+              <option disabled value>-- info --</option>
+              <option
+                v-for="info in relevantInfo"
+                v-bind:key="info.id"
+                v-bind:value="info"
+                >{{ info.id }}</option
+              >
+            </b-select>
+          </b-field>
+          <info-entry v-bind:key="questInfo.id" v-bind:info="questInfo"></info-entry>
+        </div>
+      </div>
+      <footer class="card-footer">
+        <a class="card-footer-item" @click="onQuestComplete">Complete Quest</a>
+      </footer>
+    </b-collapse>
   </div>
   <!-- Below is for if agent is not in a conversation -->
   <div
@@ -141,14 +195,17 @@ import {
   Agent,
   Room,
   Info,
-  Item
+  Item,
+  Quest
 } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import infoEntry from "./infoEntry.vue";
+import questEntry from "./questEntry.vue";
 
 @Component({
   components: {
-    "info-entry": infoEntry
+    "info-entry": infoEntry,
+    "quest-entry": questEntry
   }
 })
 export default class ConverstaionTab extends Vue {
@@ -265,12 +322,39 @@ export default class ConverstaionTab extends Vue {
 
   // Update asked questions in conversation
   questions = [];
+  assignedQuests: Quest[] = [];
   @Watch("trigger")
-  updateQuestions() {
+  updateTab() {
     if (!ClientAPI.playerAgent || !ClientAPI.playerAgent.conversation) {
       return;
     }
+    this.assignedQuests = [];
+    // add any new quests assigned by agent
+    for (const quest of ClientAPI.playerAgent.activeAssignedQuests) {
+      if (ClientAPI.playerAgent.conversation.contains_agent(quest.giver)) {
+        this.assignedQuests.push(quest);
+      }
+    }
     this.questions = ClientAPI.playerAgent.conversation.askedQuestions;
+  }
+
+  relevantInfo = [];
+  completeQuest: Quest = {} as any;
+  questInfo: Info = {} as any;
+  // For quest turn in
+  onQuestSelect() {
+    // list of info that can complete quest
+    this.relevantInfo = [];
+    if (this.completeQuest) {
+      for (const info of ClientAPI.playerAgent.knowledge) {
+        if (this.completeQuest.checkSatisfiability(info)) {
+          this.relevantInfo.push(info);
+        }
+      }
+    }
+  }
+  onQuestComplete() {
+    ClientAPI.completeQuest(this.completeQuest, this.questInfo);
   }
 }
 </script>
