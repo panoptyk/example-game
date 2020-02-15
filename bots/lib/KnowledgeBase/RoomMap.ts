@@ -30,6 +30,10 @@ export class RoomMap {
     }
   }
 
+  public checkForUnexploredRooms(): Room[] {
+    return [...this.nodes].filter(x => !this.edges.has(x));
+  }
+
   public findDisconnectedGraphs(): Room[] {
     const startPoints: Set<Room> = new Set<Room>();
     const visited: Set<Room> = new Set<Room>();
@@ -94,14 +98,18 @@ export class RoomMap {
     return undefined;
   }
 
-  private reconstruct(cameFrom: Map<Room, Room>, current: Room, start: Room): Room[] {
-    const totalPath = new Array<Room> ();
-    totalPath.push (current);
+  private reconstruct(
+    cameFrom: Map<Room, Room>,
+    current: Room,
+    start: Room
+  ): Room[] {
+    const totalPath = new Array<Room>();
+    totalPath.push(current);
     while (current !== start) {
-      current = cameFrom.get (current);
-      totalPath.push (current);
+      current = cameFrom.get(current);
+      totalPath.push(current);
     }
-    totalPath.reverse ();
+    totalPath.reverse();
     return totalPath;
   }
 
