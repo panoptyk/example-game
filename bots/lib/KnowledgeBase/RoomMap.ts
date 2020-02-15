@@ -16,7 +16,9 @@ export class RoomMap {
 
   public addRoom(room: Room): void {
     this.nodes.add(room);
-    this.edges.set(room, []);
+    if (!this.edges.has(room)) {
+      this.edges.set(room, []);
+    }
   }
 
   public addConnection(room1: Room, room2: Room): void {
@@ -32,7 +34,7 @@ export class RoomMap {
   }
 
   public checkForUnexploredRooms(): Room[] {
-    return [...this.nodes].filter(x => this.edges.get(x).length > 0);
+    return [...this.nodes].filter(x => !(this.edges.get(x).length > 0));
   }
 
   public findDisconnectedGraphs(): Room[] {
@@ -77,9 +79,10 @@ export class RoomMap {
     });
 
     fScore.set(start, 0);
+    gScore.set(start, 0);
 
     while (openSet.size > 0) {
-      current = this.minFScore(fScore);
+      current = this.minFScore(fScore, openSet);
       if (current === end) {
         return this.reconstruct(cameFrom, current, start);
       }
@@ -111,18 +114,17 @@ export class RoomMap {
       totalPath.push(current);
     }
     totalPath.reverse();
-    return totalPath;
+    return totalPath.slice(1);
   }
 
-  private minFScore(fScore: Map<Room, number>): Room {
-    let min: Room;
+  private minFScore(fScore: Map<Room, number>, openSet: Set<Room>): Room {
+    let min: Room = [...openSet][0];
 
-    this.nodes.forEach(room => {
+    openSet.forEach(room => {
       if (fScore.get(room) < fScore.get(min)) {
         min = room;
       }
     });
-
     return min;
   }
 }
