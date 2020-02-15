@@ -5,8 +5,6 @@ import {
   SuccessAction,
   FailureAction
 } from "../../lib";
-import { UpdatedModels, ClientAPI } from "panoptyk-engine/dist/clientAPI";
-import { Agent } from "panoptyk-engine/dist/client";
 import { MoveBehavior } from "./Behaviors/moveBehavior";
 import { TalkBehavior } from "./Behaviors/talkBehavior";
 import { IdleBehavior } from "./Behaviors/idleBehavior";
