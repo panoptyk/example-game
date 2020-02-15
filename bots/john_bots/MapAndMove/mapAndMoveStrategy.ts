@@ -14,6 +14,7 @@ import { ClientAPI } from "panoptyk-engine";
 export class MapAndMoveStrategy extends Strategy {
   constructor() {
     super();
+    this.currentBehavior = new MapBehavior (MapAndMoveStrategy.mapBehaviorTransition);
   }
 
   public static moveBehaviorTransition(this: MoveBehavior): BehaviorState {
