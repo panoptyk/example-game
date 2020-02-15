@@ -1,5 +1,6 @@
 import { RoomMap } from "./RoomMap";
-import { ClientAPI } from "panoptyk-engine";
+import { ClientAPI, Info, Room } from "panoptyk-engine";
+import { QuestionInfo } from "panoptyk-engine/dist/models/conversation";
 
 export class KnowledgeBase {
   // Singleton Pattern
@@ -19,5 +20,15 @@ export class KnowledgeBase {
       return true;
     }
     return false;
+  }
+
+  public questionAboutRoom(): Room {
+    const questionsAsked: Info[] = ClientAPI.playerAgent.conversation.askedQuestions;
+    questionsAsked.forEach(question => {
+      if (question.locations.length > 0) {
+        return Room.getByID (question.locations [0]);
+      }
+    });
+    return undefined;
   }
 }
