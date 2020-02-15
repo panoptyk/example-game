@@ -14,7 +14,9 @@ import { ClientAPI } from "panoptyk-engine";
 export class MapAndMoveStrategy extends Strategy {
   constructor() {
     super();
-    this.currentBehavior = new MapBehavior (MapAndMoveStrategy.mapBehaviorTransition);
+    this.currentBehavior = new MapBehavior(
+      MapAndMoveStrategy.mapBehaviorTransition
+    );
   }
 
   public static moveBehaviorTransition(this: MoveBehavior): BehaviorState {
@@ -41,8 +43,9 @@ export class MapAndMoveStrategy extends Strategy {
       if (KnowledgeBase.instance.roomMap.findDisconnectedGraphs.length > 1) {
         return new MapBehavior(MapAndMoveStrategy.mapBehaviorTransition);
       } else {
-        MoveBehavior.assignNewDestinationRoom(TalkBehavior.useRoom());
-        return new MoveBehavior(MapAndMoveStrategy.moveBehaviorTransition);
+        if (MoveBehavior.assignNewDestinationRoom(TalkBehavior.useRoom())) {
+          return new MoveBehavior(MapAndMoveStrategy.moveBehaviorTransition);
+        }
       }
     }
     return this;

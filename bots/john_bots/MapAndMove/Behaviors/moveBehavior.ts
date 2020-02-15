@@ -21,13 +21,17 @@ export class MoveBehavior extends BehaviorState {
     );
   }
 
-  public static assignNewDestinationRoom(newDest: Room): void {
+  public static assignNewDestinationRoom(newDest: Room): boolean {
     MoveBehavior.destination = newDest;
     MoveBehavior.path = KnowledgeBase.instance.roomMap.findPath(
       ClientAPI.playerAgent.room,
       MoveBehavior.destination
     );
     MoveBehavior.pathPos = 0;
+    if (MoveBehavior.path === undefined || !(MoveBehavior.path.length > 0)) {
+      return false;
+    }
+    return true;
   }
 
   public static moveActionTransition(this: MoveAction): ActionState {
