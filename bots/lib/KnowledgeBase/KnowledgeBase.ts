@@ -1,5 +1,5 @@
 import { RoomMap } from "./RoomMap";
-import { ClientAPI, Info, Room } from "panoptyk-engine";
+import { ClientAPI, Info, Room } from "panoptyk-engine/dist/client";
 import { QuestionInfo } from "panoptyk-engine/dist/models/conversation";
 
 export class KnowledgeBase {
@@ -23,12 +23,25 @@ export class KnowledgeBase {
   }
 
   public questionAboutRoom(): Room {
-    const questionsAsked: Info[] = ClientAPI.playerAgent.conversation.askedQuestions;
-    questionsAsked.forEach(question => {
-      if (question.locations.length > 0) {
-        return Room.getByID (question.locations [0]);
+    let location: Room;
+    if (ClientAPI.playerAgent.conversation !== undefined) {
+      const questionsAsked: Info[] =
+        ClientAPI.playerAgent.conversation.askedQuestions;
+      if (questionsAsked.length > 0) {
+        questionsAsked.forEach(question => {
+          if (question.locations.length > 0) {
+            let i = 0;
+            while (i < question.locations.length) {
+              if (question.locations[i] !== undefined) {
+                location = Room.getByID(question.locations[i]);
+                break;
+              }
+              i++;
+            }
+          }
+        });
       }
-    });
-    return undefined;
+    }
+    return location;
   }
 }
