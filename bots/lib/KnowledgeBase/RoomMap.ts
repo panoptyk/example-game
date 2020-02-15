@@ -16,6 +16,7 @@ export class RoomMap {
 
   public addRoom(room: Room): void {
     this.nodes.add(room);
+    this.edges.set(room, []);
   }
 
   public addConnection(room1: Room, room2: Room): void {
@@ -31,7 +32,7 @@ export class RoomMap {
   }
 
   public checkForUnexploredRooms(): Room[] {
-    return [...this.nodes].filter(x => !this.edges.has(x));
+    return [...this.nodes].filter(x => this.edges.get(x).length > 0);
   }
 
   public findDisconnectedGraphs(): Room[] {
