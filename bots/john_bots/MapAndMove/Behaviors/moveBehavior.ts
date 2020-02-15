@@ -10,7 +10,10 @@ export class MoveBehavior extends BehaviorState {
 
   constructor(nextState: () => BehaviorState) {
     super(nextState);
-    MoveBehavior.destination = TalkBehavior.useRoom();
+  }
+
+  public static assignNewDestinationRoom (newDest: Room): void {
+    MoveBehavior.destination = newDest;
     MoveBehavior.path = KnowledgeBase.instance.roomMap.findPath (ClientAPI.playerAgent.room, MoveBehavior.destination);
     MoveBehavior.pathPos = 0;
   }
