@@ -10,6 +10,7 @@ export class MoveBehavior extends BehaviorState {
 
   constructor(nextState: () => BehaviorState) {
     super(nextState);
+    this.currentActionState = new MoveAction(MoveBehavior.moveActionTransition, MoveBehavior.path[MoveBehavior.pathPos]);
   }
 
   public static assignNewDestinationRoom (newDest: Room): void {
