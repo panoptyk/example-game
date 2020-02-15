@@ -16,6 +16,7 @@ export class ExploreRoomAction extends ActionState {
     const room: Room = ClientAPI.playerAgent.room;
     const adjacentRooms: Room[] = room.getAdjacentRooms();
     KnowledgeBase.instance.roomMap.addRoom (room);
+    console.log("Explored room " + room);
     adjacentRooms.forEach(neighbor => {
       KnowledgeBase.instance.roomMap.addRoom (neighbor);
       KnowledgeBase.instance.roomMap.addConnection (room, neighbor);
