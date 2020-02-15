@@ -15,24 +15,6 @@ import { MapBehavior } from "./Behaviors/mapBehavior";
 export class MapAndMoveStrategy extends Strategy {
   constructor() {
     super();
-
-    ClientAPI.addOnUpdateListener(this.conversationRequestCallback);
-    ClientAPI.addOnUpdateListener(this.reciveRoomInfoCallback);
-  }
-
-  public conversationRequestCallback(updates: UpdatedModels): void {
-    const agents: Agent[] = updates.Agent;
-    agents.forEach(agent => {
-      if (agent === ClientAPI.playerAgent) {
-        if (agent.conversationRequested.length > 0) {
-          KnowledgeBase.instance.conversationRequested();
-        }
-      }
-    });
-  }
-
-  public reciveRoomInfoCallback(updates: UpdatedModels): void {
-    // Needs to call TalkBehavior.receiveRoom (room) where room is the room received in the convo
   }
 
   public static moveBehaviorTransition(this: MoveBehavior): BehaviorState {
