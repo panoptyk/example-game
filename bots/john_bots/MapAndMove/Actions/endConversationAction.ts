@@ -1,5 +1,5 @@
 import { ActionState } from "../../../lib";
-import { ClientAPI, ValidationResult } from "panoptyk-engine";
+import { ClientAPI, ValidationResult } from "panoptyk-engine/dist/client";
 import { TalkBehavior } from "../Behaviors/talkBehavior";
 
 export class EndConversationAction extends ActionState {
@@ -13,6 +13,11 @@ export class EndConversationAction extends ActionState {
   }
 
   public async act() {
+    if (ClientAPI.playerAgent.conversation === undefined) {
+      console.log (TalkBehavior.agentToTalkTo + " already left the conversation.");
+      this.conversationLeft = true;
+      return;
+    }
     await ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation)
       .catch((res: ValidationResult) => {
         console.log(res.message);

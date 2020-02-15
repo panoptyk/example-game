@@ -35,7 +35,7 @@ export class TalkBehavior extends BehaviorState {
   }
 
   public static receiveRoom(room: Room): void {
-    if (TalkBehavior.receivedRoom === undefined) {
+    if (TalkBehavior.room === undefined) {
       TalkBehavior.room = room;
     }
   }
@@ -73,6 +73,9 @@ export class TalkBehavior extends BehaviorState {
         );
       }
       return SuccessAction.instance;
+    }
+    if (ClientAPI.playerAgent.conversation === undefined) {
+      return FailureAction.instance;
     }
     return this;
   }

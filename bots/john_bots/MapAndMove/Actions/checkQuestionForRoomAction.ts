@@ -17,7 +17,7 @@ export class CheckQuestionForRoomAction extends ActionState {
     const room: Room = KnowledgeBase.instance.questionAboutRoom();
     if (room !== undefined) {
       TalkBehavior.receiveRoom(room);
-      console.log("Found room in a question: " + this.roomFound);
+      console.log("Found room in a question: " + room);
       this.roomFound = true;
     }
   }
