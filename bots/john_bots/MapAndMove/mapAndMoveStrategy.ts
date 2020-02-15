@@ -21,10 +21,13 @@ export class MapAndMoveStrategy extends Strategy {
       return new IdleBehavior(MapAndMoveStrategy.idleBehaviorTransition);
     }
     if (KnowledgeBase.instance.isConversationRequested) {
-      if (TalkBehavior.assignAgentToTalkTo ()) {
+      if (TalkBehavior.assignAgentToTalkTo()) {
         return new TalkBehavior(MapAndMoveStrategy.talkBehaviorTransition);
       }
-    } else if (this.currentActionState === SuccessAction.instance) {
+    } else if (
+      this.currentActionState === SuccessAction.instance ||
+      this.currentActionState === FailureAction.instance
+    ) {
       return new IdleBehavior(MapAndMoveStrategy.idleBehaviorTransition);
     }
     return this;
@@ -46,7 +49,7 @@ export class MapAndMoveStrategy extends Strategy {
 
   public static idleBehaviorTransition(this: IdleBehavior): BehaviorState {
     if (KnowledgeBase.instance.isConversationRequested) {
-      if (TalkBehavior.assignAgentToTalkTo ()) {
+      if (TalkBehavior.assignAgentToTalkTo()) {
         return new TalkBehavior(MapAndMoveStrategy.talkBehaviorTransition);
       }
     }
@@ -55,10 +58,13 @@ export class MapAndMoveStrategy extends Strategy {
 
   public static mapBehaviorTransition(this: MapBehavior): BehaviorState {
     if (KnowledgeBase.instance.isConversationRequested) {
-      if (TalkBehavior.assignAgentToTalkTo ()) {
+      if (TalkBehavior.assignAgentToTalkTo()) {
         return new TalkBehavior(MapAndMoveStrategy.talkBehaviorTransition);
       }
-    } else if (this.currentActionState === SuccessAction.instance) {
+    } else if (
+      this.currentActionState === SuccessAction.instance ||
+      this.currentActionState === FailureAction.instance
+    ) {
       return new IdleBehavior(MapAndMoveStrategy.idleBehaviorTransition);
     }
     return this;
