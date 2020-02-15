@@ -9,6 +9,7 @@ import { MoveBehavior } from "./Behaviors/moveBehavior";
 import { TalkBehavior } from "./Behaviors/talkBehavior";
 import { IdleBehavior } from "./Behaviors/idleBehavior";
 import { MapBehavior } from "./Behaviors/mapBehavior";
+import { ClientAPI } from "panoptyk-engine";
 
 export class MapAndMoveStrategy extends Strategy {
   constructor() {
@@ -20,7 +21,9 @@ export class MapAndMoveStrategy extends Strategy {
       return new IdleBehavior(MapAndMoveStrategy.idleBehaviorTransition);
     }
     if (KnowledgeBase.instance.isConversationRequested) {
-      return new TalkBehavior(MapAndMoveStrategy.talkBehaviorTransition);
+      if (TalkBehavior.assignAgentToTalkTo ()) {
+        return new TalkBehavior(MapAndMoveStrategy.talkBehaviorTransition);
+      }
     } else if (this.currentActionState === SuccessAction.instance) {
       return new IdleBehavior(MapAndMoveStrategy.idleBehaviorTransition);
     }
@@ -43,14 +46,18 @@ export class MapAndMoveStrategy extends Strategy {
 
   public static idleBehaviorTransition(this: IdleBehavior): BehaviorState {
     if (KnowledgeBase.instance.isConversationRequested) {
-      return new TalkBehavior(MapAndMoveStrategy.talkBehaviorTransition);
+      if (TalkBehavior.assignAgentToTalkTo ()) {
+        return new TalkBehavior(MapAndMoveStrategy.talkBehaviorTransition);
+      }
     }
     return this;
   }
 
   public static mapBehaviorTransition(this: MapBehavior): BehaviorState {
     if (KnowledgeBase.instance.isConversationRequested) {
-      return new TalkBehavior(MapAndMoveStrategy.talkBehaviorTransition);
+      if (TalkBehavior.assignAgentToTalkTo ()) {
+        return new TalkBehavior(MapAndMoveStrategy.talkBehaviorTransition);
+      }
     } else if (this.currentActionState === SuccessAction.instance) {
       return new IdleBehavior(MapAndMoveStrategy.idleBehaviorTransition);
     }

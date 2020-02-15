@@ -40,8 +40,13 @@ export class TalkBehavior extends BehaviorState {
     }
   }
 
-  public static assignAgentToTalkTo(agent: Agent) {
-    TalkBehavior.agent = agent;
+  public static assignAgentToTalkTo(): boolean {
+    const agentsRequestingConversation = ClientAPI.playerAgent.conversationRequesters;
+    if (agentsRequestingConversation.length > 0) {
+      TalkBehavior.agent = agentsRequestingConversation [0];
+      return true;
+    }
+    return false;
   }
 
   public static acceptConversationActionTransition(
