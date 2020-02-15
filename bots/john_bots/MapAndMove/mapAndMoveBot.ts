@@ -2,7 +2,7 @@ import { ClientAPI, logger } from "panoptyk-engine/dist/client";
 import { MapAndMoveStrategy } from "./mapAndMoveStrategy";
 
 // Boilerplate agent code ================================================== START
-const username = process.argv[2] ? process.argv[2] : "idle";
+const username = process.argv[2] ? process.argv[2] : "mnmBot";
 const password = process.argv[3] ? process.argv[3] : "password";
 const address = process.argv[4] ? process.argv[4] : "http://localhost:8080";
 
