@@ -1,7 +1,7 @@
 import { BehaviorState, KnowledgeBase, SuccessAction, ActionState, FailureAction } from "../../../lib";
 import { ClientAPI, Room } from "panoptyk-engine/dist/client";
 import { MoveAction } from "../Actions/moveAction";
-import { ExploreRoomAction } from "../Actions/exploreRoomAction"
+import { ExploreRoomAction } from "../Actions/exploreRoomAction";
 
 export class MapBehavior extends BehaviorState {
   public static destination: Room;
