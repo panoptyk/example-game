@@ -1,4 +1,4 @@
-import { BehaviorState, KnowledgeBase, SuccessAction, ActionState } from "../../../lib";
+import { BehaviorState, KnowledgeBase, SuccessAction, ActionState, FailureAction } from "../../../lib";
 import { ClientAPI, Room } from "panoptyk-engine/dist/client";
 import { MoveAction } from "../Actions/moveAction";
 import { ExploreRoomAction } from "../Actions/exploreRoomAction"
@@ -30,6 +30,9 @@ export class MapBehavior extends BehaviorState {
       return new ExploreRoomAction (MapBehavior.exploreRoomActionTransition);
     } else if (this.isMoveCompleted) {
       MapBehavior.pathPos++;
+      if (MapBehavior.pathPos > MapBehavior.path.length) {
+        return FailureAction.instance;
+      }
       return new MoveAction(
         MapBehavior.moveActionTransition,
         MapBehavior.path[MapBehavior.pathPos]
