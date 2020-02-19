@@ -232,7 +232,47 @@
       "_tradeRequested": [],
       "_assignedQuests": [],
       "_givenQuests": []
+    },
+    "18": {
+      "id": 18,
+      "_conversationID": 0,
+      "_agentName": "Citizen 5",
+      "roomID": 3,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 100000000,
+      "_conversationRequests": []
+    },
+    "19": {
+      "id": 19,
+      "_conversationID": 0,
+      "_agentName": "Citizen 6",
+      "roomID": 2,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 100000000,
+      "_conversationRequests": []
+    },
+    "20": {
+      "id": 20,
+      "_conversationID": 0,
+      "_agentName": "Citizen 7",
+      "roomID": 6,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 100000000,
+      "_conversationRequests": []
+    },
+    "21": {
+      "id": 21,
+      "_conversationID": 0,
+      "_agentName": "Citizen 8",
+      "roomID": 8,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 100000000,
+      "_conversationRequests": []
     }
   },
-  "nextID": 18
+  "nextID": 22
 }

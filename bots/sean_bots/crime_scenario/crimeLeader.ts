@@ -12,6 +12,7 @@ const unassignedInfoQuest = new Set<Info>();
 const assignedInfoQuest = new Set<Info>();
 const unassignedItemQuest = new Set<Item>();
 const assignedItemQuest = new Set<Item>();
+const assignedAgents = new Set<Agent>();
 // conversation related variables
 let conUpdate: number;
 let prevInfoLen: number;
@@ -86,17 +87,19 @@ async function idleHandler() {
         for (const requester of ClientAPI.playerAgent.conversationRequesters) {
             if (requester.faction === ClientAPI.playerAgent.faction) {
                 await ClientAPI.acceptConversation(requester);
+                await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
                 return;
             }
             else {
                 await ClientAPI.rejectConversation(requester);
+                await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
             }
         }
     }
 }
 
 function eligibleForQuest(agent: Agent): boolean {
-    if (agent.faction === ClientAPI.playerAgent.faction && Helper.getQuestsGivenToAgent(agent).length === 0) {
+    if (agent.faction === ClientAPI.playerAgent.faction && !assignedAgents.has(agent)) {
         return true;
     }
     return false;
@@ -114,6 +117,7 @@ async function questAssignHandler() {
             for (const tell of tellInfo) {
                 if (tell.getTerms().info.equals(partial)) {
                     await ClientAPI.tellInfo(tell);
+                    await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
                 }
             }
             await ClientAPI.giveQuest(other, partial.getTerms(), true);
@@ -125,11 +129,13 @@ async function questAssignHandler() {
             const tellInfo: Info[] = ClientAPI.playerAgent.getInfoByItem(item);
             for (const tell of tellInfo) {
                 await ClientAPI.tellInfo(tell);
+                await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
             }
             const command = Info.ACTIONS.GAVE.question({agent1: other, agent2: ClientAPI.playerAgent, time: undefined, loc: undefined, item, quantity: 1});
             await ClientAPI.giveQuest(other, command, false);
         }
-        console.log(ClientAPI.playerAgent + " ASSIGNED QUEST!");
+        assignedAgents.add(other);
+        console.log(ClientAPI.playerAgent + " ASSIGNED QUEST TO " + other);
         state = "idle";
     }
     // leader attemps to enter conversation with faction member that does not have an assigned quest

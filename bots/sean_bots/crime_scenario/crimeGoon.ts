@@ -83,6 +83,9 @@ async function act() {
     else if (state === "quest") {
         await questHandler();
     }
+    else if (state === "escape") {
+        await escapeCity();
+    }
 }
 
 /**
@@ -132,6 +135,7 @@ async function patrolConversationHandler() {
                 for (const rInfo of relatedInfo) {
                     console.log(username + " telling answer: " + rInfo);
                     await ClientAPI.tellInfo(rInfo);
+                    await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
                 }
                 answeredQuestions.add(question);
             }
@@ -149,6 +153,7 @@ async function patrolConversationHandler() {
                     told.getTerms().agent2 === other));
                 if (!hasTold) {
                     await ClientAPI.tellInfo(cinfo);
+                    await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
                 }
             }
         }
@@ -226,10 +231,11 @@ async function completeQuest() {
         await ClientAPI.completeQuest(activeQuest, solution);
         console.log(ClientAPI.playerAgent + ": Quest complete " + activeQuest);
         activeQuest = undefined;
+        state = "escape";
     }
     else if (ClientAPI.playerAgent.room.hasAgent(activeQuest.giver)) {
         if (!ClientAPI.playerAgent.activeConversationRequestTo(activeQuest.giver) && !activeQuest.giver.conversation) {
-            console.log(ClientAPI.playerAgent + ": Requesting quest giver: " + activeQuest.giver);
+            // console.log(ClientAPI.playerAgent + ": Requesting quest giver: " + activeQuest.giver);
             prepForConversation();
             await ClientAPI.requestConversation(activeQuest.giver);
         }
@@ -250,6 +256,7 @@ async function questQuestionConversation() {
             for (const [item, response] of trade.getAgentsRequestedItems(other)) {
                 if (!trade.agentOfferedItem(ClientAPI.playerAgent, item) && ClientAPI.playerAgent.hasItem(item)) {
                     await ClientAPI.offerItemsTrade([item]);
+                    await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
                 }
             }
             // TODO: add feature to process gold/resource requests
@@ -530,6 +537,16 @@ async function questHandler() {
         // item acquisition
         await questGiveItem();
     }
+}
+
+async function escapeCity() {
+    if (ClientAPI.playerAgent.room.roomName !== "room8") {
+        await Helper.dumbNavigateStep("room8");
+        return;
+    }
+    console.log (ClientAPI.playerAgent + " ESCAPED!");
+    process.send("escaped");
+    process.exit(0);
 }
 
 /**

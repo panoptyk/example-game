@@ -85,6 +85,7 @@ class MerchantMember {
                 for (const info of this.crimesToReport) {
                     await ClientAPI.tellInfo(info);
                     this.crimesToReport.delete(info);
+                    await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
                 }
                 console.log(ClientAPI.playerAgent + " reported cimes to " + other);
                 this.state = "conversation";
@@ -117,9 +118,11 @@ class MerchantMember {
             for (const [desiredItem, passed] of trade.getAgentsRequestedItems(other)) {
                 if (ClientAPI.playerAgent.hasItem(desiredItem)) {
                     await ClientAPI.offerItemsTrade([desiredItem]);
+                    await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
                 }
                 else if (!trade.getAgentItemsData(ClientAPI.playerAgent).includes(desiredItem)) {
                     await ClientAPI.passItemRequestTrade(desiredItem);
+                    await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
                 }
             }
 
@@ -154,6 +157,7 @@ class MerchantMember {
                             time: undefined, loc: undefined, item, quantity: 1
                         });
                         await ClientAPI.askQuestion(informSale);
+                        await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
                     }
                 }
                 this.asked = true;

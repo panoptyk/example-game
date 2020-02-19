@@ -190,7 +190,7 @@
     "7": {
       "id": 7,
       "_roomName": "room7",
-      "adjacent": [6, 8, 9, 10],
+      "adjacent": [4, 6, 8, 9, 10],
       "_occupants": [],
       "itemIDs": [
         5,

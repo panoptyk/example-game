@@ -1,6 +1,10 @@
 import { fork, ChildProcess } from "child_process";
 let policeLeader: ChildProcess;
 let crimeLeader: ChildProcess;
+const numCrime = 8;
+let crimeIdx = 1;
+const numPolice = 3;
+const numNeutral = 8;
 const policeMembers = [];
 const crimeMembers = [];
 const neutralMembers = [];
@@ -16,21 +20,28 @@ async function startScenario() {
     await spawnCrime();
 }
 
-async function spawnCrime() {
-    const numCrime = 8;
-    for (let i = 1; i <= numCrime; i++) {
-        crimeMembers.push(fork(
+function spawnNewCrimeGoon() {
+    crimeIdx++;
+    const newGoon = fork(
         "./bots/sean_bots/crime_scenario/crimeGoon.ts",
-        ["Goon " + i, "password"],
+        ["Goon " + crimeIdx, "password"],
         {execArgv: childExecArgv}
-        ));
+    );
+    newGoon.on("message", (m) => {
+        spawnNewCrimeGoon();
+    });
+    crimeMembers.push(newGoon);
+}
+
+async function spawnCrime() {
+    while (crimeIdx <= numCrime) {
+        spawnNewCrimeGoon();
         // tslint:disable-next-line: ban
         await new Promise(javascriptIsFun => setTimeout(javascriptIsFun, 100));
     }
 }
 
 async function spawnPolice() {
-    const numPolice = 3;
     for (let i = 1; i <= numPolice; i++) {
         policeMembers.push(fork(
         "./bots/sean_bots/crime_scenario/policeFsm.ts",
@@ -43,8 +54,7 @@ async function spawnPolice() {
 }
 
 async function spawnNeutral() {
-    const numPolice = 8;
-    for (let i = 1; i <= numPolice; i++) {
+    for (let i = 1; i <= numNeutral; i++) {
         neutralMembers.push(fork(
         "./bots/sean_bots/crime_scenario/merchant.ts",
         ["Citizen " + i, "password"],
