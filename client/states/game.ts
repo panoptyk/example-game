@@ -9,6 +9,10 @@ import {
 } from "panoptyk-engine/dist/client";
 import { AgentSprite } from "../prefabs/agent";
 import { UI } from "../ui/ui";
+import { LocationIndex } from "../components/locationIndex";
+import { MapLoader } from "../components/mapLoader";
+import { DoorSprite } from "../prefabs/door";
+import { ActionSel } from "../prefabs/actionSel";
 
 const offset = Date.UTC(2019, 9, 28); // Current server beginning of time
 
@@ -18,52 +22,45 @@ interface RoomEvent {
   data: any;
 }
 
-export class Game extends Phaser.State {
-  private UI: UI;
-  private map: Phaser.Tilemap;
+class GameState extends Phaser.State {
+  UI: UI;
+  mapLoader: MapLoader;
 
-  private room: Room;
-  private previousRoom: Room;
+  room: Room;
+  previousRoom: Room;
 
-  private player: AgentSprite;
-  private standingLocs = {
-    tileWidth: 0,
-    tileHeight: 0,
-    width: 0,
-    height: 0,
-    offset: new Phaser.Point(0, 0),
-    possible: []
-  };
-  private agentSpriteMap: Map<number, AgentSprite> = new Map();
-  private agentsInRoom: Set<number> = new Set();
-  private roomEvents: RoomEvent[] = new Array();
+  player: AgentSprite;
+  standingLocs: LocationIndex;
+  agentSpriteMap: Map<number, AgentSprite> = new Map();
+  agentsInRoom: Set<number> = new Set();
+  roomEvents: RoomEvent[] = new Array();
 
   // Groups
-  private gameWorld: Phaser.Group;
-  private mapLayers: Phaser.Group;
-  private otherAgents: Phaser.Group;
-  private doorObjects: Phaser.Group;
-  private HUD: Phaser.Group;
-
+  groups: GameState.Groups = {} as any;
   public createGroups() {
-    this.gameWorld = this.game.add.group();
-    this.mapLayers = this.game.add.group();
-    this.otherAgents = this.game.add.group();
-    this.doorObjects = this.game.add.group();
-    this.gameWorld.add(this.mapLayers);
-    this.gameWorld.add(this.otherAgents);
-    this.gameWorld.add(this.doorObjects);
+    this.groups.gameWorld = this.game.add.group();
+    this.groups.mapLayers = this.game.add.group();
+    this.groups.otherAgents = this.game.add.group();
+    this.groups.doorObjects = this.game.add.group();
+    this.groups.gameWorld.add(this.groups.mapLayers);
+    this.groups.gameWorld.add(this.groups.otherAgents);
+    this.groups.gameWorld.add(this.groups.doorObjects);
 
-    this.HUD = this.game.add.group();
+    this.groups.HUD = this.game.add.group();
   }
 
   // PHASER CREATE FUNCTION //
   public create(): void {
+    this.mapLoader = new MapLoader(this);
+
+    ActionSel.doorEnterCallback = this.onDoorEnter;
+
     this.UI = UI.instance;
     (window as any).myUI = this.UI;
     this.UI.addMessage("Welcome to Panoptyk!");
     this.UI.refresh();
-    // Initialization code
+
+    // initialization code
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.game.input.mouse.capture = true;
     this.createGroups();
@@ -72,15 +69,11 @@ export class Game extends Phaser.State {
     this.createHUD();
 
     // load map and set gameWorld location
-    this.loadMap(ClientAPI.playerAgent.room);
-    this.gameWorld.scale.set(1.7, 1.7);
-    this.gameWorld.position.set(
-      this.world.centerX - this.gameWorld.width / 2,
-      this.world.centerY - this.gameWorld.height / 2
-    );
+    this.UI.setRoom(this.room);
+    this.mapLoader.loadMap(this.room);
 
     // Initialize player
-    const standLoc = this.getStandingLoc();
+    const standLoc = this.standingLocs.getRandomLoc();
     const pos = standLoc.pos;
     this.createPlayer(pos.x, pos.y);
     this.player.standLocIndex = standLoc.index;
@@ -92,138 +85,59 @@ export class Game extends Phaser.State {
       models.Info.forEach(i => {
         this.scheduleRoomEvents(i);
       });
-      models.Agent.forEach(a => {
-        if (this.agentSpriteMap.has(a.id)) {
-          this.agentSpriteMap.get(a.id).updateAgent();
-        }
-      });
       this.UI.refresh();
     });
 
-    this.game.onFocus.add(() => {
-      console.log("Focus!");
-      this.clearAgents();
-      this.loadAgents();
-      this.UI.refresh();
-    });
+    // if not set to true things will break!
+    this.game.stage.disableVisibilityChange = true;
+
+    // this.game.onFocus.add(() => {
+    //   console.log("Focus!");
+    //   this.clearAgents();
+    //   this.loadAgents();
+    //   this.UI.refresh();
+    // });
   }
 
   // PHASER UPDATE FUNCTION //
   public update(): void {
     // Update time
     this.UI.setTime(getPanoptykDatetime(offset));
-    this.updateHUD();
     if (!ClientAPI.isUpdating()) {
       this.handleRoomEvents();
       // this.checkForRequests();
+      if (ActionSel.currentMenu) {
+        ActionSel.currentMenu.update();
+      }
     }
+    this.updateHUD();
   }
+
+  // onClick server actions //
+  private onDoorEnter = (sprite: DoorSprite) => {
+    // add a loading image later
+    this.groups.doorObjects.inputEnableChildren = false;
+    const target = sprite.model;
+    ClientAPI.moveToRoom(target)
+      .catch(err => this.addConsoleMessage("Failed to move to room!"))
+      .then(res => {
+        const start = this.player.position;
+        const end = sprite.position;
+        this.moveAgent(this.player, start, end, () => {
+          this.enterNewRoom();
+        });
+      })
+      .catch(err => this.addConsoleMessage(err));
+  };
 
   // HUD code //
-  public createHUD() {
-  }
+  public createHUD() {}
 
-  public updateHUD() {
-  }
-
-  private loadMap(room: Room): void {
-    if (this.map) {
-      this.map.destroy();
-      this.doorObjects.getAll().forEach(child => {
-        child.destroy();
-      });
-      this.mapLayers.getAll().forEach(child => {
-        child.destroy();
-      });
-    }
-    this.UI.setRoom(room);
-    // Load
-    this.map = this.game.add.tilemap(
-      Assets.TilemapJSON.TilemapsMapsTemplateRoom.getName()
-    );
-    this.map.addTilesetImage(
-      Assets.Images.TilemapsTilesTilesDungeonV11.getName()
-    );
-    this.map.layers.forEach(layerObj => {
-      const layer = this.map.createLayer(
-        layerObj.name,
-        this.map.tileWidth * this.map.width,
-        this.map.tileHeight * this.map.height,
-        this.mapLayers
-      );
-      layer.fixedToCamera = false;
-    });
-
-    // create map of room to door
-    const roomToDoor = {};
-    this.map.objects["Doors"].forEach(door => {
-      roomToDoor[door.name] = door;
-    });
-
-    // add door objects
-    this.doorObjects.inputEnableChildren = true;
-    const style = { font: "25px Arial", fill: "#ffffff" };
-    let i = 1;
-    ClientAPI.playerAgent.room.getAdjacentRooms().forEach((room: Room) => {
-      const door = roomToDoor["door" + i];
-      const box = this.game.make.sprite(door.x, door.y);
-      box.name = "" + room.id;
-      box.alpha = 1;
-      box.width = door.width;
-      box.height = door.height;
-      const hoverText = this.game.make.text(0, -28, room.roomName, style);
-      hoverText.visible = false;
-      box.addChild(hoverText);
-      this.game.add.existing(box);
-      this.doorObjects.add(box);
-      i++;
-    });
-    this.doorObjects.onChildInputDown.add(this.onDoorClicked, this);
-    this.doorObjects.onChildInputOver.add(sprite => {
-      sprite.getChildAt(0).visible = true;
-    });
-    this.doorObjects.onChildInputOut.add(sprite => {
-      sprite.getChildAt(0).visible = false;
-    });
-    this.world.bringToTop(this.doorObjects);
-
-    // create possible standing locations
-    const standArea = this.map.objects["Areas"][0];
-    this.standingLocs.height = Math.floor(
-      standArea.height / this.map.tileHeight
-    );
-    this.standingLocs.width = Math.floor(standArea.width / this.map.tileWidth);
-    this.standingLocs.offset.set(standArea.x, standArea.y);
-    this.standingLocs.tileHeight = this.map.tileHeight;
-    this.standingLocs.tileWidth = this.map.tileWidth;
-    this.standingLocs.possible = [];
-    for (
-      let loc = 0;
-      loc < this.standingLocs.height * this.standingLocs.width;
-      loc++
-    ) {
-      this.standingLocs.possible.push(loc);
-    }
-    console.log(this.standingLocs.possible);
-  }
-
-  public getStandingLoc(): { pos: Phaser.Point; index: number } {
-    const index = Math.floor(Math.random() * this.standingLocs.possible.length);
-    console.log("index chosen: " + index);
-    const loc = this.standingLocs.possible[index];
-    const x =
-      (loc % this.standingLocs.width) * this.standingLocs.tileWidth +
-      this.standingLocs.offset.x;
-    const y =
-      Math.floor(loc / this.standingLocs.width) * this.standingLocs.tileHeight +
-      this.standingLocs.offset.y;
-    this.standingLocs.possible.splice(index);
-    return { pos: new Phaser.Point(x, y), index };
-  }
+  public updateHUD() {}
 
   private createPlayer(x: number, y: number): void {
     this.player = new AgentSprite(this.game, x, y, false);
-    this.gameWorld.add(this.player);
+    this.groups.gameWorld.add(this.player);
   }
 
   private moveAgent(
@@ -254,40 +168,19 @@ export class Game extends Phaser.State {
     this.UI.addMessage(messageString);
   }
 
-  private async onDoorClicked(sprite: Phaser.Sprite): Promise<void> {
-    // add a loading image later
-    this.doorObjects.inputEnableChildren = false;
-    const target = Room.getByID(parseInt(sprite.name));
-    await ClientAPI.moveToRoom(target)
-      .catch(err => this.addConsoleMessage("Failed to move to room!"))
-      .then(res => {
-        const start = this.player.position;
-        let end = start;
-        for (const door of this.doorObjects.getAll()) {
-          if (parseInt(door.name) === target.id) {
-            end = door.position;
-            break;
-          }
-        }
-        this.moveAgent(this.player, start, end, () => {
-          this.enterNewRoom();
-        });
-      })
-      .catch(err => this.addConsoleMessage(err));
-  }
-
   private enterNewRoom(): void {
     this.previousRoom = this.room;
     this.room = ClientAPI.playerAgent.room;
+    this.UI.setRoom(this.room);
     this.addConsoleMessage("Moved to " + this.room.roomName);
 
-    this.loadMap(this.room);
+    this.mapLoader.loadMap(this.room);
     this.clearAgents();
     this.loadAgents();
 
-    const end = this.getStandingLoc();
+    const end = this.standingLocs.getRandomLoc();
     let start = end.pos;
-    for (const door of this.doorObjects.getAll()) {
+    for (const door of this.groups.doorObjects.getAll()) {
       if (parseInt(door.name) === this.previousRoom.id) {
         start = door.position;
         break;
@@ -310,7 +203,7 @@ export class Game extends Phaser.State {
     Array.from(this.agentSpriteMap.values()).forEach(sprite => {
       sprite.destroy();
     });
-    this.otherAgents.getAll().forEach(agent => {
+    this.groups.otherAgents.getAll().forEach(agent => {
       agent.destroy();
     });
     this.agentSpriteMap = new Map();
@@ -323,7 +216,7 @@ export class Game extends Phaser.State {
       ClientAPI.playerAgent
     );
     currentAgents.forEach((agent: Agent) => {
-      const standLoc = this.getStandingLoc();
+      const standLoc = this.standingLocs.getRandomLoc();
       const agentSprite = new AgentSprite(
         this.game,
         standLoc.pos.x,
@@ -332,7 +225,7 @@ export class Game extends Phaser.State {
       agentSprite.model = agent;
       agentSprite.standLocIndex = standLoc.index;
       agentSprite.inputEnabled = true;
-      this.otherAgents.add(agentSprite);
+      this.groups.otherAgents.add(agentSprite);
 
       this.agentsInRoom.add(agent.id);
       this.agentSpriteMap.set(agent.id, agentSprite);
@@ -365,9 +258,9 @@ export class Game extends Phaser.State {
   }
 
   private handleEnter(event: RoomEvent) {
-    const end = this.getStandingLoc();
+    const end = this.standingLocs.getRandomLoc();
     let start = end.pos;
-    for (const door of this.doorObjects.getAll()) {
+    for (const door of this.groups.doorObjects.getAll()) {
       if (parseInt(door.name) === event.data.id) {
         start = door.position;
         break;
@@ -378,7 +271,7 @@ export class Game extends Phaser.State {
     agentSprite.model = Agent.getByID(event.agentID);
     agentSprite.standLocIndex = end.index;
     agentSprite.inputEnabled = true;
-    this.otherAgents.add(agentSprite);
+    this.groups.otherAgents.add(agentSprite);
     this.agentSpriteMap.set(event.agentID, agentSprite);
     this.agentsInRoom.add(event.agentID);
     agentSprite.animating = true;
@@ -393,13 +286,13 @@ export class Game extends Phaser.State {
 
   private handleLeave(agent: AgentSprite, event: RoomEvent) {
     let end = agent.position;
-    for (const door of this.doorObjects.getAll()) {
+    for (const door of this.groups.doorObjects.getAll()) {
       if (parseInt(door.name) === event.data.id) {
         end = door.position;
         break;
       }
     }
-    this.standingLocs.possible.push(agent.standLocIndex);
+    this.standingLocs.releaseIndex(agent.standLocIndex);
     this.moveAgent(agent, agent.position, end, () => {
       if (this.agentSpriteMap.has(event.agentID)) {
         this.agentSpriteMap.get(event.agentID).destroy();
@@ -447,3 +340,15 @@ export class Game extends Phaser.State {
     this.roomEvents = unHandledEvents;
   }
 }
+
+namespace GameState {
+  export interface Groups {
+    gameWorld: Phaser.Group;
+    mapLayers: Phaser.Group;
+    otherAgents: Phaser.Group;
+    doorObjects: Phaser.Group;
+    HUD: Phaser.Group;
+  }
+}
+
+export default GameState;

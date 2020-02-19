@@ -7,7 +7,7 @@ import * as WebFontLoader from "webfontloader";
 import Boot from "./states/boot";
 import Preload from "./states/preloader";
 import { Login } from "./states/login";
-import { Game } from "./states/game";
+import Game from "./states/game";
 import * as Utils from "./utils/utils";
 import * as Assets from "./assets";
 

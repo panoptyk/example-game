@@ -3,10 +3,10 @@ import { ClientAPI, Agent } from "panoptyk-engine/dist/client";
 import { ActionSel } from "./actionSel";
 
 export class AgentSprite extends Phaser.Sprite {
+  private menu: ActionSel;
   public animating = false;
   public model: Agent;
   public standLocIndex = -1;
-  private menu: ActionSel;
 
   constructor(game: Phaser.Game, x: number, y: number, enableInput = true) {
     super(game, x, y, Assets.Spritesheets.SpritesheetsPlayerSpriteSheet484844.getName(), 0);
@@ -36,14 +36,8 @@ export class AgentSprite extends Phaser.Sprite {
   }
 
   public createMenu() {
-    this.menu = new ActionSel(this);
-    this.menu.createAgentActions();
-  }
-
-  public updateAgent() {
-    if (this.menu) {
-      this.menu.updateAgentActions();
-    }
+    this.menu = ActionSel.getMenu(this);
+    this.menu.createActions();
   }
 
   public destroyMenu() {
