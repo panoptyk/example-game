@@ -8,7 +8,7 @@
           position="is-centered"
         >
           <b-tab-item label="Inspect">
-            <inspect-tab v-bind:trigger="trigger"></inspect-tab>
+            <inspect-tab v-bind:trigger="trigger" v-bind:target="inspectTarget"></inspect-tab>
           </b-tab-item>
 
           <b-tab-item label="Items">
@@ -110,6 +110,7 @@ export default class App extends Vue {
   knowledge = [];
   assignedQuests = [];
   givenQuests = [];
+  inspectTarget = 0;
   @Watch("trigger")
   updateLists() {
     this.agents = ClientAPI.seenAgents;

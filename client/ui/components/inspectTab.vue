@@ -21,7 +21,7 @@ import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 })
 export default class InspectTab extends Vue {
   @Prop({ default: 0 }) trigger: number;
-
+  @Prop({default: 0}) target;
 }
 </script>
 

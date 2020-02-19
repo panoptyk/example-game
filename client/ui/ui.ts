@@ -73,6 +73,10 @@ export class UI {
     this.main.$data.room = room.roomName;
   }
 
+  public setInspectTarget(model) {
+    this.main.$data.inspectTarget = model;
+  }
+
   public refresh() {
     this.trigger = (this.trigger + 1) % 2;
     this.main.$data.trigger = this.trigger;
