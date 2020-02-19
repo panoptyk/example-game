@@ -22,6 +22,46 @@ export namespace Images {
 
         static getPNG(): string { return require('assets/images/trade.png'); }
     }
+    export class TilemapsTilesADirtPipo {
+        static getName(): string { return '[A]Dirt_pipo'; }
+
+        static getPNG(): string { return require('assets/tilemaps/tiles/[A]Dirt_pipo.png'); }
+    }
+    export class TilemapsTilesAFlowerPipo {
+        static getName(): string { return '[A]Flower_pipo'; }
+
+        static getPNG(): string { return require('assets/tilemaps/tiles/[A]Flower_pipo.png'); }
+    }
+    export class TilemapsTilesAGrassPipo {
+        static getName(): string { return '[A]Grass_pipo'; }
+
+        static getPNG(): string { return require('assets/tilemaps/tiles/[A]Grass_pipo.png'); }
+    }
+    export class TilemapsTilesAWallUpPipo {
+        static getName(): string { return '[A]Wall-Up_pipo'; }
+
+        static getPNG(): string { return require('assets/tilemaps/tiles/[A]Wall-Up_pipo.png'); }
+    }
+    export class TilemapsTilesAWaterPipo {
+        static getName(): string { return '[A]Water_pipo'; }
+
+        static getPNG(): string { return require('assets/tilemaps/tiles/[A]Water_pipo.png'); }
+    }
+    export class TilemapsTilesAWaterFallPipo {
+        static getName(): string { return '[A]WaterFall_pipo'; }
+
+        static getPNG(): string { return require('assets/tilemaps/tiles/[A]WaterFall_pipo.png'); }
+    }
+    export class TilemapsTilesBaseBaseChipPipo {
+        static getName(): string { return '[Base]BaseChip_pipo'; }
+
+        static getPNG(): string { return require('assets/tilemaps/tiles/[Base]BaseChip_pipo.png'); }
+    }
+    export class TilemapsTilesLightShadowPipo {
+        static getName(): string { return 'LightShadow_pipo'; }
+
+        static getPNG(): string { return require('assets/tilemaps/tiles/LightShadow_pipo.png'); }
+    }
     export class TilemapsTilesTilesDungeonV11 {
         static getName(): string { return 'tiles_dungeon_v1.1'; }
 
@@ -128,6 +168,21 @@ export namespace JSON {
 }
 
 export namespace TilemapJSON {
+    export class TilemapsMapsDowntown {
+        static getName(): string { return 'downtown'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/downtown.json'); }
+    }
+    export class TilemapsMapsHouse1 {
+        static getName(): string { return 'house1'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/house1.json'); }
+    }
+    export class TilemapsMapsInn {
+        static getName(): string { return 'inn'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/inn.json'); }
+    }
     export class TilemapsMapsRoom1 {
         static getName(): string { return 'room1'; }
 
