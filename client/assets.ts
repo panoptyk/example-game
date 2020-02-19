@@ -160,33 +160,24 @@ export namespace BitmapFonts {
 }
 
 export namespace JSON {
-    export class TilemapsMapsExampleRooms {
-        static getName(): string { return 'example_rooms'; }
-
-        static getJSON(): string { return require('assets/tilemaps/maps/example_rooms.json'); }
-    }
+    class IExistSoTypeScriptWillNotComplainAboutAnEmptyNamespace {}
 }
 
 export namespace TilemapJSON {
     export class TilemapsMapsDowntown {
-        static getName(): string { return 'downtown'; }
+        static getName(): string { return 'Downtown'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/downtown.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/Downtown.json'); }
     }
     export class TilemapsMapsHouse1 {
-        static getName(): string { return 'house1'; }
+        static getName(): string { return 'House1'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/house1.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/House1.json'); }
     }
     export class TilemapsMapsInn {
-        static getName(): string { return 'inn'; }
+        static getName(): string { return 'Inn'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/inn.json'); }
-    }
-    export class TilemapsMapsRoom1 {
-        static getName(): string { return 'room1'; }
-
-        static getJSON(): string { return require('assets/tilemaps/maps/room1.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/Inn.json'); }
     }
     export class TilemapsMapsTemplateRoom {
         static getName(): string { return 'templateRoom'; }
