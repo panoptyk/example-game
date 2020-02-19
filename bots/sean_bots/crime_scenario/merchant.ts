@@ -86,10 +86,13 @@ class MerchantMember {
                     await ClientAPI.tellInfo(info);
                     this.crimesToReport.delete(info);
                 }
+                console.log(ClientAPI.playerAgent + " reported cimes to " + other);
+                this.state = "conversation";
+                this.prepForConversation();
             }
-            console.log(ClientAPI.playerAgent + " reported cimes to " + other);
-            this.state = "conversation";
-            this.prepForConversation();
+            else {
+                await this.convHanlder();
+            }
         }
         else {
             for (const agent of Helper.getOthersInRoom()) {
@@ -182,7 +185,6 @@ class MerchantMember {
     async wander() {
         if (ClientAPI.playerAgent.conversation) {
             this.state = "conversation";
-            this.prepForConversation();
         }
         else {
             const roomItems = ClientAPI.playerAgent.room.getItems();
@@ -200,6 +202,7 @@ class MerchantMember {
             }
             if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
                 await ClientAPI.acceptConversation(ClientAPI.playerAgent.conversationRequesters[0]);
+                this.prepForConversation();
                 return;
             }
             for (const agent of Helper.getOthersInRoom()) {
@@ -207,6 +210,8 @@ class MerchantMember {
                 if (!agent.conversation && !this.requestedAgents.has(agent)) {
                     await ClientAPI.requestConversation(agent);
                     this.requestedAgents.add(agent);
+                    this.prepForConversation();
+                    return;
                 }
             }
             if (Date.now() - this.roomUpdate > Helper.WAIT_FOR_OTHER) {
@@ -278,6 +283,9 @@ function main() {
     if (!acting) {
         acting = true;
         act().catch(err => {
+            if (ClientAPI.playerAgent.agentStatus.has("dead")) {
+                return 0;
+            }
             if (!err.message.includes("is already in a conversation!")) console.log(err);
         }).finally(() => {
             acting = false;

@@ -11,9 +11,9 @@ startScenario();
 async function startScenario() {
     crimeLeader = fork("./bots/sean_bots/crime_scenario/crimeLeader.ts", ["Crime Leader", "password"], {execArgv: childExecArgv});
     policeLeader = fork("./bots/sean_bots/crime_scenario/police.ts", ["Police Leader", "password"], {execArgv: childExecArgv});
+    await spawnPolice();
     await spawnNeutral();
     await spawnCrime();
-    await spawnPolice();
 }
 
 async function spawnCrime() {
@@ -33,7 +33,7 @@ async function spawnPolice() {
     const numPolice = 3;
     for (let i = 1; i <= numPolice; i++) {
         policeMembers.push(fork(
-        "./bots/sean_bots/crime_scenario/crimeGoon.ts",
+        "./bots/sean_bots/crime_scenario/policeFsm.ts",
         ["Police " + i, "password"],
         {execArgv: childExecArgv}
         ));

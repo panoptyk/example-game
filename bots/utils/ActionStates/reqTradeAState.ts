@@ -1,9 +1,9 @@
-import { ActionState } from "../lib/ActionStates/actionState";
-import { Agent, ClientAPI, ValidationResult } from "panoptyk-engine/dist/client";
-import { SuccessAction } from "../lib/ActionStates/successAState";
-import { FailureAction } from "../lib/ActionStates/failureAState";
+import { ActionState } from "../../lib/ActionStates/actionState";
+import { Agent, ClientAPI, ValidationResult } from "panoptyk-engine/dist/";
+import { SuccessAction } from "../../lib/ActionStates/successAState";
+import { FailureAction } from "../../lib/ActionStates/failureAState";
 
-export class RequestConersationState extends ActionState {
+export class RequestTradeState extends ActionState {
     private targetAgent: Agent;
     private _completed = false;
     public get completed() {
@@ -20,9 +20,9 @@ export class RequestConersationState extends ActionState {
     }
 
     public async act() {
-        if (ClientAPI.playerAgent.room.hasAgent(this.targetAgent) &&
-        !this.targetAgent.conversation) {
-            await ClientAPI.requestConversation(this.targetAgent)
+        if (ClientAPI.playerAgent.conversation &&
+        ClientAPI.playerAgent.conversation.contains_agent(this.targetAgent)) {
+            await ClientAPI.requestTrade(this.targetAgent)
             .catch((res: ValidationResult) => {
                 console.log(res.message);
             })

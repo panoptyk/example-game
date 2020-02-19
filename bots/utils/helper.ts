@@ -155,3 +155,19 @@ export async function dumbNavigateStep(roomName: string) {
         else await ClientAPI.moveToRoom(potentialRooms[randomInt(0, potentialRooms.length)]);
     }
 }
+
+/**
+ * Checks if player has told the targetInfo pieces
+ * @param targetAgent
+ * @param targetInfo
+ */
+export function hasToldInfo(targetAgent: Agent, targetInfo: Info[]) {
+    const hasTold = ClientAPI.playerAgent.getInfoByAction("TOLD").filter(info => {
+        const terms = info.getTerms();
+        if (terms.agent1 === ClientAPI.playerAgent && terms.agent2 === targetAgent && targetInfo.includes(terms.info)) {
+            return true;
+        }
+        return false;
+    });
+    return hasTold.length === targetInfo.length;
+}

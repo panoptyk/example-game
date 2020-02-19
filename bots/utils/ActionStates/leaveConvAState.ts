@@ -1,6 +1,6 @@
-import { ActionState } from "../lib/ActionStates/actionState";
-import { Agent, ClientAPI, ValidationResult } from "panoptyk-engine/dist/client";
-import { SuccessAction } from "../lib/ActionStates/successAState";
+import { ActionState } from "../../lib/ActionStates/actionState";
+import { Agent, ClientAPI, ValidationResult } from "panoptyk-engine/dist/";
+import { SuccessAction } from "../../lib/ActionStates/successAState";
 
 export class LeaveConersationState extends ActionState {
     private _completed = false;

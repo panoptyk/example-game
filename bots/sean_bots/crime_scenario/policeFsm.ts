@@ -1,30 +1,35 @@
-import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, Quest, Faction, IDObject, ActionArrestAgent } from "panoptyk-engine/dist/";
+import { Agent, Room, Info, Trade, Item, Conversation, ClientAPI, Quest, Faction, IDObject } from "panoptyk-engine/dist/";
 import * as Helper from "../../utils/helper";
 import { Strategy, ActionState, BehaviorState, SuccessAction, SuccessBehavior, FailureAction, FailureBehavior } from "../../lib/index";
-import { RequestConersationState, LeaveConersationState } from "../../utils/index";
-import { IdleState } from "../../john_bots/idleAState";
-import { MoveState } from "../../john_bots/moveAState";
+import { RequestConversationState, LeaveConersationState, MoveState, AcceptConersationState,
+    TellInfoState, IdleState, CompleteQuestState
+} from "../../utils/index";
 
 const username = process.argv[2];
 const password = process.argv[3];
 let acting = false;
 let strategy: Strategy;
 
-class PoliceMember extends Strategy {
-    criminals: Set<Agent>;
-    infoIdx: number;
-
-    constructor(criminals = new Set<Agent>(), infoIdx = 0) {
-        super();
-        this.criminals = criminals;
-        this.infoIdx = infoIdx;
+class PoliceKnowledgeBase {
+    criminals: Set<Agent> = new Set<Agent>();
+    crimeDatabase: Set<Info> = new Set<Info>();
+    requestedAgents: Set<Agent> = new Set<Agent>();
+    conversedAgents: Set<Agent> = new Set<Agent>();
+    infoIdx = 0;
+    private static _instance: PoliceKnowledgeBase;
+    static get instance(): PoliceKnowledgeBase {
+        if (!PoliceKnowledgeBase._instance) {
+            PoliceKnowledgeBase._instance = new PoliceKnowledgeBase();
+        }
+        return PoliceKnowledgeBase._instance;
     }
 
-    protected addCriminalIfAlive(criminal: Agent) {
+    protected registerCrime(criminal: Agent, crime: Info) {
         // may need reworking as we manage the way death is handled and reported
         if (criminal && !(criminal.agentStatus.has("dead"))) {
             this.criminals.add(criminal);
         }
+        this.crimeDatabase.add(crime);
     }
 
     public detectCrime() {
@@ -35,17 +40,17 @@ class PoliceMember extends Strategy {
             const item: Item = terms.item;
             switch (info.action) {
                 case "STOLE":
-                    this.addCriminalIfAlive(terms.agent1);
+                    this.registerCrime(terms.agent1, info);
                     /* falls through */
                 case "GAVE":
                     if (item.itemTags.has("illegal")) {
-                        this.addCriminalIfAlive(terms.agent1);
-                        this.addCriminalIfAlive(terms.agent2);
+                        this.registerCrime(terms.agent1, info);
+                        this.registerCrime(terms.agent2, info);
                     }
                     break;
                 case "PICKUP":
                     if (item.itemTags.has("illegal")) {
-                        this.addCriminalIfAlive(terms.agent);
+                        this.registerCrime(terms.agent, info);
                     }
                     break;
             }
@@ -53,53 +58,343 @@ class PoliceMember extends Strategy {
     }
 }
 
-class PoliceLeader extends PoliceMember {
+class PoliceLeader extends Strategy {
     public async act() {
-        this.currentBehavior.act();
+        this.currentBehavior = await this.currentBehavior.tick();
     }
 }
 
-class PoliceDetective extends PoliceMember {
+class PoliceDetective extends Strategy {
+    private static _activeInstance: PoliceDetective;
+    public static get activeInstance(): PoliceDetective {
+        return this._activeInstance;
+    }
+
+    constructor() {
+        super();
+        this.currentBehavior = new PolicePatrol(Helper.WAIT_FOR_OTHER, PoliceDetective.patrolTransition);
+    }
+
     public async act() {
-        this.currentBehavior.act();
+        PoliceDetective._activeInstance = this;
+        PoliceKnowledgeBase.instance.detectCrime();
+        this.currentBehavior = await this.currentBehavior.tick();
+    }
+
+    public static patrolTransition(this: PolicePatrol): BehaviorState {
+        for (const quest of ClientAPI.playerAgent.activeAssignedQuests) {
+            if (quest.giver.faction === ClientAPI.playerAgent.faction && quest.task.action === "ARRESTED") {
+                const target = quest.task.getTerms().agent2;
+                if (ClientAPI.playerAgent.room.hasAgent(target)) {
+                    return new ArrestBehavior(target, quest, PoliceDetective.arrestTransition);
+                }
+            }
+        }
+        for (const agent of Helper.getOthersInRoom()) {
+            if (agent.faction === ClientAPI.playerAgent.faction && !agent.conversation &&
+                !PoliceKnowledgeBase.instance.requestedAgents.has(agent)
+            ) {
+                if (Helper.hasToldInfo(agent, Array.from(PoliceKnowledgeBase.instance.crimeDatabase))) {
+                    PoliceKnowledgeBase.instance.requestedAgents.add(agent);
+                }
+                else {
+                    const toTell = new Set(PoliceKnowledgeBase.instance.crimeDatabase);
+                    for (const info of ClientAPI.playerAgent.getInfoByAction("TOLD")) {
+                        const terms = info.getTerms();
+                        if (terms.agent2 === agent && toTell.has(info)) {
+                            toTell.delete(info);
+                        }
+                    }
+                    return new TellInfo(agent, Array.from(toTell), PoliceDetective.tellTransition);
+                }
+            }
+        }
+        return this;
+    }
+
+    public static turnInTransition(this: TurnInBehavior) {
+        if (this.currentActionState instanceof SuccessAction) {
+            return new PolicePatrol(Helper.WAIT_FOR_OTHER, PoliceDetective.patrolTransition);
+        }
+        else if (!ClientAPI.playerAgent.room.hasAgent(this.quest.giver)) {
+            return new PoliceNavigateToAgent(this.quest.giver, Infinity,
+                function(this: PoliceNavigateToAgent) {
+                    if (this.currentActionState instanceof SuccessAction) {
+                        return TurnInBehavior.activeInstance;
+                    }
+                    return this;
+                }
+            );
+        }
+        return this;
+    }
+
+    public static arrestTransition(this: ArrestBehavior): BehaviorState {
+        if (this.currentActionState instanceof SuccessAction) {
+            return new TurnInBehavior(this._warrant, PoliceDetective.turnInTransition);
+        }
+        else if (this.currentActionState instanceof IdleState) {
+            return new PolicePatrol(Helper.WAIT_FOR_OTHER, PoliceDetective.patrolTransition);
+        }
+        return this;
+    }
+
+    public static tellTransition(this: TellInfo): BehaviorState {
+        if (this.currentActionState instanceof FailureAction ||
+        this.currentActionState instanceof SuccessAction) {
+            return new PolicePatrol(Helper.WAIT_FOR_OTHER, PoliceDetective.patrolTransition);
+        }
+        return this;
+    }
+}
+
+class TurnInBehavior extends BehaviorState {
+    quest: Quest;
+    solution: Info;
+
+    private static _activeInstance: TurnInBehavior;
+    public static get activeInstance(): TurnInBehavior {
+        return TurnInBehavior._activeInstance;
+    }
+    constructor(quest: Quest, nextState?: () => BehaviorState) {
+        super(nextState);
+        this.quest = quest;
+        for (const info of ClientAPI.playerAgent.getInfoByAction(this.quest.task.action)) {
+            if (this.quest.checkSatisfiability(info)) {
+                this.solution = info;
+                break;
+            }
+        }
+
+        if (!this.solution) {
+            this.currentActionState = FailureAction.instance;
+        }
+        else if (ClientAPI.playerAgent.conversation) {
+            if (Helper.getOthersInConversation[0] === this.quest.giver) {
+                this.currentActionState = new CompleteQuestState(this.quest, this.solution);
+            }
+            else {
+                this.currentActionState = new LeaveConersationState(TellInfo.leaveTransition);
+            }
+        }
+        else {
+            this.currentActionState = new RequestConversationState(this.quest.giver, TurnInBehavior.requestConversationTransition);
+        }
+    }
+
+    public async act() {
+        TurnInBehavior._activeInstance = this;
+        this.currentActionState = await this.currentActionState.tick();
+    }
+
+    public nextState(): BehaviorState {
+        return this;
+    }
+
+    static leaveTransition(this: LeaveConersationState): ActionState {
+        if (this.completed) {
+            return new RequestConversationState(TurnInBehavior.activeInstance.quest.giver, TurnInBehavior.requestConversationTransition);
+        }
+        return this;
+    }
+
+    static requestConversationTransition(this: RequestConversationState): ActionState {
+        if (this.completed) {
+            PoliceKnowledgeBase.instance.requestedAgents.add(this.targetAgent);
+            if (ClientAPI.playerAgent.conversation) {
+                return new CompleteQuestState(TurnInBehavior.activeInstance.quest, TurnInBehavior.activeInstance.solution);
+            }
+        }
+        return this;
+    }
+}
+
+class ArrestBehavior extends BehaviorState {
+    _targetAgent: Agent;
+    _warrant: Quest;
+    private static _activeInstance: ArrestBehavior;
+    public static get activeInstance(): ArrestBehavior {
+        return ArrestBehavior._activeInstance;
+    }
+
+    constructor(targetAgent: Agent, warrant: Quest, nextState?: () => BehaviorState) {
+        super(nextState);
+        this._targetAgent = targetAgent;
+        this._warrant = warrant;
+        if (ClientAPI.playerAgent.room.hasAgent(this._targetAgent)) {
+            this.currentActionState = new PoliceArrestAgentState(this._targetAgent, ArrestBehavior.arrestTransition);
+        }
+        else {
+            this.currentActionState = new IdleState(ArrestBehavior.idleTransition);
+        }
+    }
+
+    public async act() {
+        ArrestBehavior._activeInstance = this;
+        this.currentActionState = await this.currentActionState.tick();
+    }
+
+    public static arrestTransition(this: PoliceArrestAgentState): ActionState {
+        if (this.completed) {
+            return SuccessAction.instance;
+        }
+        else if (this.doneActing) {
+            return new IdleState(ArrestBehavior.idleTransition);
+        }
+        return this;
+    }
+
+    public static idleTransition(this: IdleState): ActionState {
+        if (ClientAPI.playerAgent.room.hasAgent(ArrestBehavior.activeInstance._targetAgent)) {
+            return new PoliceArrestAgentState(ArrestBehavior.activeInstance._targetAgent, ArrestBehavior.arrestTransition);
+        }
+        return this;
+    }
+
+    public nextState(): BehaviorState {
+        return this;
+    }
+}
+
+class TellInfo extends BehaviorState {
+    _targetAgent: Agent;
+    _toTell: Info[];
+
+    private static _activeInstance: TellInfo;
+    static get activeInstance(): TellInfo {
+        return TellInfo._activeInstance;
+    }
+
+    constructor(targetAgent: Agent, toTell: Info[], nextState?: () => BehaviorState) {
+        super(nextState);
+        this._targetAgent = targetAgent;
+        this._toTell = toTell;
+        if (ClientAPI.playerAgent.conversation) {
+            if (Helper.getOthersInConversation[0] === this._targetAgent) {
+                this.currentActionState = new TellInfoState(this._toTell.pop(), [], TellInfo.tellTransition);
+            }
+            else {
+                this.currentActionState = new LeaveConersationState(TellInfo.leaveTransition);
+            }
+        }
+        else {
+            this.currentActionState = new RequestConversationState(this._targetAgent, TellInfo.requestConversationTransition);
+        }
+    }
+
+    public async act() {
+        TellInfo._activeInstance = this;
+        this.currentActionState = await this.currentActionState.tick();
+    }
+
+    static leaveTransition(this: LeaveConersationState): ActionState {
+        if (this.completed) {
+            return new RequestConversationState(TellInfo.activeInstance._targetAgent, TellInfo.requestConversationTransition);
+        }
+        return this;
+    }
+
+    static requestConversationTransition(this: RequestConversationState): ActionState {
+        if (this.completed) {
+            PoliceKnowledgeBase.instance.requestedAgents.add(this.targetAgent);
+            if (ClientAPI.playerAgent.conversation) {
+                return new TellInfoState(TellInfo.activeInstance._toTell.pop(), [], TellInfo.tellTransition);
+            }
+        }
+        if ((!this.completed && this.doneActing) || this.deltaTime > Helper.WAIT_FOR_OTHER) {
+            return FailureAction.instance;
+        }
+        return this;
+    }
+
+    static tellTransition(this: TellInfoState): ActionState {
+        if (this.completed) {
+            if (TellInfo.activeInstance._toTell[0]) {
+                return new TellInfoState(TellInfo.activeInstance._toTell.pop(), [], TellInfo.tellTransition);
+            }
+            else {
+                return SuccessAction.instance;
+            }
+        }
+        else if (this.doneActing) {
+            return FailureAction.instance;
+        }
+        return this;
+    }
+
+    public nextState() {
+        return this;
     }
 }
 
 class PolicePatrol extends BehaviorState {
     idleTimeRoom: number;
-    knownCriminals: Set<Agent>;
-    lastUpdate: number;
+    private static _activeInstance: PolicePatrol;
+    public static get activeInstance(): PolicePatrol {
+        return this._activeInstance;
+    }
 
-    constructor(knownCriminals: Set<Agent>, idleTimeRoom = 10000, nextState?: () => BehaviorState) {
+    constructor(idleTimeRoom = 10000, nextState?: () => BehaviorState) {
         super(nextState);
-        this.knownCriminals = knownCriminals;
         this.idleTimeRoom = idleTimeRoom;
-        this.lastUpdate = Date.now();
+        this.currentActionState = new IdleState(PolicePatrol.idleTransition);
     }
 
     public async act() {
-        if (ClientAPI.playerAgent.conversation) {
-            if (!(this.currentActionState instanceof ListenToOther)) {
-                this.currentActionState = new ListenToOther(Helper.WAIT_FOR_OTHER);
-            }
-        }
-        else {
-            for (const agent of ClientAPI.playerAgent.room.occupants) {
-                if (this.knownCriminals.has(agent)) {
-                    this.currentActionState = new PoliceArrestAgent(agent);
-                    break;
-                }
-            }
-
-            if (this.currentActionState && !(this.currentActionState instanceof SuccessAction) &&
-            !(this.currentActionState instanceof FailureAction)) {
-                this.lastUpdate = Date.now();
-            }
-            else if (Date.now() - this.lastUpdate > this.idleTimeRoom) {
-                this.currentActionState = new PoliceNavigate("random");
-            }
-        }
+        PolicePatrol._activeInstance = this;
         this.currentActionState = await this.currentActionState.tick();
+    }
+
+    static idleTransition(this: IdleState) {
+        if (ClientAPI.playerAgent.conversationRequesters[0]) {
+            return new AcceptConersationState(
+            ClientAPI.playerAgent.conversationRequesters[0], PolicePatrol.acceptConversationTransition);
+        }
+        else if (Date.now() - this.startTime > PolicePatrol.activeInstance.idleTimeRoom) {
+            let potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
+            if (Helper.getPlayerRank(ClientAPI.playerAgent) > 100) {
+                potentialRooms = potentialRooms.filter(room => !room.roomTags.has("private"));
+            }
+            return new MoveState(
+            potentialRooms[Helper.randomInt(0, potentialRooms.length)], PolicePatrol.moveTransition);
+        }
+        return this;
+    }
+
+    static acceptConversationTransition(this: AcceptConersationState) {
+        if (this.completed) {
+            return new ListenToOther(Helper.WAIT_FOR_OTHER, PolicePatrol.listenTransition);
+        }
+        else if (this.doneActing) {
+            return new IdleState(PolicePatrol.idleTransition);
+        }
+        return this;
+    }
+
+    static listenTransition(this: ListenToOther) {
+        if (Date.now() - this.lastUpdate > this.timeout) {
+            return new LeaveConersationState(PolicePatrol.leaveTransition);
+        }
+        return this;
+    }
+
+    static leaveTransition(this: LeaveConersationState) {
+        if (this.completed) {
+            return new IdleState(PolicePatrol.idleTransition);
+        }
+        return this;
+    }
+
+    static moveTransition(this: MoveState) {
+        if (this.doneActing) {
+            if (this.completed) {
+                PoliceKnowledgeBase.instance.requestedAgents.clear();
+                PoliceKnowledgeBase.instance.conversedAgents.clear();
+                return new IdleState(PolicePatrol.idleTransition);
+            }
+            return FailureAction.instance;
+        }
+        return this;
     }
 
     public nextState() {
@@ -111,21 +406,26 @@ class ListenToOther extends ActionState {
     other: Agent;
     timeout: number;
     lastUpdate: number;
-    infoAboutOther: number;
+    infoAboutOther = 0;
 
     constructor(timeout: number, nextState?: () => ActionState) {
         super(nextState);
-        this.other = ClientAPI.playerAgent.conversation.getAgents(ClientAPI.playerAgent)[0];
         this.timeout = timeout;
-        this.infoAboutOther = ClientAPI.playerAgent.getInfoByAgent(this.other).length;
         this.lastUpdate = Date.now();
+        if (ClientAPI.playerAgent.conversation) {
+            this.other = ClientAPI.playerAgent.conversation.getAgents(ClientAPI.playerAgent)[0];
+            this.infoAboutOther = ClientAPI.playerAgent.getInfoByAgent(this.other).length;
+        }
     }
 
     public async act() {
-        const currentInfo = ClientAPI.playerAgent.getInfoByAgent(this.other).length;
-        if (this.infoAboutOther < currentInfo) {
-            this.lastUpdate = Date.now();
-            this.infoAboutOther = currentInfo;
+        if (ClientAPI.playerAgent.conversation) {
+            if (!this.other) this.other = ClientAPI.playerAgent.conversation.getAgents(ClientAPI.playerAgent)[0];
+            const currentInfo = ClientAPI.playerAgent.getInfoByAgent(this.other).length;
+            if (this.infoAboutOther < currentInfo) {
+                this.lastUpdate = Date.now();
+                this.infoAboutOther = currentInfo;
+            }
         }
     }
 
@@ -137,15 +437,15 @@ class ListenToOther extends ActionState {
     }
 }
 
-class PoliceArrestAgent extends ActionState {
+class PoliceArrestAgentState extends ActionState {
     private targetAgent: Agent;
     private _completed = false;
     public get completed() {
         return this._completed;
     }
-    private _impossible = false;
-    public get impossible() {
-        return this._impossible;
+    private _doneActing = false;
+    public get doneActing() {
+        return this._doneActing;
     }
 
     constructor(targetAgent: Agent, nextState: () => ActionState = undefined) {
@@ -157,160 +457,133 @@ class PoliceArrestAgent extends ActionState {
         if (ClientAPI.playerAgent.room.hasAgent(this.targetAgent)) {
             await ClientAPI.arrestAgent(this.targetAgent);
             this._completed = true;
+            this._doneActing = true;
         }
         else {
-            this._impossible = true;
+            this._doneActing = true;
         }
     }
 
     public nextState(): ActionState {
         if (this._completed) return SuccessAction.instance;
-        else if (this._impossible) return FailureAction.instance;
-        else return this;
-    }
-}
-
-class ConverseWithAgent extends BehaviorState {
-    agent: Agent;
-    timeout: number;
-    acceptRejection: boolean;
-    conversing = false;
-    failed = false;
-
-    constructor(agent: Agent, acceptRejection = true, timeout = Infinity, nextState?: () => BehaviorState) {
-        super(nextState);
-        this.agent = agent;
-        this.timeout = timeout;
-        this.acceptRejection = acceptRejection;
-    }
-
-    public async act() {
-        if (ClientAPI.playerAgent.conversation) {
-            const conversation = ClientAPI.playerAgent.conversation;
-            if (conversation.contains_agent(this.agent)) {
-                this.conversing = true;
-                this.currentActionState = SuccessAction.instance;
-            }
-            else {
-                this.conversing = false;
-                this.currentActionState = new LeaveConersationState();
-            }
-        }
-        else {
-            this.conversing = false;
-            if (ClientAPI.playerAgent.room.hasAgent(this.agent)) {
-                if (!ClientAPI.playerAgent.activeConversationRequestTo(this.agent)) {
-                    if (!(this.currentActionState instanceof SuccessAction && this.acceptRejection)) {
-                        this.currentActionState = new RequestConersationState(this.agent);
-                    }
-                    else this.failed = true;
-                }
-            }
-            else this.failed = true;
-        }
-        this.currentActionState = await this.currentActionState.tick();
-    }
-
-    public nextState(): BehaviorState {
-        if (this.conversing) return SuccessBehavior.instance;
-        else if (this.deltaTime > this.timeout || this.failed) return FailureBehavior.instance;
+        else if (this._doneActing) return FailureAction.instance;
         else return this;
     }
 }
 
 class PoliceNavigateToAgent extends BehaviorState {
-    agent: Agent;
+    targetAgent: Agent;
     timeout: number;
-    lastKnownLoc: Room;
-    visitedLastLoc = false;
-    found = false;
-
-    canVisitRoom(room: Room): boolean {
-        if (room && room.roomTags.has("private") &&
-        Helper.getPlayerRank(ClientAPI.playerAgent) > 100) {
-            return false;
-        }
-        return true;
+    lastLocation: Room;
+    visitedLastLocation = false;
+    private static _activeInstance: PoliceNavigateToAgent;
+    public static get activeInstance(): PoliceNavigateToAgent {
+        return PoliceNavigateToAgent._activeInstance;
     }
 
-    constructor(agent: Agent, timeout = Infinity, nextState?: () => BehaviorState) {
+    constructor(targetAgent: Agent, timeout = Infinity, nextState: () => BehaviorState = undefined) {
         super(nextState);
-        this.agent = agent;
+        this.targetAgent = targetAgent;
         this.timeout = timeout;
-        this.lastKnownLoc = Helper.findLastKnownLocation(this.agent);
+        this.lastLocation = Helper.findLastKnownLocation(this.targetAgent);
+        this.currentActionState = new MoveState(this.lastLocation, PoliceNavigateToAgent.navigateTransition);
     }
 
     public async act() {
-        if (ClientAPI.playerAgent.room.hasAgent(this.agent)) {
-            this.found = true;
-            this.currentActionState = SuccessAction.instance;
-        }
-        else {
-            if (this.found) {
-                // we found the agent and they moved
-                this.found = false;
-                this.visitedLastLoc = false;
-                this.lastKnownLoc = Helper.findLastKnownLocation(this.agent);
-            }
-
-            if (this.currentActionState === undefined ||
-                this.currentActionState instanceof SuccessAction ||
-                this.currentActionState instanceof FailureAction) {
-                if (!this.visitedLastLoc && this.canVisitRoom(this.lastKnownLoc)) {
-                    if (ClientAPI.playerAgent.room === this.lastKnownLoc) this.visitedLastLoc = true;
-                    else this.currentActionState = new PoliceNavigate(this.lastKnownLoc.roomName);
-                }
-                else this.currentActionState = new PoliceNavigate("random");
-            }
-        }
+        PoliceNavigateToAgent._activeInstance = this;
         this.currentActionState = await this.currentActionState.tick();
     }
 
-    public nextState(): BehaviorState {
-        if (this.found) return SuccessBehavior.instance;
-        else if (this.deltaTime > this.timeout) return FailureBehavior.instance;
-        else return this;
-    }
-}
-
-class PoliceNavigate extends ActionState {
-    destName: string;
-    timeout: number;
-    completed = false;
-    cannotComplete = false;
-
-    constructor(dest: string, timeout = Infinity, nextState: () => ActionState = undefined) {
-        super(nextState);
-        this.destName = dest;
-        this.timeout = timeout;
-    }
-
-    public async act() {
-        let potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
-        const dest = potentialRooms.find(room => room.roomName === this.destName);
-        if (dest) {
-            if (Helper.getPlayerRank(ClientAPI.playerAgent) <= 100 || !dest.roomTags.has("private")) {
-                await ClientAPI.moveToRoom(dest);
-                this.completed = true;
-            }
-            else {
-                this.cannotComplete = true;
-            }
+    public static navigateTransition(this: MoveState) {
+        if (ClientAPI.playerAgent.room.hasAgent(PoliceNavigateToAgent.activeInstance.targetAgent)) {
+            return SuccessAction.instance;
         }
-        else {
+        if (this.doneActing) {
+            let potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
+            if (!PoliceNavigateToAgent.activeInstance.visitedLastLocation) {
+                if (ClientAPI.playerAgent.room === PoliceNavigateToAgent.activeInstance.lastLocation) {
+                    PoliceNavigateToAgent.activeInstance.visitedLastLocation = true;
+                }
+                else {
+                    const dest = potentialRooms.find(room => room === PoliceNavigateToAgent.activeInstance.lastLocation);
+                    if (dest) {
+                        if (Helper.getPlayerRank(ClientAPI.playerAgent) <= 100 || !dest.roomTags.has("private")) {
+                            return new MoveState(dest, PoliceNavigateToAgent.navigateTransition);
+                        }
+                    }
+                }
+            }
             if (Helper.getPlayerRank(ClientAPI.playerAgent) > 100) {
                 potentialRooms = potentialRooms.filter(room => !room.roomTags.has("private"));
             }
-            await ClientAPI.moveToRoom(potentialRooms[Helper.randomInt(0, potentialRooms.length)]);
+            return new MoveState(potentialRooms[Helper.randomInt(0, potentialRooms.length)], PoliceNavigateToAgent.navigateTransition);
         }
+        return this;
     }
 
-    public nextState(): ActionState {
-        if (this.completed) {
-            return SuccessAction.instance;
+    public nextState(): BehaviorState {
+        return this;
+    }
+}
+
+class PoliceNavigate extends BehaviorState {
+    destName: string;
+    timeout: number;
+    completed = false;
+    doneActing = false;
+    private static _activeInstance: PoliceNavigate;
+    public static get activeInstance(): PoliceNavigate {
+        return PoliceNavigate._activeInstance;
+    }
+
+    constructor(dest: string, timeout = Infinity, nextState: () => BehaviorState = undefined) {
+        super(nextState);
+        this.destName = dest;
+        this.timeout = timeout;
+        this.currentActionState = new MoveState(ClientAPI.playerAgent.room, PoliceNavigate.navigateTransition);
+    }
+
+    public async act() {
+        PoliceNavigate._activeInstance = this;
+        this.currentActionState = await this.currentActionState.tick();
+    }
+
+    public static navigateTransition(this: MoveState) {
+        if (this.doneActing) {
+            if (PoliceNavigate.activeInstance.destName === this.destination.roomName) {
+                PoliceNavigate.activeInstance.completed = true;
+                PoliceNavigate.activeInstance.doneActing = true;
+                return SuccessAction.instance;
+            }
+            else {
+                let potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
+                const dest = potentialRooms.find(room => room.roomName === PoliceNavigate.activeInstance.destName);
+                if (dest) {
+                    if (Helper.getPlayerRank(ClientAPI.playerAgent) <= 100 || !dest.roomTags.has("private")) {
+                        return new MoveState(dest, PoliceNavigate.navigateTransition);
+                    }
+                    else {
+                        PoliceNavigate.activeInstance.doneActing = true;
+                        return FailureAction.instance;
+                    }
+                }
+                else {
+                    if (Helper.getPlayerRank(ClientAPI.playerAgent) > 100) {
+                        potentialRooms = potentialRooms.filter(room => !room.roomTags.has("private"));
+                    }
+                    return new MoveState(potentialRooms[Helper.randomInt(0, potentialRooms.length)], PoliceNavigate.navigateTransition);
+                }
+            }
         }
-        else if (this.deltaTime > this.timeout || this.cannotComplete) {
-            return FailureAction.instance;
+        return this;
+    }
+
+    public nextState(): BehaviorState {
+        if (this.completed) {
+            return SuccessBehavior.instance;
+        }
+        else if (this.deltaTime > this.timeout || this.doneActing) {
+            return FailureBehavior.instance;
         }
     }
 }
@@ -322,7 +595,10 @@ function main() {
     if (!acting) {
         acting = true;
         act().catch(err => {
-            console.log(err);
+            if (ClientAPI.playerAgent.agentStatus.has("dead")) {
+                return 0;
+            }
+            if (!err.message.includes("is already in a conversation!")) console.log(err);
         }).finally(() => {
             acting = false;
         });

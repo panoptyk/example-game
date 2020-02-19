@@ -32,6 +32,9 @@ function main() {
     if (!acting) {
         acting = true;
         act().catch(err => {
+            if (ClientAPI.playerAgent.agentStatus.has("dead")) {
+                return 0;
+            }
             if (!err.message.includes("is already in a conversation!")) console.log(err);
         }).finally(() => {
             acting = false;
@@ -429,8 +432,9 @@ async function questItemSteal(questItem: Item) {
     }
     else if (questItem.agent) {
         if (ClientAPI.playerAgent.room.hasAgent(questItem.agent)) {
+            const target = questItem.agent;
             await ClientAPI.stealItem(questItem.agent, questItem);
-            console.log(username + " STOLE item " + questItem + " from " + questItem.agent);
+            console.log(username + " STOLE item " + questItem + " from " + target);
             questState = "evaluating";
         }
         else {
