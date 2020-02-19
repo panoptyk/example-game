@@ -181,7 +181,7 @@ class GameState extends Phaser.State {
     const end = this.standingLocs.getRandomLoc();
     let start = end.pos;
     for (const door of this.groups.doorObjects.getAll()) {
-      if (parseInt(door.name) === this.previousRoom.id) {
+      if (door.model.id === this.previousRoom.id) {
         start = door.position;
         break;
       }

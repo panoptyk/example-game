@@ -179,6 +179,56 @@ export namespace TilemapJSON {
 
         static getJSON(): string { return require('assets/tilemaps/maps/Inn.json'); }
     }
+    export class TilemapsMapsRoom1 {
+        static getName(): string { return 'room1'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room1.json'); }
+    }
+    export class TilemapsMapsRoom10 {
+        static getName(): string { return 'room10'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room10.json'); }
+    }
+    export class TilemapsMapsRoom2 {
+        static getName(): string { return 'room2'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room2.json'); }
+    }
+    export class TilemapsMapsRoom3 {
+        static getName(): string { return 'room3'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room3.json'); }
+    }
+    export class TilemapsMapsRoom4 {
+        static getName(): string { return 'room4'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room4.json'); }
+    }
+    export class TilemapsMapsRoom5 {
+        static getName(): string { return 'room5'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room5.json'); }
+    }
+    export class TilemapsMapsRoom6 {
+        static getName(): string { return 'room6'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room6.json'); }
+    }
+    export class TilemapsMapsRoom7 {
+        static getName(): string { return 'room7'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room7.json'); }
+    }
+    export class TilemapsMapsRoom8 {
+        static getName(): string { return 'room8'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room8.json'); }
+    }
+    export class TilemapsMapsRoom9 {
+        static getName(): string { return 'room9'; }
+
+        static getJSON(): string { return require('assets/tilemaps/maps/room9.json'); }
+    }
     export class TilemapsMapsTemplateRoom {
         static getName(): string { return 'templateRoom'; }
 

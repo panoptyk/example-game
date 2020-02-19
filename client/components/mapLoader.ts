@@ -11,6 +11,24 @@ import Game from "../states/game";
 import { LocationIndex } from "./locationIndex";
 import { DoorSprite } from "../prefabs/door";
 
+const RoomKey = {
+  "Downtown": Assets.TilemapJSON.TilemapsMapsDowntown.getName(),
+  "House1": Assets.TilemapJSON.TilemapsMapsHouse1.getName(),
+  "Inn": Assets.TilemapJSON.TilemapsMapsInn.getName(),
+  
+
+  "room1": Assets.TilemapJSON.TilemapsMapsRoom1.getName(),
+  "room2": Assets.TilemapJSON.TilemapsMapsRoom2.getName(),
+  "room3": Assets.TilemapJSON.TilemapsMapsRoom3.getName(),
+  "room4": Assets.TilemapJSON.TilemapsMapsRoom4.getName(),
+  "room5": Assets.TilemapJSON.TilemapsMapsRoom5.getName(),
+  "room6": Assets.TilemapJSON.TilemapsMapsRoom6.getName(),
+  "room7": Assets.TilemapJSON.TilemapsMapsRoom7.getName(),
+  "room8": Assets.TilemapJSON.TilemapsMapsRoom8.getName(),
+  "room9": Assets.TilemapJSON.TilemapsMapsRoom9.getName(),
+  "room10": Assets.TilemapJSON.TilemapsMapsRoom10.getName()
+};
+
 export class MapLoader {
   GS: Game;
   map: Phaser.Tilemap;
@@ -38,10 +56,9 @@ export class MapLoader {
       this.groups.doorObjects.position.set(0);
       this.groups.mapLayers.position.set(0);
     }
-    // TODO: this.UI.setRoom(room);
     // Load tilemap
     this.map = this.game.add.tilemap(
-      Assets.TilemapJSON["TilemapsMaps" + room.roomName].getName()
+      RoomKey[room.roomName]
     );
 
     this.groups.gameWorld.width = this.map.widthInPixels;
