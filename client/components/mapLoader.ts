@@ -11,7 +11,8 @@ import Game from "../states/game";
 import { LocationIndex } from "./locationIndex";
 import { DoorSprite } from "../prefabs/door";
 
-const RoomKey = {
+// map from Room.prototype.roomName to actual tilemap (if different)
+const MapKey = {
   "Downtown": Assets.TilemapJSON.TilemapsMapsDowntown.getName(),
   "House1": Assets.TilemapJSON.TilemapsMapsHouse1.getName(),
   "Inn": Assets.TilemapJSON.TilemapsMapsInn.getName(),
@@ -27,6 +28,25 @@ const RoomKey = {
   "room8": Assets.TilemapJSON.TilemapsMapsRoom8.getName(),
   "room9": Assets.TilemapJSON.TilemapsMapsRoom9.getName(),
   "room10": Assets.TilemapJSON.TilemapsMapsRoom10.getName()
+};
+// map from Room.prototype.roomName to door label (if different)
+const DoorKey = {
+};
+
+const ToTileMapName = function(room: Room) {
+  const tileMapName = MapKey[room.roomName];
+  if (tileMapName) {
+    return tileMapName;
+  }
+  return Assets.TilemapJSON["TilemapsMaps" + room.roomName].getName();
+};
+const ToDoorName = function(room: Room) {
+  const doorName = DoorKey[room.roomName];
+  if (doorName) {
+    return doorName;
+  }
+  // default
+  return room.roomName;
 };
 
 export class MapLoader {
@@ -58,7 +78,7 @@ export class MapLoader {
     }
     // Load tilemap
     this.map = this.game.add.tilemap(
-      RoomKey[room.roomName]
+      ToTileMapName(room)
     );
 
     this.groups.gameWorld.width = this.map.widthInPixels;
@@ -91,7 +111,7 @@ export class MapLoader {
     // add door objects
     this.groups.doorObjects.inputEnableChildren = true;
     ClientAPI.playerAgent.room.getAdjacentRooms().forEach((room: Room) => {
-      const door = roomToDoor[room.roomName];
+      const door = roomToDoor[ToDoorName(room)];
       const box = new DoorSprite(
         this.game,
         door.x,
