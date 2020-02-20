@@ -1,4 +1,4 @@
-import { Info, Agent } from "panoptyk-engine/dist/client";
+import { Info, Agent, ClientAPI } from "panoptyk-engine/dist/client";
 /**
  * class that helps generate usable sentences from Info and other models
  */
@@ -101,9 +101,15 @@ class Sentence {
    */
   private static badCreate(terms): Sentence.Block[] {
     const arr = [];
-    const agentName = terms.agent
+    let agentName = terms.agent
       ? terms.agent.agentName
       : terms.agent1.agentName;
+    if (agentName === ClientAPI.playerAgent.agentName) agentName = "You";
+    if (terms.agent2 &&
+      terms.agent2.agentName === ClientAPI.playerAgent.agentName
+    ) {
+      terms.agent2 = {agentName: "You"};
+    }
     arr.push({
       type: Sentence.BlockType.AGENT,
       text: agentName + " "
