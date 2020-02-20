@@ -136,7 +136,7 @@ class GameState extends Phaser.State {
   public updateHUD() {}
 
   private createPlayer(x: number, y: number): void {
-    this.player = new AgentSprite(this.game, x, y, false);
+    this.player = new AgentSprite(this.game, x, y, ClientAPI.playerAgent, false);
     this.groups.gameWorld.add(this.player);
   }
 
@@ -220,9 +220,9 @@ class GameState extends Phaser.State {
       const agentSprite = new AgentSprite(
         this.game,
         standLoc.pos.x,
-        standLoc.pos.y
+        standLoc.pos.y,
+        agent
       );
-      agentSprite.model = agent;
       agentSprite.standLocIndex = standLoc.index;
       agentSprite.inputEnabled = true;
       this.groups.otherAgents.add(agentSprite);
@@ -266,9 +266,8 @@ class GameState extends Phaser.State {
         break;
       }
     }
-    const agentSprite = new AgentSprite(this.game, 0, 0);
+    const agentSprite = new AgentSprite(this.game, 0, 0, Agent.getByID(event.agentID));
     agentSprite.visible = false;
-    agentSprite.model = Agent.getByID(event.agentID);
     agentSprite.standLocIndex = end.index;
     agentSprite.inputEnabled = true;
     this.groups.otherAgents.add(agentSprite);
