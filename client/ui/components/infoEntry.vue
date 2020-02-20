@@ -20,67 +20,23 @@ export default class InfoEntry extends Vue {
   get sentence() {
     if (this.newFoundQuery) {
       // We are currently cheating the query info to be treated as fact
-      return this.badQuerySentence(this.query);
-    } else if (this.info && this.info.id) {
-      if (!this.info.isQuery()) {
-        return Sentence.fromInfo(this.info);
-      } else {
-        const infoTerms = this.info.getTerms();
-        return this.badQuerySentence(infoTerms);
-      }
+      return Sentence.fromInfo(this.spoofQuery(this.query));
+    } else {
+      return Sentence.fromInfo(this.info);
     }
     return [];
   }
 
-  badQuerySentence(queryTerms): Sentence.Block[] {
-    const dummyInfo = {
-      agents: [],
-      items: [],
-      locations: [],
-      quantities: [],
-      factions: []
-    };
-    const terms = queryTerms.action
-      ? Info.ACTIONS[queryTerms.action].getTerms(dummyInfo)
-      : Info.PREDICATE.TAL.getTerms(dummyInfo as any);
-    if (!terms.action) {
-      terms.action = "???";
-    }
-    Object.keys(terms).forEach(k => {
-      if (!queryTerms[k]) {
-        const val = k.replace(/\d/, "");
-        switch (val) {
-          case "agent":
-            terms[k] = {agentName: "???"};
-            break;
-          case "loc":
-            terms[k] = {roomName: "???"};
-            break;
-          case "item":
-            terms[k] = {itemName: "???"};
-            break;
-          case "info":
-            terms[k] = {id: "???"};
-            break;
-          case "faction":
-            terms[k] = {factionName: "???"};
-            break;
-          default:
-            break;
-        }
-      } else {
-        terms[k] = queryTerms[k];
-      }
-    });
+  spoofQuery(queryTerms): any {
     const info = {
       isQuery() {
-        return false;
+        return true;
       },
       getTerms: () => {
-        return terms;
+        return queryTerms;
       }
     };
-    return Sentence.fromInfo(info as any);
+    return info;
   }
 }
 </script>

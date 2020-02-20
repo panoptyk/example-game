@@ -21,19 +21,81 @@ class Sentence {
   public static fromInfo(info: Info): Sentence.Block[] {
     let blocks: Sentence.Block[] = undefined;
     if (info.isQuery()) {
-      blocks = Sentence.blockToArray(Sentence.createQuestion(info));
+      blocks = Sentence.createQuestion(info);
+    } else if (info.isCommand()) {
+      blocks = Sentence.createCommand(info);
+    } else if (info.isMasked()) {
+      blocks = Sentence.createMaskedFact(info);
     } else {
       blocks = Sentence.createFact(info);
     }
     return blocks;
   }
-  private static createQuestion(info: Info): Sentence.Block {
-    return undefined;
+  private static createQuestion(info: Info): Sentence.Block[] {
+    const terms = Sentence.replaceMissing(info.getTerms(), "???");
+    return Sentence.badCreate(terms);
+  }
+  private static createCommand(info: Info): Sentence.Block[] {
+    const terms = Sentence.replaceMissing(info.getTerms(), "???");
+    return Sentence.badCreate(terms);
+  }
+  private static createMaskedFact(info: Info): Sentence.Block[] {
+    const terms = Sentence.replaceMissing(info.getTerms(), "____");
+    return Sentence.badCreate(terms);
   }
   private static createFact(info: Info): Sentence.Block[] {
     const terms = info.getTerms();
     return Sentence.badCreate(terms);
   }
+
+  /**
+   * Replaces undefined terms with provided string
+   *  @return new terms object
+   */
+  private static replaceMissing(infoTerms, fill = "???") {
+    const dummyInfo = {
+      agents: [],
+      items: [],
+      locations: [],
+      quantities: [],
+      factions: []
+    };
+    const terms = infoTerms.action
+      ? Info.ACTIONS[infoTerms.action].getTerms(dummyInfo)
+      : Info.PREDICATE.TAL.getTerms(dummyInfo as any);
+    if (!terms.action) {
+      terms.action = fill;
+    }
+    Object.keys(terms).forEach(k => {
+      if (!infoTerms[k]) {
+        const val = k.replace(/\d/, "");
+        switch (val) {
+          case "agent":
+            terms[k] = {agentName: fill};
+            break;
+          case "loc":
+            terms[k] = {roomName: fill};
+            break;
+          case "item":
+            terms[k] = {itemName: fill};
+            break;
+          case "info":
+            terms[k] = {id: fill};
+            break;
+          case "faction":
+            terms[k] = {factionName: fill};
+            break;
+          default:
+            break;
+        }
+      } else {
+        terms[k] = infoTerms[k];
+      }
+    });
+    return terms;
+  }
+
+
   /**
    * This is a really bad way to make these sentences...
    */
