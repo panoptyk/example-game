@@ -2,7 +2,8 @@ import {
   Strategy,
   BehaviorState,
   FailureAction,
-  KnowledgeBase
+  KnowledgeBase,
+  SuccessAction
 } from "../../lib";
 import { FollowBehavior } from "./Behaviors/followBehavior";
 import { IdleBehavior } from "./Behaviors/idleBehavior";
@@ -13,7 +14,9 @@ import { DenyConversationAction } from "./Actions/denyConversationAction";
 export class FollowStrategy extends Strategy {
   constructor() {
     super();
-    this.currentBehavior = new IdleBehavior(FollowStrategy.idleBehaviorTransition);
+    this.currentBehavior = new IdleBehavior(
+      FollowStrategy.idleBehaviorTransition
+    );
 
     ClientAPI.addOnUpdateListener(FollowStrategy.moveRoomUpdateListener);
   }
@@ -24,23 +27,28 @@ export class FollowStrategy extends Strategy {
       if (
         info.action === Info.ACTIONS.MOVE.name &&
         Agent.getByID(info.agents[0]) === FollowBehavior.followedAgent &&
-        Room.getByID(info.locations [0]) === ClientAPI.playerAgent.room
+        Room.getByID(info.locations[0]) === ClientAPI.playerAgent.room
       ) {
         if (FollowBehavior.destinationRoom === undefined) {
-          FollowBehavior.assignRoomToMoveTo(Room.getByID(info.locations [1]));
+          FollowBehavior.assignRoomToMoveTo(Room.getByID(info.locations[1]));
         }
       }
     });
   }
 
   public static followBehaviorTransition(this: FollowBehavior): BehaviorState {
-    if (this.currentActionState === FailureAction.instance) {
+    if (
+      this.currentActionState === FailureAction.instance ||
+      this.currentActionState === SuccessAction.instance
+    ) {
       return new IdleBehavior(FollowStrategy.idleBehaviorTransition);
-    } else if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
+    } else if (
+      KnowledgeBase.instance.isConversationRequested() &&
+      !FollowBehavior.isDenyConversationNeeded
+    ) {
       const requestingAgent = ClientAPI.playerAgent.conversationRequesters[0];
-      if (requestingAgent !== undefined && requestingAgent === FollowBehavior.followedAgent && !(this.currentActionState instanceof DenyConversationAction)) {
+      if (requestingAgent === FollowBehavior.followedAgent) {
         FollowBehavior.clearAgentToFollow();
-        return new IdleBehavior(FollowStrategy.idleBehaviorTransition);
       } else {
         FollowBehavior.assignAgentToFollow(requestingAgent);
         return new FollowBehavior(FollowStrategy.followBehaviorTransition);
@@ -50,8 +58,17 @@ export class FollowStrategy extends Strategy {
   }
 
   public static idleBehaviorTransition(this: IdleBehavior): BehaviorState {
-    if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
-      FollowBehavior.assignAgentToFollow(ClientAPI.playerAgent.conversationRequesters [0]);
+    if (
+      ClientAPI.playerAgent.room
+        .getAgents()
+        .includes(FollowBehavior.followedAgent)
+    ) {
+      return new FollowBehavior(FollowStrategy.followBehaviorTransition);
+    }
+    if (KnowledgeBase.instance.isConversationRequested()) {
+      FollowBehavior.assignAgentToFollow(
+        ClientAPI.playerAgent.conversationRequesters[0]
+      );
       return new FollowBehavior(FollowStrategy.followBehaviorTransition);
     }
     return this;

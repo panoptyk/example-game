@@ -1,5 +1,6 @@
 import { ActionState } from "../../../lib";
 import { Room, ClientAPI, ValidationResult } from "panoptyk-engine/dist/client";
+import { FollowBehavior } from "../Behaviors/followBehavior";
 
 export class MoveAction extends ActionState {
   private destination: Room;
@@ -26,6 +27,7 @@ export class MoveAction extends ActionState {
       .then(() => {
         console.log("Moved to " + this.destination);
         this.moveCompleted = true;
+        FollowBehavior.finishedMoveToRoom();
       });
   }
 
