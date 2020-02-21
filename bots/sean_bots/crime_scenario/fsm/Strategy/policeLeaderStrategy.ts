@@ -45,7 +45,7 @@ export class PoliceLeader extends Strategy {
     return false;
   }
 
-  hasCriminalQuestTarget(): boolean {
+  private updateNextTarget() {
     if (!this._nextTarget) {
       for (const agent of PoliceKnowledgeBase.instance.criminals) {
         if (
@@ -53,11 +53,9 @@ export class PoliceLeader extends Strategy {
           !agent.agentStatus.has("dead")
         ) {
           this._nextTarget = agent;
-          return true;
         }
       }
     }
-    return false;
   }
 
   onGiveQuestSuccess() {
@@ -70,34 +68,37 @@ export class PoliceLeader extends Strategy {
   public async act() {
     PoliceLeader._activeInstance = this;
     PoliceKnowledgeBase.instance.detectCrime();
+    this.updateNextTarget();
     this.currentBehavior = await this.currentBehavior.tick();
   }
 
-  public giveQuestBehavior(): BehaviorState {
-    for (const agent of Helper.getOthersInRoom()) {
-      if (
-        agent.faction === ClientAPI.playerAgent.faction &&
-        !PoliceLeader.hasActiveGivenQuest(agent)
-      ) {
-        const command = Info.ACTIONS.ARRESTED.question({
-          agent1: agent,
-          agent2: this._nextTarget,
-          time: undefined,
-          loc: undefined
-        });
-        const relatedInfo = ClientAPI.playerAgent.getInfoByAgent(
-          this._nextTarget
-        );
-        return new GiveQuestBehavior(
-          agent,
-          command,
-          false,
-          relatedInfo,
-          PoliceLeader.giveQuestTransition
-        );
+  public getNextBehavior(): BehaviorState {
+    if (this._nextTarget) {
+      for (const agent of Helper.getOthersInRoom()) {
+        if (
+          agent.faction === ClientAPI.playerAgent.faction &&
+          !PoliceLeader.hasActiveGivenQuest(agent)
+        ) {
+          const command = Info.ACTIONS.ARRESTED.question({
+            agent1: agent,
+            agent2: this._nextTarget,
+            time: undefined,
+            loc: undefined
+          });
+          const relatedInfo = ClientAPI.playerAgent.getInfoByAgent(
+            this._nextTarget
+          );
+          return new GiveQuestBehavior(
+            agent,
+            command,
+            false,
+            relatedInfo,
+            PoliceLeader.giveQuestTransition
+          );
+        }
       }
     }
-    // idle if we found no eligible agents to perform arrest
+    // idle if we have no target or agents to perform arrests
     return IdleAndConverseBehavior.activeInstance
       ? IdleAndConverseBehavior.activeInstance
       : new IdleAndConverseBehavior(PoliceLeader.idleConverseTransition);
@@ -106,18 +107,15 @@ export class PoliceLeader extends Strategy {
   public static idleConverseTransition(
     this: IdleAndConverseBehavior
   ): BehaviorState {
-    if (PoliceLeader.activeInstance.hasCriminalQuestTarget()) {
-      return PoliceLeader.activeInstance.giveQuestBehavior();
-    }
-    return this;
+    return PoliceLeader.activeInstance.getNextBehavior();
   }
 
   public static giveQuestTransition(this: GiveQuestBehavior): BehaviorState {
     if (this.currentActionState instanceof SuccessAction) {
       PoliceLeader.activeInstance.onGiveQuestSuccess();
-      return new IdleAndConverseBehavior(PoliceLeader.idleConverseTransition);
+      return PoliceLeader.activeInstance.getNextBehavior();
     } else if (this.currentActionState instanceof FailureAction) {
-      return PoliceLeader.activeInstance.giveQuestBehavior();
+      return PoliceLeader.activeInstance.getNextBehavior();
     }
     return this;
   }

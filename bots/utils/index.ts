@@ -12,3 +12,6 @@ export { TurnInBehavior } from "./BehaviorStates/turnInBState";
 export { GiveQuestState } from "./ActionStates/giveQuestAState";
 export { GiveQuestBehavior } from "./BehaviorStates/giveQuestBState";
 export { ListenToOther } from "./ActionStates/listenAState";
+export { IdleBehavior } from "./BehaviorStates/idleBState";
+export { SetTradeState } from "./ActionStates/setTradeStatusAState";
+export { TradeBehavior } from "./BehaviorStates/tradeBState";

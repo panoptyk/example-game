@@ -89,9 +89,7 @@ export class GiveQuestBehavior extends BehaviorState {
           GiveQuestBehavior._activeInstance._isQuestion
         );
       }
-    }
-    else if (
-      (!this.completed && this.doneActing) ||
+    } else if (
       this.deltaTime > Helper.WAIT_FOR_OTHER ||
       !ClientAPI.playerAgent.room.hasAgent(this.targetAgent)
     ) {
@@ -115,7 +113,7 @@ export class GiveQuestBehavior extends BehaviorState {
           GiveQuestBehavior._activeInstance._isQuestion
         );
       }
-    } else if (this.doneActing) {
+    } else if (!ClientAPI.playerAgent.conversation) {
       return FailureAction.instance;
     }
     return this;

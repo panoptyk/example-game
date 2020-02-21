@@ -18,11 +18,11 @@ const address = process.argv[4] ? process.argv[4] : "http://localhost:8080";
 
 const MAX_RETRY = 10;
 const RETRY_INTERVAL = 100; // ms before attempLogin() is called again to retry logging in
-const ACT_INTERVAL = 2000; // ms before act() is called again(possibly)
+const ACT_INTERVAL = 100; // ms before act() is called again(possibly)
 
 function init() {
   console.log("Logging in as: " + username + " to server: " + address);
-  logger.silence();
+  // logger.silence();
   address ? ClientAPI.init(address) : ClientAPI.init();
   attemptLogin();
 }
@@ -69,7 +69,7 @@ function actWrapper() {
 let policeLeader: PoliceLeader;
 
 async function act() {
-  policeLeader.act();
+  await policeLeader.act();
 }
 
 // =======Start Bot========== //

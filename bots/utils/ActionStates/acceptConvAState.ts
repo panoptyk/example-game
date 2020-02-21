@@ -4,7 +4,10 @@ import { SuccessAction } from "../../lib/ActionStates/successAState";
 import { FailureAction } from "../../lib/ActionStates/failureAState";
 
 export class AcceptConersationState extends ActionState {
-    private targetAgent: Agent;
+    private _targetAgent: Agent;
+    public get targetAgent(): Agent {
+        return this._targetAgent;
+    }
     private _completed = false;
     public get completed() {
         return this._completed;
@@ -16,7 +19,7 @@ export class AcceptConersationState extends ActionState {
 
     constructor(targetAgent: Agent, nextState: () => ActionState = undefined) {
         super(nextState);
-        this.targetAgent = targetAgent;
+        this._targetAgent = targetAgent;
     }
 
     public async act() {

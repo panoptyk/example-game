@@ -21,8 +21,19 @@ export class IdleAndConverseBehavior extends BehaviorState {
     return IdleAndConverseBehavior._activeInstance;
   }
 
-  constructor(nextState?: () => BehaviorState) {
+  public wantsToConverseWith(targetAgent: Agent) {
+    return true;
+  }
+
+  constructor(
+    nextState?: () => BehaviorState,
+    converseRequirement?: (agent: Agent) => boolean
+  ) {
     super(nextState);
+    if (converseRequirement) {
+      this.wantsToConverseWith = converseRequirement;
+    }
+
     if (ClientAPI.playerAgent.conversation) {
       this.currentActionState = new ListenToOther(
         Helper.WAIT_FOR_OTHER,
@@ -41,22 +52,24 @@ export class IdleAndConverseBehavior extends BehaviorState {
   }
 
   static idleTransition(this: IdleState): ActionState {
-    if (ClientAPI.playerAgent.conversationRequesters[0]) {
-      return new AcceptConersationState(
-        ClientAPI.playerAgent.conversationRequesters[0],
-        IdleAndConverseBehavior.acceptConvTransition
-      );
+    for (const agent of ClientAPI.playerAgent.conversationRequesters) {
+      if (IdleAndConverseBehavior.activeInstance.wantsToConverseWith(agent)) {
+        return new AcceptConersationState(
+          agent,
+          IdleAndConverseBehavior.acceptConvTransition
+        );
+      }
     }
     return this;
   }
 
   static acceptConvTransition(this: AcceptConersationState) {
-    if (this.completed) {
+    if (ClientAPI.playerAgent.conversation) {
       return new ListenToOther(
         Helper.WAIT_FOR_OTHER,
         IdleAndConverseBehavior.listenTransition
       );
-    } else if (this.doneActing) {
+    } else if (!this.completed && this.doneActing) {
       return new IdleState(IdleAndConverseBehavior.idleTransition);
     }
     return this;
