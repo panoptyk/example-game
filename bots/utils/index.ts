@@ -7,3 +7,8 @@ export { AcceptConersationState } from "./ActionStates/acceptConvAState";
 export { TellInfoState } from "./ActionStates/tellInfoAState";
 export { IdleState } from "./ActionStates/idleAState";
 export { CompleteQuestState } from "./ActionStates/completeQuestAState";
+export { TellInfo } from "./BehaviorStates/tellInfoBState";
+export { TurnInBehavior } from "./BehaviorStates/turnInBState";
+export { GiveQuestState } from "./ActionStates/giveQuestAState";
+export { GiveQuestBehavior } from "./BehaviorStates/giveQuestBState";
+export { ListenToOther } from "./ActionStates/listenAState";

@@ -3,7 +3,7 @@ import { Agent, Room, Info, Trade, Item, Conversation, Quest, Faction, ClientAPI
 /**
  * Variable that I use in my bots to determine time to wait for input from other agents.
  */
-export const WAIT_FOR_OTHER = 5000;
+export const WAIT_FOR_OTHER = 1000;
 
 export function UCS(start: Room, goal: Room) {
 }

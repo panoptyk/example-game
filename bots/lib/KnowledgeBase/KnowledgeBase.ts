@@ -3,7 +3,7 @@ import { ClientAPI, Info, Room } from "panoptyk-engine/dist/client";
 // TODO: needs a new name
 class KnowledgeBase {
   // Singleton Pattern
-  private static _instance: KnowledgeBase;
+  protected static _instance: KnowledgeBase;
 
   public static get instance(): KnowledgeBase {
     if (!KnowledgeBase._instance) {

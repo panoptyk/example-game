@@ -1,4 +1,4 @@
-import { Room, ClientAPI } from "panoptyk-engine/dist/client";
+import { Room, ClientAPI } from "panoptyk-engine/dist/";
 
 class RoomMap {
   // Singleton Patten
