@@ -161,18 +161,18 @@ export default class InfoTab extends Vue {
     this.updateInfo();
   }
   onAgentChange() {
-    this.filterRoom = 0;
-    this.filterItem = 0;
+    this.filterRoom = undefined;
+    this.filterItem = undefined;
     this.updateInfo();
   }
   onItemChange() {
-    this.filterAgent = 0;
-    this.filterRoom = 0;
+    this.filterAgent = undefined;
+    this.filterRoom = undefined;
     this.updateInfo();
   }
   onRoomChange() {
-    this.filterAgent = 0;
-    this.filterItem = 0;
+    this.filterAgent = undefined;
+    this.filterItem = undefined;
     this.updateInfo();
   }
 
