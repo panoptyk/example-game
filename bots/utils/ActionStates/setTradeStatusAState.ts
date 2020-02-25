@@ -21,14 +21,23 @@ export class SetTradeState extends ActionState {
 
   public async act() {
     if (ClientAPI.playerAgent.trade) {
-      await ClientAPI.setTradeReadyStatus(this._status)
-        .catch((res: ValidationResult) => {
-          console.log(res.message);
-        })
-        .then(() => {
-          this._completed = true;
-          this._doneActing = true;
-        });
+      if (
+        ClientAPI.playerAgent.trade.getAgentReadyStatus(
+          ClientAPI.playerAgent
+        ) === this._status
+      ) {
+        this._completed = true;
+        this._doneActing = true;
+      } else {
+        await ClientAPI.setTradeReadyStatus(this._status)
+          .catch((res: ValidationResult) => {
+            console.log(res.message);
+          })
+          .then(() => {
+            this._completed = true;
+            this._doneActing = true;
+          });
+      }
     } else {
       this._doneActing = true;
     }

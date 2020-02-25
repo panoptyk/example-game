@@ -35,7 +35,12 @@ export class PolicePatrol extends BehaviorState {
   }
 
   static idleTransition(this: IdleState) {
-    if (ClientAPI.playerAgent.conversationRequesters[0]) {
+    if (ClientAPI.playerAgent.conversation) {
+      return new ListenToOther(
+        Helper.WAIT_FOR_OTHER,
+        PolicePatrol.listenTransition
+      );
+    } else if (ClientAPI.playerAgent.conversationRequesters[0]) {
       return new AcceptConersationState(
         ClientAPI.playerAgent.conversationRequesters[0],
         PolicePatrol.acceptConversationTransition

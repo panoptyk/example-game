@@ -52,6 +52,12 @@ export class IdleAndConverseBehavior extends BehaviorState {
   }
 
   static idleTransition(this: IdleState): ActionState {
+    if (ClientAPI.playerAgent.conversation) {
+      return new ListenToOther(
+        Helper.WAIT_FOR_OTHER,
+        IdleAndConverseBehavior.listenTransition
+      );
+    }
     for (const agent of ClientAPI.playerAgent.conversationRequesters) {
       if (IdleAndConverseBehavior.activeInstance.wantsToConverseWith(agent)) {
         return new AcceptConersationState(
