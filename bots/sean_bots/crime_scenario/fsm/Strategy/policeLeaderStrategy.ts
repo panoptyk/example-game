@@ -112,6 +112,9 @@ export class PoliceLeader extends Strategy {
 
   public static giveQuestTransition(this: GiveQuestBehavior): BehaviorState {
     if (this.currentActionState instanceof SuccessAction) {
+      console.log(
+        ClientAPI.playerAgent + " assigned a quest to " + this._targetAgent
+      );
       PoliceLeader.activeInstance.onGiveQuestSuccess();
       return PoliceLeader.activeInstance.getNextBehavior();
     } else if (this.currentActionState instanceof FailureAction) {

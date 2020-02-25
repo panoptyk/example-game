@@ -85,6 +85,7 @@ export class PoliceAgent extends Strategy {
 
   public static turnInTransition(this: TurnInBehavior) {
     if (this.currentActionState instanceof SuccessAction) {
+      console.log(ClientAPI.playerAgent + " completed quest " + this.quest);
       return new PolicePatrol(
         Helper.WAIT_FOR_OTHER,
         PoliceAgent.patrolTransition
@@ -104,6 +105,7 @@ export class PoliceAgent extends Strategy {
 
   public static arrestTransition(this: ArrestBehavior): BehaviorState {
     if (this.currentActionState instanceof SuccessAction) {
+      console.log(ClientAPI.playerAgent + " arrested " + this._targetAgent);
       return new TurnInBehavior(this._warrant, PoliceAgent.turnInTransition);
     } else if (this.currentActionState instanceof IdleState) {
       return new PolicePatrol(

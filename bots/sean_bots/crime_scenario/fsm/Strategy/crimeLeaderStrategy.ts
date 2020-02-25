@@ -167,6 +167,9 @@ export class CrimeLeader extends Strategy {
 
   public static giveQuestTransition(this: GiveQuestBehavior) {
     if (this.currentActionState instanceof SuccessAction) {
+      console.log(
+        ClientAPI.playerAgent + " assigned a quest to " + this._targetAgent
+      );
       CrimeLeader.instance._assignedAgents.add(this._targetAgent);
       return new IdleAndConverseBehavior(
         CrimeLeader.idleConverseTransition,
