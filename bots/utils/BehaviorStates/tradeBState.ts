@@ -69,11 +69,11 @@ export class TradeBehavior extends BehaviorState {
     const trade = ClientAPI.playerAgent.trade;
     if (trade) {
       if (!trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
-        return new SetTradeState(true, this.getNextTradeAction);
+        return new SetTradeState(true, TradeBehavior.activeInstance.getNextTradeAction);
       }
       return this;
     }
-    return SuccessBehavior.instance;
+    return SuccessAction.instance;
   }
 
   static requestConversationTransition(
