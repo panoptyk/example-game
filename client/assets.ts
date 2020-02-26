@@ -62,11 +62,6 @@ export namespace Images {
 
         static getPNG(): string { return require('assets/tilemaps/tiles/LightShadow_pipo.png'); }
     }
-    export class TilemapsTilesTilesDungeonV11 {
-        static getName(): string { return 'tiles_dungeon_v1.1'; }
-
-        static getPNG(): string { return require('assets/tilemaps/tiles/tiles_dungeon_v1.1.png'); }
-    }
 }
 
 export namespace Spritesheets {
@@ -164,75 +159,75 @@ export namespace JSON {
 }
 
 export namespace TilemapJSON {
-    export class TilemapsMapsDowntown {
-        static getName(): string { return 'Downtown'; }
+    export class TilemapsMapsBackAlley {
+        static getName(): string { return 'BackAlley'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/Downtown.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/BackAlley.json'); }
     }
-    export class TilemapsMapsHouse1 {
-        static getName(): string { return 'House1'; }
+    export class TilemapsMapsCSTavern {
+        static getName(): string { return 'CSTavern'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/House1.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/CSTavern.json'); }
     }
-    export class TilemapsMapsInn {
-        static getName(): string { return 'Inn'; }
+    export class TilemapsMapsCSTavernBack {
+        static getName(): string { return 'CSTavernBack'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/Inn.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/CSTavernBack.json'); }
     }
-    export class TilemapsMapsRoom1 {
-        static getName(): string { return 'room1'; }
+    export class TilemapsMapsCSTavernUpper {
+        static getName(): string { return 'CSTavernUpper'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room1.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/CSTavernUpper.json'); }
     }
-    export class TilemapsMapsRoom10 {
-        static getName(): string { return 'room10'; }
+    export class TilemapsMapsEastBentham {
+        static getName(): string { return 'EastBentham'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room10.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/EastBentham.json'); }
     }
-    export class TilemapsMapsRoom2 {
-        static getName(): string { return 'room2'; }
+    export class TilemapsMapsGuild1 {
+        static getName(): string { return 'Guild1'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room2.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/Guild1.json'); }
     }
-    export class TilemapsMapsRoom3 {
-        static getName(): string { return 'room3'; }
+    export class TilemapsMapsGuild2 {
+        static getName(): string { return 'Guild2'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room3.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/Guild2.json'); }
     }
-    export class TilemapsMapsRoom4 {
-        static getName(): string { return 'room4'; }
+    export class TilemapsMapsNorthBentham {
+        static getName(): string { return 'NorthBentham'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room4.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/NorthBentham.json'); }
     }
-    export class TilemapsMapsRoom5 {
-        static getName(): string { return 'room5'; }
+    export class TilemapsMapsNorthBenthamGate {
+        static getName(): string { return 'NorthBenthamGate'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room5.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/NorthBenthamGate.json'); }
     }
-    export class TilemapsMapsRoom6 {
-        static getName(): string { return 'room6'; }
+    export class TilemapsMapsPlayerHouseA {
+        static getName(): string { return 'PlayerHouseA'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room6.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/PlayerHouseA.json'); }
     }
-    export class TilemapsMapsRoom7 {
-        static getName(): string { return 'room7'; }
+    export class TilemapsMapsRedbrickCafe {
+        static getName(): string { return 'RedbrickCafe'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room7.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/RedbrickCafe.json'); }
     }
-    export class TilemapsMapsRoom8 {
-        static getName(): string { return 'room8'; }
+    export class TilemapsMapsSouthBentham {
+        static getName(): string { return 'SouthBentham'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room8.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/SouthBentham.json'); }
     }
-    export class TilemapsMapsRoom9 {
-        static getName(): string { return 'room9'; }
+    export class TilemapsMapsStrawRoofInn {
+        static getName(): string { return 'StrawRoofInn'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/room9.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/StrawRoofInn.json'); }
     }
-    export class TilemapsMapsTemplateRoom {
-        static getName(): string { return 'templateRoom'; }
+    export class TilemapsMapsWestBentham {
+        static getName(): string { return 'WestBentham'; }
 
-        static getJSON(): string { return require('assets/tilemaps/maps/templateRoom.json'); }
+        static getJSON(): string { return require('assets/tilemaps/maps/WestBentham.json'); }
     }
 }
 

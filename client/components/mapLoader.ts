@@ -13,24 +13,32 @@ import { DoorSprite } from "../prefabs/door";
 
 // map from Room.prototype.roomName to actual tilemap (if different)
 const MapKey = {
-  "Downtown": Assets.TilemapJSON.TilemapsMapsDowntown.getName(),
-  "House1": Assets.TilemapJSON.TilemapsMapsHouse1.getName(),
-  "Inn": Assets.TilemapJSON.TilemapsMapsInn.getName(),
-  
-
-  "room1": Assets.TilemapJSON.TilemapsMapsRoom1.getName(),
-  "room2": Assets.TilemapJSON.TilemapsMapsRoom2.getName(),
-  "room3": Assets.TilemapJSON.TilemapsMapsRoom3.getName(),
-  "room4": Assets.TilemapJSON.TilemapsMapsRoom4.getName(),
-  "room5": Assets.TilemapJSON.TilemapsMapsRoom5.getName(),
-  "room6": Assets.TilemapJSON.TilemapsMapsRoom6.getName(),
-  "room7": Assets.TilemapJSON.TilemapsMapsRoom7.getName(),
-  "room8": Assets.TilemapJSON.TilemapsMapsRoom8.getName(),
-  "room9": Assets.TilemapJSON.TilemapsMapsRoom9.getName(),
-  "room10": Assets.TilemapJSON.TilemapsMapsRoom10.getName()
+  "East Bentham": Assets.TilemapJSON.TilemapsMapsEastBentham.getName(),
+  "West Bentham": Assets.TilemapJSON.TilemapsMapsWestBentham.getName(),
+  "South Bentham": Assets.TilemapJSON.TilemapsMapsSouthBentham.getName(),
+  "North Bentham": Assets.TilemapJSON.TilemapsMapsNorthBentham.getName(),
+  "North Bentham Gate": Assets.TilemapJSON.TilemapsMapsNorthBenthamGate.getName(),
+  "Redbrick Cafe": Assets.TilemapJSON.TilemapsMapsRedbrickCafe.getName(),
+  "Straw Roof Inn": Assets.TilemapJSON.TilemapsMapsStrawRoofInn.getName(),
+  "Crooked Sword Tavern (main)": Assets.TilemapJSON.TilemapsMapsCSTavern.getName(),
+  "Crooked Sword Tavern (back room)": Assets.TilemapJSON.TilemapsMapsCSTavernBack.getName(),
+  "Crooked Sword Tavern (upper)": Assets.TilemapJSON.TilemapsMapsCSTavernUpper.getName(),
+  "Crooked Sword Back Alley": Assets.TilemapJSON.TilemapsMapsBackAlley.getName(),
+  "Guild#1": Assets.TilemapJSON.TilemapsMapsGuild1.getName(),
+  "Guild#2": Assets.TilemapJSON.TilemapsMapsGuild2.getName(),
+  "***'s House": Assets.TilemapJSON.TilemapsMapsPlayerHouseA.getName()
 };
 // map from Room.prototype.roomName to door label (if different)
 const DoorKey = {
+  "Redbrick Cafe": "Cafe#1",
+  "Straw Roof Inn": "Inn#1",
+  "Crooked Sword Tavern (main)": "Tavern#1",
+  "Crooked Sword Tavern (back room)": "Tavern#1:back",
+  "Crooked Sword Tavern (upper)": "Tavern#1:upper",
+  "Crooked Sword Back Alley": "BackAlley#1",
+  "Guild#1": "Guild#1",
+  "Guild#2": "Guild#2",
+  "***'s House": "PlayerHouse#1"
 };
 
 const ToTileMapName = function(room: Room) {
@@ -128,7 +136,7 @@ export class MapLoader {
 
     // create possible standing locations
     this.GS.standingLocs = new LocationIndex(
-      this.map.objects["Areas"],
+      this.map.objects["Standing_Area"],
       this.map.tileWidth,
       this.map.tileHeight
     );
