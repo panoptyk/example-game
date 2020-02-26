@@ -20,16 +20,14 @@ class Sentence {
   }
   public static fromInfo(info: Info): Sentence.Block[] {
     let blocks: Sentence.Block[] = undefined;
-    if (info) {
-      if (info.isQuery()) {
-        blocks = Sentence.createQuestion(info);
-      } else if (info.isCommand()) {
-        blocks = Sentence.createCommand(info);
-      } else if (info.isMasked()) {
-        blocks = Sentence.createMaskedFact(info);
-      } else {
-        blocks = Sentence.createFact(info);
-      }
+    if (info.isQuery()) {
+      blocks = Sentence.createQuestion(info);
+    } else if (info.isCommand()) {
+      blocks = Sentence.createCommand(info);
+    } else if (info.isMasked()) {
+      blocks = Sentence.createMaskedFact(info);
+    } else {
+      blocks = Sentence.createFact(info);
     }
     return blocks;
   }
