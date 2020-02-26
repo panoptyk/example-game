@@ -37,7 +37,7 @@ export class TradeBehavior extends BehaviorState {
     }
 
     if (ClientAPI.playerAgent.conversation) {
-      if (Helper.getOthersInConversation[0] === this._targetAgent) {
+      if (ClientAPI.playerAgent.conversation.contains_agent(this._targetAgent)) {
         if (ClientAPI.playerAgent.trade) {
           this.currentActionState = new IdleState(this.getNextTradeAction);
         } else {

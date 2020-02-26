@@ -32,7 +32,7 @@ export class TellInfo extends BehaviorState {
     this._targetAgent = targetAgent;
     this._toTell = toTell;
     if (ClientAPI.playerAgent.conversation) {
-      if (Helper.getOthersInConversation[0] === this._targetAgent) {
+      if (ClientAPI.playerAgent.conversation.contains_agent(this._targetAgent)) {
         this.currentActionState = new TellInfoState(
           this._toTell.pop(),
           [],

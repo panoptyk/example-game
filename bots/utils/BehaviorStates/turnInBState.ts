@@ -37,7 +37,7 @@ export class TurnInBehavior extends BehaviorState {
     if (!this.solution) {
       this.currentActionState = FailureAction.instance;
     } else if (ClientAPI.playerAgent.conversation) {
-      if (Helper.getOthersInConversation[0] === this.quest.giver) {
+      if (ClientAPI.playerAgent.conversation.contains_agent(this.quest.giver)) {
         this.currentActionState = new CompleteQuestState(
           this.quest,
           this.solution

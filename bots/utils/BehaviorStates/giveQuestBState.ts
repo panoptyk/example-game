@@ -40,7 +40,7 @@ export class GiveQuestBehavior extends BehaviorState {
     this._toTell = relatedInfo;
 
     if (ClientAPI.playerAgent.conversation) {
-      if (Helper.getOthersInConversation[0] === this._targetAgent) {
+      if (ClientAPI.playerAgent.conversation.contains_agent(this._targetAgent)) {
         if (this._toTell[0]) {
           this.currentActionState = new TellInfoState(
             this._toTell.pop(),
