@@ -35,8 +35,8 @@ function startApp(): void {
         defaultIconPack: "mdi"
     });
     const ui = UI.instance;
-    let gameWidth = 700;
-    let gameHeight = 500;
+    let gameWidth = 1000;
+    let gameHeight = 650;
 
     if (SCALE_MODE === "USER_SCALE") {
         const screenMetrics: Utils.ScreenMetrics = Utils.ScreenUtils.calculateScreenMetrics(gameWidth, gameHeight, gameWidth, gameHeight);

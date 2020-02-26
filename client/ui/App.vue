@@ -261,16 +261,16 @@ body {
   background-color: black;
 }
 #app {
-  width: 1600px;
-  height: 900px;
+  width: 1900px;
+  height: 950px;
   margin-left: auto;
   margin-right: auto;
-  padding-top: 25px;
+  padding-top: 15px;
 }
 #game-top-row {
   width: inherit;
   height: inherit;
-  max-height: 900px;
+  max-height: 950px;
   display: flex;
   align-items: stretch;
 }

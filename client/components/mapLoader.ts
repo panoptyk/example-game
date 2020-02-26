@@ -143,10 +143,10 @@ export class MapLoader {
 
     // Scale and set position
     const scale = Math.min(
-      (this.world.width * 0.95) / this.map.widthInPixels,
-      (this.world.height * 0.95) / this.map.heightInPixels
+      (this.world.width * 0.98) / this.map.widthInPixels,
+      (this.world.height * 0.98) / this.map.heightInPixels
     );
-    this.groups.gameWorld.scale.set(scale);
+    this.groups.gameWorld.scale.set(Math.fround(scale));
     this.groups.gameWorld.position.set(
       this.world.centerX - this.groups.gameWorld.width / 2,
       this.world.centerY - this.groups.gameWorld.height / 2
