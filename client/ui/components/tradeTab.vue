@@ -2,7 +2,7 @@
   <div id="trade-tab" class="game-tab" v-if="inTrade">
     <div class="content" id="trade-info">
       You are in a trade with
-      <span class="agent">{{ otherAgentName }}</span
+      <span class="agent">{{ otherAgent.agentName }}</span
       >.
       <b-button size="is-small" @click="leaveTrade">Leave</b-button>
     </div>
@@ -156,7 +156,7 @@
         role="button"
         aria-controls="other-offer"
       >
-        <p class="card-header-title">{{ otherAgentName }}'s offer ({{ ready(otherReady) }})</p>
+        <p class="card-header-title">{{ otherAgent.agentName }}'s offer ({{ ready(otherReady) }})</p>
         <a class="card-header-icon">
           <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
         </a>
@@ -194,13 +194,6 @@ export default class TradeTab extends Vue {
        ? ClientAPI.playerAgent.trade !== undefined
        : false;
   }
-  get otherAgentName() {
-    // return "Bob";
-    if (ClientAPI.playerAgent === undefined) {
-      return " ";
-    }
-    return this.otherAgent.agentName;
-  }
   leaveTrade() {
     ClientAPI.cancelTrade();
   }
@@ -214,7 +207,7 @@ export default class TradeTab extends Vue {
   otherItemOffers: Item[];
   myAnswerOffers;
   otherAnswerOffers;
-  @Watch("trigger")
+  @Watch("inTrade")
   updateTrade() {
     if (!this.inTrade) {
       return;
