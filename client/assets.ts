@@ -75,13 +75,23 @@ export namespace Spritesheets {
         static getMargin(): number { return 0; }
         static getSpacing(): number { return 0; }
     }
-    export class SpritesheetsPlayerSpriteSheet484844 {
-        static getName(): string { return 'player_sprite_sheet.[48,48,44,0,0]'; }
+    export class SpritesheetsMale21323212 {
+        static getName(): string { return 'Male 02-1.[32,32,12,0,0]'; }
 
-        static getPNG(): string { return require('assets/spritesheets/player_sprite_sheet.[48,48,44,0,0].png'); }
-        static getFrameWidth(): number { return 48; }
-        static getFrameHeight(): number { return 48; }
-        static getFrameMax(): number { return 44; }
+        static getPNG(): string { return require('assets/spritesheets/Male 02-1.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsMale22323212 {
+        static getName(): string { return 'Male 02-2.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Male 02-2.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
         static getMargin(): number { return 0; }
         static getSpacing(): number { return 0; }
     }
