@@ -71,19 +71,19 @@ class Sentence {
         const val = k.replace(/\d/, "");
         switch (val) {
           case "agent":
-            terms[k] = {agentName: fill};
+            terms[k] = { agentName: fill };
             break;
           case "loc":
-            terms[k] = {roomName: fill};
+            terms[k] = { roomName: fill };
             break;
           case "item":
-            terms[k] = {itemName: fill};
+            terms[k] = { itemName: fill };
             break;
           case "info":
-            terms[k] = {id: fill};
+            terms[k] = { id: fill };
             break;
           case "faction":
-            terms[k] = {factionName: fill};
+            terms[k] = { factionName: fill };
             break;
           default:
             break;
@@ -95,7 +95,6 @@ class Sentence {
     return terms;
   }
 
-
   /**
    * This is a really bad way to make these sentences...
    */
@@ -103,12 +102,15 @@ class Sentence {
     const arr = [];
     let agentName = terms.agent
       ? terms.agent.agentName
-      : terms.agent1.agentName;
+      : terms.agent1
+      ? terms.agent1.agentName
+      : "";
     if (agentName === ClientAPI.playerAgent.agentName) agentName = "You";
-    if (terms.agent2 &&
+    if (
+      terms.agent2 &&
       terms.agent2.agentName === ClientAPI.playerAgent.agentName
     ) {
-      terms.agent2 = {agentName: "You"};
+      terms.agent2 = { agentName: "You" };
     }
     arr.push({
       type: Sentence.BlockType.AGENT,
@@ -385,6 +387,38 @@ class Sentence {
         arr.push({
           type: Sentence.BlockType.NONE,
           text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
+      case Info.ACTIONS.POSSESS.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "claimed to have possession of "
+        });
+        arr.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.item + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
+      case Info.ACTIONS.LOCATED_IN.name:
+        arr.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.item + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: " present at "
         });
         arr.push({
           type: Sentence.BlockType.ROOM,

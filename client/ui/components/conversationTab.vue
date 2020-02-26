@@ -123,6 +123,43 @@
         </div>
       </div>
     </b-collapse>
+    <b-collapse class="card" aria-id="tell-item-ownership">
+      <div
+        slot="trigger"
+        slot-scope="props"
+        class="card-header"
+        role="button"
+        aria-controls="tell-item-ownership"
+      >
+        <p class="card-header-title">Tell item ownership</p>
+        <a class="card-header-icon">
+          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+        </a>
+      </div>
+      <div class="card-content">
+        <div class="content">
+          <b-field>
+            <b-select
+              placeholder="-- item --"
+              size="is-small"
+              v-model="tellItem"
+            >
+              <option disabled value>-- item --</option>
+              <option
+                v-for="item in inventory"
+                v-bind:key="item.id"
+                v-bind:value="item"
+                >{{ item.itemName }}</option
+              >
+            </b-select>
+          </b-field>
+          <item-entry v-bind:key="tellItem.id" v-bind:item="tellItem"></item-entry>
+        </div>
+      </div>
+      <footer class="card-footer">
+        <a class="card-footer-item" @click="onTellItem">Tell</a>
+      </footer>
+    </b-collapse>
     <b-collapse class="card" aria-id="complete-quest">
       <div
         slot="trigger"
@@ -201,11 +238,13 @@ import {
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import infoEntry from "./infoEntry.vue";
 import questEntry from "./questEntry.vue";
+import ItemEntry from "./itemEntry.vue";
 
 @Component({
   components: {
     "info-entry": infoEntry,
-    "quest-entry": questEntry
+    "quest-entry": questEntry,
+    "item-entry": ItemEntry
   }
 })
 export default class ConverstaionTab extends Vue {
@@ -323,6 +362,7 @@ export default class ConverstaionTab extends Vue {
   // Update asked questions in conversation
   questions = [];
   assignedQuests: Quest[] = [];
+  inventory: Item[] = [];
   @Watch("trigger")
   updateTab() {
     if (!ClientAPI.playerAgent || !ClientAPI.playerAgent.conversation) {
@@ -335,6 +375,7 @@ export default class ConverstaionTab extends Vue {
         this.assignedQuests.push(quest);
       }
     }
+    this.inventory = ClientAPI.playerAgent.inventory;
     this.questions = ClientAPI.playerAgent.conversation.askedQuestions;
   }
 
@@ -355,6 +396,13 @@ export default class ConverstaionTab extends Vue {
   }
   onQuestComplete() {
     ClientAPI.completeQuest(this.completeQuest, this.questInfo);
+  }
+
+  tellItem: Item = {} as any;
+  onTellItem() {
+    if (this.tellItem) {
+      ClientAPI.tellItemOwnership([this.tellItem]);
+    }
   }
 }
 </script>
