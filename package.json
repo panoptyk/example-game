@@ -15,7 +15,8 @@
     "update": "npm install panoptyk/panoptyk-engine#master",
     "load-scenario": "./loadScenario.sh",
     "assets:dev": "node ./scripts/generateAssetsClass.js --dev",
-    "assets": "node ./scripts/generateAssetsClass.js"
+    "assets": "node ./scripts/generateAssetsClass.js",
+    "custom": "ts-node --project ./server.tsconfig.json"
   },
   "repository": {
     "type": "git",

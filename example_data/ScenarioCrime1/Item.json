@@ -6,7 +6,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 10,
+      "roomID": 1,
       "inTransaction": false
     },
     "2": {
@@ -42,7 +42,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 7,
+      "roomID": 1,
       "inTransaction": false
     },
     "6": {
@@ -50,8 +50,8 @@
       "_itemName": "Item 6",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 4,
+      "_itemTags": [],
+      "roomID": 1,
       "inTransaction": false
     },
     "7": {
@@ -59,8 +59,8 @@
       "_itemName": "Item 7",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 6,
+      "_itemTags": ["illegal"],
+      "roomID": 1,
       "inTransaction": false
     },
     "8": {
@@ -68,8 +68,8 @@
       "_itemName": "Item 8",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 2,
+      "_itemTags": ["illegal"],
+      "roomID": 1,
       "inTransaction": false
     },
     "9": {
@@ -77,8 +77,8 @@
       "_itemName": "Item 9",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 2,
+      "_itemTags": [],
+      "roomID": 1,
       "inTransaction": false
     },
     "10": {
@@ -86,7 +86,7 @@
       "_itemName": "Item 10",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
+      "_itemTags": ["illegal"],
       "roomID": 1,
       "inTransaction": false
     },
@@ -95,8 +95,8 @@
       "_itemName": "Item 11",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 9,
+      "_itemTags": ["illegal"],
+      "roomID": 2,
       "inTransaction": false
     },
     "12": {
@@ -104,8 +104,8 @@
       "_itemName": "Item 12",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
+      "_itemTags": ["illegal"],
+      "roomID": 2,
       "inTransaction": false
     },
     "13": {
@@ -114,7 +114,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 6,
+      "roomID": 2,
       "inTransaction": false
     },
     "14": {
@@ -122,7 +122,7 @@
       "_itemName": "Item 14",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
+      "_itemTags": [],
       "roomID": 2,
       "inTransaction": false
     },
@@ -131,8 +131,8 @@
       "_itemName": "Item 15",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 6,
+      "_itemTags": [],
+      "roomID": 2,
       "inTransaction": false
     },
     "16": {
@@ -141,7 +141,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 9,
+      "roomID": 2,
       "inTransaction": false
     },
     "17": {
@@ -149,7 +149,7 @@
       "_itemName": "Item 17",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
+      "_itemTags": [],
       "roomID": 2,
       "inTransaction": false
     },
@@ -158,8 +158,8 @@
       "_itemName": "Item 18",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 3,
+      "_itemTags": ["illegal"],
+      "roomID": 2,
       "inTransaction": false
     },
     "19": {
@@ -168,7 +168,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 3,
+      "roomID": 2,
       "inTransaction": false
     },
     "20": {
@@ -176,8 +176,8 @@
       "_itemName": "Item 20",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 6,
+      "_itemTags": ["illegal"],
+      "roomID": 2,
       "inTransaction": false
     },
     "21": {
@@ -186,7 +186,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 9,
+      "roomID": 3,
       "inTransaction": false
     },
     "22": {
@@ -195,7 +195,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 7,
+      "roomID": 3,
       "inTransaction": false
     },
     "23": {
@@ -203,8 +203,8 @@
       "_itemName": "Item 23",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 9,
+      "_itemTags": ["illegal"],
+      "roomID": 3,
       "inTransaction": false
     },
     "24": {
@@ -212,8 +212,8 @@
       "_itemName": "Item 24",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 9,
+      "_itemTags": [],
+      "roomID": 3,
       "inTransaction": false
     },
     "25": {
@@ -222,7 +222,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 10,
+      "roomID": 3,
       "inTransaction": false
     },
     "26": {
@@ -231,7 +231,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 9,
+      "roomID": 3,
       "inTransaction": false
     },
     "27": {
@@ -239,8 +239,8 @@
       "_itemName": "Item 27",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 10,
+      "_itemTags": [],
+      "roomID": 3,
       "inTransaction": false
     },
     "28": {
@@ -257,8 +257,8 @@
       "_itemName": "Item 29",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 2,
+      "_itemTags": [],
+      "roomID": 3,
       "inTransaction": false
     },
     "30": {
@@ -267,7 +267,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 9,
+      "roomID": 3,
       "inTransaction": false
     },
     "31": {
@@ -275,8 +275,8 @@
       "_itemName": "Item 31",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 5,
+      "_itemTags": [],
+      "roomID": 4,
       "inTransaction": false
     },
     "32": {
@@ -285,7 +285,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 5,
+      "roomID": 4,
       "inTransaction": false
     },
     "33": {
@@ -294,7 +294,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 7,
+      "roomID": 4,
       "inTransaction": false
     },
     "34": {
@@ -303,7 +303,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 3,
+      "roomID": 4,
       "inTransaction": false
     },
     "35": {
@@ -311,8 +311,8 @@
       "_itemName": "Item 35",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 10,
+      "_itemTags": [],
+      "roomID": 4,
       "inTransaction": false
     },
     "36": {
@@ -321,7 +321,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 10,
+      "roomID": 4,
       "inTransaction": false
     },
     "37": {
@@ -330,7 +330,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 7,
+      "roomID": 4,
       "inTransaction": false
     },
     "38": {
@@ -339,7 +339,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 3,
+      "roomID": 4,
       "inTransaction": false
     },
     "39": {
@@ -348,7 +348,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 7,
+      "roomID": 4,
       "inTransaction": false
     },
     "40": {
@@ -357,7 +357,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 7,
+      "roomID": 4,
       "inTransaction": false
     },
     "41": {
@@ -365,8 +365,8 @@
       "_itemName": "Item 41",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 9,
+      "_itemTags": [],
+      "roomID": 5,
       "inTransaction": false
     },
     "42": {
@@ -374,8 +374,8 @@
       "_itemName": "Item 42",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 3,
+      "_itemTags": ["illegal"],
+      "roomID": 5,
       "inTransaction": false
     },
     "43": {
@@ -384,7 +384,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 6,
+      "roomID": 5,
       "inTransaction": false
     },
     "44": {
@@ -393,7 +393,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 1,
+      "roomID": 5,
       "inTransaction": false
     },
     "45": {
@@ -401,8 +401,8 @@
       "_itemName": "Item 45",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 10,
+      "_itemTags": ["illegal"],
+      "roomID": 5,
       "inTransaction": false
     },
     "46": {
@@ -411,7 +411,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 8,
+      "roomID": 5,
       "inTransaction": false
     },
     "47": {
@@ -419,8 +419,8 @@
       "_itemName": "Item 47",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 1,
+      "_itemTags": ["illegal"],
+      "roomID": 5,
       "inTransaction": false
     },
     "48": {
@@ -429,7 +429,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 10,
+      "roomID": 5,
       "inTransaction": false
     },
     "49": {
@@ -438,7 +438,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 3,
+      "roomID": 5,
       "inTransaction": false
     },
     "50": {
@@ -446,8 +446,8 @@
       "_itemName": "Item 50",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 10,
+      "_itemTags": [],
+      "roomID": 5,
       "inTransaction": false
     },
     "51": {
@@ -456,7 +456,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 2,
+      "roomID": 6,
       "inTransaction": false
     },
     "52": {
@@ -465,7 +465,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 2,
+      "roomID": 6,
       "inTransaction": false
     },
     "53": {
@@ -473,8 +473,8 @@
       "_itemName": "Item 53",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
+      "_itemTags": ["illegal"],
+      "roomID": 6,
       "inTransaction": false
     },
     "54": {
@@ -483,7 +483,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 8,
+      "roomID": 6,
       "inTransaction": false
     },
     "55": {
@@ -492,7 +492,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 3,
+      "roomID": 6,
       "inTransaction": false
     },
     "56": {
@@ -509,8 +509,8 @@
       "_itemName": "Item 57",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 3,
+      "_itemTags": ["illegal"],
+      "roomID": 6,
       "inTransaction": false
     },
     "58": {
@@ -519,7 +519,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 9,
+      "roomID": 6,
       "inTransaction": false
     },
     "59": {
@@ -528,7 +528,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 7,
+      "roomID": 6,
       "inTransaction": false
     },
     "60": {
@@ -536,8 +536,8 @@
       "_itemName": "Item 60",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 9,
+      "_itemTags": [],
+      "roomID": 6,
       "inTransaction": false
     },
     "61": {
@@ -546,7 +546,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 10,
+      "roomID": 7,
       "inTransaction": false
     },
     "62": {
@@ -555,7 +555,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 5,
+      "roomID": 7,
       "inTransaction": false
     },
     "63": {
@@ -563,8 +563,8 @@
       "_itemName": "Item 63",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 8,
+      "_itemTags": ["illegal"],
+      "roomID": 7,
       "inTransaction": false
     },
     "64": {
@@ -573,7 +573,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 6,
+      "roomID": 7,
       "inTransaction": false
     },
     "65": {
@@ -582,7 +582,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 8,
+      "roomID": 7,
       "inTransaction": false
     },
     "66": {
@@ -591,7 +591,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 2,
+      "roomID": 7,
       "inTransaction": false
     },
     "67": {
@@ -599,8 +599,8 @@
       "_itemName": "Item 67",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 9,
+      "_itemTags": [],
+      "roomID": 7,
       "inTransaction": false
     },
     "68": {
@@ -609,7 +609,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 5,
+      "roomID": 7,
       "inTransaction": false
     },
     "69": {
@@ -618,7 +618,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 6,
+      "roomID": 7,
       "inTransaction": false
     },
     "70": {
@@ -627,7 +627,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 1,
+      "roomID": 7,
       "inTransaction": false
     },
     "71": {
@@ -635,8 +635,8 @@
       "_itemName": "Item 71",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 6,
+      "_itemTags": [],
+      "roomID": 8,
       "inTransaction": false
     },
     "72": {
@@ -644,8 +644,8 @@
       "_itemName": "Item 72",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 4,
+      "_itemTags": ["illegal"],
+      "roomID": 8,
       "inTransaction": false
     },
     "73": {
@@ -654,7 +654,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 5,
+      "roomID": 8,
       "inTransaction": false
     },
     "74": {
@@ -663,7 +663,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 10,
+      "roomID": 8,
       "inTransaction": false
     },
     "75": {
@@ -671,8 +671,8 @@
       "_itemName": "Item 75",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 3,
+      "_itemTags": [],
+      "roomID": 8,
       "inTransaction": false
     },
     "76": {
@@ -680,7 +680,7 @@
       "_itemName": "Item 76",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
+      "_itemTags": [],
       "roomID": 8,
       "inTransaction": false
     },
@@ -690,7 +690,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 10,
+      "roomID": 8,
       "inTransaction": false
     },
     "78": {
@@ -699,7 +699,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 4,
+      "roomID": 8,
       "inTransaction": false
     },
     "79": {
@@ -707,8 +707,8 @@
       "_itemName": "Item 79",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 2,
+      "_itemTags": ["illegal"],
+      "roomID": 8,
       "inTransaction": false
     },
     "80": {
@@ -717,7 +717,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 4,
+      "roomID": 8,
       "inTransaction": false
     },
     "81": {
@@ -725,8 +725,8 @@
       "_itemName": "Item 81",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 4,
+      "_itemTags": ["illegal"],
+      "roomID": 9,
       "inTransaction": false
     },
     "82": {
@@ -735,7 +735,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 3,
+      "roomID": 9,
       "inTransaction": false
     },
     "83": {
@@ -744,7 +744,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 5,
+      "roomID": 9,
       "inTransaction": false
     },
     "84": {
@@ -752,8 +752,8 @@
       "_itemName": "Item 84",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 4,
+      "_itemTags": [],
+      "roomID": 9,
       "inTransaction": false
     },
     "85": {
@@ -761,8 +761,8 @@
       "_itemName": "Item 85",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 3,
+      "_itemTags": [],
+      "roomID": 9,
       "inTransaction": false
     },
     "86": {
@@ -770,8 +770,8 @@
       "_itemName": "Item 86",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 8,
+      "_itemTags": ["illegal"],
+      "roomID": 9,
       "inTransaction": false
     },
     "87": {
@@ -779,8 +779,8 @@
       "_itemName": "Item 87",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 4,
+      "_itemTags": [],
+      "roomID": 9,
       "inTransaction": false
     },
     "88": {
@@ -789,7 +789,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 7,
+      "roomID": 9,
       "inTransaction": false
     },
     "89": {
@@ -797,8 +797,8 @@
       "_itemName": "Item 89",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
+      "_itemTags": ["illegal"],
+      "roomID": 9,
       "inTransaction": false
     },
     "90": {
@@ -807,7 +807,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 4,
+      "roomID": 9,
       "inTransaction": false
     },
     "91": {
@@ -816,7 +816,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 5,
+      "roomID": 10,
       "inTransaction": false
     },
     "92": {
@@ -824,8 +824,8 @@
       "_itemName": "Item 92",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 3,
+      "_itemTags": ["illegal"],
+      "roomID": 10,
       "inTransaction": false
     },
     "93": {
@@ -833,8 +833,8 @@
       "_itemName": "Item 93",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 9,
+      "_itemTags": [],
+      "roomID": 10,
       "inTransaction": false
     },
     "94": {
@@ -843,7 +843,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 5,
+      "roomID": 10,
       "inTransaction": false
     },
     "95": {
@@ -852,7 +852,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 7,
+      "roomID": 10,
       "inTransaction": false
     },
     "96": {
@@ -861,7 +861,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 9,
+      "roomID": 10,
       "inTransaction": false
     },
     "97": {
@@ -879,7 +879,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 3,
+      "roomID": 10,
       "inTransaction": false
     },
     "99": {
@@ -887,8 +887,8 @@
       "_itemName": "Item 99",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 4,
+      "_itemTags": [],
+      "roomID": 10,
       "inTransaction": false
     },
     "100": {
@@ -897,7 +897,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 1,
+      "roomID": 10,
       "inTransaction": false
     },
     "101": {
@@ -906,7 +906,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 9,
+      "roomID": 11,
       "inTransaction": false
     },
     "102": {
@@ -915,7 +915,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 4,
+      "roomID": 11,
       "inTransaction": false
     },
     "103": {
@@ -924,7 +924,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 3,
+      "roomID": 11,
       "inTransaction": false
     },
     "104": {
@@ -933,7 +933,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 4,
+      "roomID": 11,
       "inTransaction": false
     },
     "105": {
@@ -941,8 +941,8 @@
       "_itemName": "Item 105",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 9,
+      "_itemTags": ["illegal"],
+      "roomID": 11,
       "inTransaction": false
     },
     "106": {
@@ -951,7 +951,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 5,
+      "roomID": 11,
       "inTransaction": false
     },
     "107": {
@@ -960,7 +960,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 7,
+      "roomID": 11,
       "inTransaction": false
     },
     "108": {
@@ -969,7 +969,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 5,
+      "roomID": 11,
       "inTransaction": false
     },
     "109": {
@@ -978,7 +978,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 5,
+      "roomID": 11,
       "inTransaction": false
     },
     "110": {
@@ -986,8 +986,8 @@
       "_itemName": "Item 110",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 9,
+      "_itemTags": [],
+      "roomID": 11,
       "inTransaction": false
     },
     "111": {
@@ -996,7 +996,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 4,
+      "roomID": 12,
       "inTransaction": false
     },
     "112": {
@@ -1004,8 +1004,8 @@
       "_itemName": "Item 112",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 1,
+      "_itemTags": [],
+      "roomID": 12,
       "inTransaction": false
     },
     "113": {
@@ -1013,8 +1013,8 @@
       "_itemName": "Item 113",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
+      "_itemTags": ["illegal"],
+      "roomID": 12,
       "inTransaction": false
     },
     "114": {
@@ -1023,7 +1023,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 4,
+      "roomID": 12,
       "inTransaction": false
     },
     "115": {
@@ -1032,7 +1032,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 7,
+      "roomID": 12,
       "inTransaction": false
     },
     "116": {
@@ -1040,8 +1040,8 @@
       "_itemName": "Item 116",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 4,
+      "_itemTags": [],
+      "roomID": 12,
       "inTransaction": false
     },
     "117": {
@@ -1049,8 +1049,8 @@
       "_itemName": "Item 117",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 4,
+      "_itemTags": [],
+      "roomID": 12,
       "inTransaction": false
     },
     "118": {
@@ -1059,7 +1059,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 10,
+      "roomID": 12,
       "inTransaction": false
     },
     "119": {
@@ -1068,7 +1068,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 5,
+      "roomID": 12,
       "inTransaction": false
     },
     "120": {
@@ -1077,7 +1077,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 9,
+      "roomID": 12,
       "inTransaction": false
     },
     "121": {
@@ -1085,8 +1085,8 @@
       "_itemName": "Item 121",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 7,
+      "_itemTags": ["illegal"],
+      "roomID": 13,
       "inTransaction": false
     },
     "122": {
@@ -1094,8 +1094,8 @@
       "_itemName": "Item 122",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 7,
+      "_itemTags": ["illegal"],
+      "roomID": 13,
       "inTransaction": false
     },
     "123": {
@@ -1104,7 +1104,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 7,
+      "roomID": 13,
       "inTransaction": false
     },
     "124": {
@@ -1112,8 +1112,8 @@
       "_itemName": "Item 124",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 1,
+      "_itemTags": [],
+      "roomID": 13,
       "inTransaction": false
     },
     "125": {
@@ -1121,8 +1121,8 @@
       "_itemName": "Item 125",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 6,
+      "_itemTags": ["illegal"],
+      "roomID": 13,
       "inTransaction": false
     },
     "126": {
@@ -1130,8 +1130,8 @@
       "_itemName": "Item 126",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 6,
+      "_itemTags": ["illegal"],
+      "roomID": 13,
       "inTransaction": false
     },
     "127": {
@@ -1139,8 +1139,8 @@
       "_itemName": "Item 127",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 5,
+      "_itemTags": [],
+      "roomID": 13,
       "inTransaction": false
     },
     "128": {
@@ -1148,8 +1148,8 @@
       "_itemName": "Item 128",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 1,
+      "_itemTags": ["illegal"],
+      "roomID": 13,
       "inTransaction": false
     },
     "129": {
@@ -1158,7 +1158,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 2,
+      "roomID": 13,
       "inTransaction": false
     },
     "130": {
@@ -1167,7 +1167,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 4,
+      "roomID": 13,
       "inTransaction": false
     },
     "131": {
@@ -1176,7 +1176,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 9,
+      "roomID": 14,
       "inTransaction": false
     },
     "132": {
@@ -1184,8 +1184,8 @@
       "_itemName": "Item 132",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 8,
+      "_itemTags": ["illegal"],
+      "roomID": 14,
       "inTransaction": false
     },
     "133": {
@@ -1194,7 +1194,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 2,
+      "roomID": 14,
       "inTransaction": false
     },
     "134": {
@@ -1203,7 +1203,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 7,
+      "roomID": 14,
       "inTransaction": false
     },
     "135": {
@@ -1211,8 +1211,8 @@
       "_itemName": "Item 135",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 8,
+      "_itemTags": [],
+      "roomID": 14,
       "inTransaction": false
     },
     "136": {
@@ -1221,7 +1221,7 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": ["illegal"],
-      "roomID": 7,
+      "roomID": 14,
       "inTransaction": false
     },
     "137": {
@@ -1229,8 +1229,8 @@
       "_itemName": "Item 137",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 10,
+      "_itemTags": [],
+      "roomID": 14,
       "inTransaction": false
     },
     "138": {
@@ -1238,8 +1238,8 @@
       "_itemName": "Item 138",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 4,
+      "_itemTags": ["illegal"],
+      "roomID": 14,
       "inTransaction": false
     },
     "139": {
@@ -1247,8 +1247,8 @@
       "_itemName": "Item 139",
       "_type": "unique",
       "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 1,
+      "_itemTags": [],
+      "roomID": 14,
       "inTransaction": false
     },
     "140": {
@@ -1257,549 +1257,9 @@
       "_type": "unique",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 4,
-      "inTransaction": false
-    },
-    "141": {
-      "id": 141,
-      "_itemName": "Item 141",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 6,
-      "inTransaction": false
-    },
-    "142": {
-      "id": 142,
-      "_itemName": "Item 142",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 3,
-      "inTransaction": false
-    },
-    "143": {
-      "id": 143,
-      "_itemName": "Item 143",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 10,
-      "inTransaction": false
-    },
-    "144": {
-      "id": 144,
-      "_itemName": "Item 144",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 6,
-      "inTransaction": false
-    },
-    "145": {
-      "id": 145,
-      "_itemName": "Item 145",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 8,
-      "inTransaction": false
-    },
-    "146": {
-      "id": 146,
-      "_itemName": "Item 146",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
-      "inTransaction": false
-    },
-    "147": {
-      "id": 147,
-      "_itemName": "Item 147",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 9,
-      "inTransaction": false
-    },
-    "148": {
-      "id": 148,
-      "_itemName": "Item 148",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 1,
-      "inTransaction": false
-    },
-    "149": {
-      "id": 149,
-      "_itemName": "Item 149",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 1,
-      "inTransaction": false
-    },
-    "150": {
-      "id": 150,
-      "_itemName": "Item 150",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 3,
-      "inTransaction": false
-    },
-    "151": {
-      "id": 151,
-      "_itemName": "Item 151",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 1,
-      "inTransaction": false
-    },
-    "152": {
-      "id": 152,
-      "_itemName": "Item 152",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
-      "inTransaction": false
-    },
-    "153": {
-      "id": 153,
-      "_itemName": "Item 153",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
-      "inTransaction": false
-    },
-    "154": {
-      "id": 154,
-      "_itemName": "Item 154",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 1,
-      "inTransaction": false
-    },
-    "155": {
-      "id": 155,
-      "_itemName": "Item 155",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 10,
-      "inTransaction": false
-    },
-    "156": {
-      "id": 156,
-      "_itemName": "Item 156",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 7,
-      "inTransaction": false
-    },
-    "157": {
-      "id": 157,
-      "_itemName": "Item 157",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 4,
-      "inTransaction": false
-    },
-    "158": {
-      "id": 158,
-      "_itemName": "Item 158",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 2,
-      "inTransaction": false
-    },
-    "159": {
-      "id": 159,
-      "_itemName": "Item 159",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 2,
-      "inTransaction": false
-    },
-    "160": {
-      "id": 160,
-      "_itemName": "Item 160",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 9,
-      "inTransaction": false
-    },
-    "161": {
-      "id": 161,
-      "_itemName": "Item 161",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 2,
-      "inTransaction": false
-    },
-    "162": {
-      "id": 162,
-      "_itemName": "Item 162",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 1,
-      "inTransaction": false
-    },
-    "163": {
-      "id": 163,
-      "_itemName": "Item 163",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 1,
-      "inTransaction": false
-    },
-    "164": {
-      "id": 164,
-      "_itemName": "Item 164",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 9,
-      "inTransaction": false
-    },
-    "165": {
-      "id": 165,
-      "_itemName": "Item 165",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 4,
-      "inTransaction": false
-    },
-    "166": {
-      "id": 166,
-      "_itemName": "Item 166",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 1,
-      "inTransaction": false
-    },
-    "167": {
-      "id": 167,
-      "_itemName": "Item 167",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 10,
-      "inTransaction": false
-    },
-    "168": {
-      "id": 168,
-      "_itemName": "Item 168",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 1,
-      "inTransaction": false
-    },
-    "169": {
-      "id": 169,
-      "_itemName": "Item 169",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 3,
-      "inTransaction": false
-    },
-    "170": {
-      "id": 170,
-      "_itemName": "Item 170",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 6,
-      "inTransaction": false
-    },
-    "171": {
-      "id": 171,
-      "_itemName": "Item 171",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 10,
-      "inTransaction": false
-    },
-    "172": {
-      "id": 172,
-      "_itemName": "Item 172",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 9,
-      "inTransaction": false
-    },
-    "173": {
-      "id": 173,
-      "_itemName": "Item 173",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 5,
-      "inTransaction": false
-    },
-    "174": {
-      "id": 174,
-      "_itemName": "Item 174",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 10,
-      "inTransaction": false
-    },
-    "175": {
-      "id": 175,
-      "_itemName": "Item 175",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 6,
-      "inTransaction": false
-    },
-    "176": {
-      "id": 176,
-      "_itemName": "Item 176",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 9,
-      "inTransaction": false
-    },
-    "177": {
-      "id": 177,
-      "_itemName": "Item 177",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 10,
-      "inTransaction": false
-    },
-    "178": {
-      "id": 178,
-      "_itemName": "Item 178",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 2,
-      "inTransaction": false
-    },
-    "179": {
-      "id": 179,
-      "_itemName": "Item 179",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 10,
-      "inTransaction": false
-    },
-    "180": {
-      "id": 180,
-      "_itemName": "Item 180",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
-      "inTransaction": false
-    },
-    "181": {
-      "id": 181,
-      "_itemName": "Item 181",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 6,
-      "inTransaction": false
-    },
-    "182": {
-      "id": 182,
-      "_itemName": "Item 182",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
-      "inTransaction": false
-    },
-    "183": {
-      "id": 183,
-      "_itemName": "Item 183",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 7,
-      "inTransaction": false
-    },
-    "184": {
-      "id": 184,
-      "_itemName": "Item 184",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 8,
-      "inTransaction": false
-    },
-    "185": {
-      "id": 185,
-      "_itemName": "Item 185",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 9,
-      "inTransaction": false
-    },
-    "186": {
-      "id": 186,
-      "_itemName": "Item 186",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 4,
-      "inTransaction": false
-    },
-    "187": {
-      "id": 187,
-      "_itemName": "Item 187",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 8,
-      "inTransaction": false
-    },
-    "188": {
-      "id": 188,
-      "_itemName": "Item 188",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 4,
-      "inTransaction": false
-    },
-    "189": {
-      "id": 189,
-      "_itemName": "Item 189",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 4,
-      "inTransaction": false
-    },
-    "190": {
-      "id": 190,
-      "_itemName": "Item 190",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 7,
-      "inTransaction": false
-    },
-    "191": {
-      "id": 191,
-      "_itemName": "Item 191",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 2,
-      "inTransaction": false
-    },
-    "192": {
-      "id": 192,
-      "_itemName": "Item 192",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 6,
-      "inTransaction": false
-    },
-    "193": {
-      "id": 193,
-      "_itemName": "Item 193",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 7,
-      "inTransaction": false
-    },
-    "194": {
-      "id": 194,
-      "_itemName": "Item 194",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 7,
-      "inTransaction": false
-    },
-    "195": {
-      "id": 195,
-      "_itemName": "Item 195",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 2,
-      "inTransaction": false
-    },
-    "196": {
-      "id": 196,
-      "_itemName": "Item 196",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 9,
-      "inTransaction": false
-    },
-    "197": {
-      "id": 197,
-      "_itemName": "Item 197",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 1,
-      "inTransaction": false
-    },
-    "198": {
-      "id": 198,
-      "_itemName": "Item 198",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 6,
-      "inTransaction": false
-    },
-    "199": {
-      "id": 199,
-      "_itemName": "Item 199",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 5,
-      "inTransaction": false
-    },
-    "200": {
-      "id": 200,
-      "_itemName": "Item 200",
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": ["illegal"],
-      "roomID": 8,
+      "roomID": 14,
       "inTransaction": false
     }
   },
-  "nextID": 201
+  "nextID": 141
 }
