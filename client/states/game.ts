@@ -148,12 +148,13 @@ class GameState extends Phaser.State {
   ) {
     agent.visible = false;
     agent.position.set(start.x, start.y);
+    const ms = start.distance(end, true) * 0.8;
     const tween = this.game.add.tween(agent).to(
       {
         x: end.x,
         y: end.y
       },
-      1000,
+      ms,
       Phaser.Easing.Linear.None,
       true
     );
@@ -261,7 +262,7 @@ class GameState extends Phaser.State {
     const end = this.standingLocs.getRandomLoc();
     let start = end.pos;
     for (const door of this.groups.doorObjects.getAll()) {
-      if (parseInt(door.name) === event.data.id) {
+      if (door.model.id === event.data.id) {
         start = door.position;
         break;
       }
@@ -286,7 +287,7 @@ class GameState extends Phaser.State {
   private handleLeave(agent: AgentSprite, event: RoomEvent) {
     let end = agent.position;
     for (const door of this.groups.doorObjects.getAll()) {
-      if (parseInt(door.name) === event.data.id) {
+      if (door.model.id === event.data.id) {
         end = door.position;
         break;
       }
