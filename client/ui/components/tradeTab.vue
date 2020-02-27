@@ -207,7 +207,7 @@ export default class TradeTab extends Vue {
   otherItemOffers: Item[];
   myAnswerOffers;
   otherAnswerOffers;
-  @Watch("inTrade")
+  @Watch("trigger")
   updateTrade() {
     if (!this.inTrade) {
       return;
