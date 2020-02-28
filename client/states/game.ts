@@ -13,14 +13,13 @@ import { LocationIndex } from "../components/locationIndex";
 import { MapLoader } from "../components/mapLoader";
 import { DoorSprite } from "../prefabs/door";
 import { ActionSel } from "../prefabs/actionSel";
+import { Event } from "../components/events/event";
+import { EnterEvent } from "../components/events/enterEvent";
+import { LeaveEvent } from "../components/events/leaveEvent";
+import { LogOffEvent } from "../components/events/logOffEvent";
+import { LogInEvent } from "../components/events/logInEvent";
 
 const offset = Date.UTC(2019, 9, 28); // Current server beginning of time
-
-interface RoomEvent {
-  agentID: number;
-  type: string;
-  data: any;
-}
 
 class GameState extends Phaser.State {
   UI: UI;
@@ -28,12 +27,13 @@ class GameState extends Phaser.State {
 
   room: Room;
   previousRoom: Room;
+  movingRooms = false;
 
   player: AgentSprite;
   standingLocs: LocationIndex;
   agentSpriteMap: Map<number, AgentSprite> = new Map();
   agentsInRoom: Set<number> = new Set();
-  roomEvents: RoomEvent[] = new Array();
+  events: Event[] = new Array();
 
   // Groups
   groups: GameState.Groups = {} as any;
@@ -83,7 +83,7 @@ class GameState extends Phaser.State {
 
     ClientAPI.addOnUpdateListener(models => {
       models.Info.forEach(i => {
-        this.scheduleRoomEvents(i);
+        this.scheduleEventsFromInfo(i);
       });
       this.UI.refresh();
     });
@@ -104,8 +104,10 @@ class GameState extends Phaser.State {
     // Update time
     this.UI.setTime(getPanoptykDatetime(offset));
     if (!ClientAPI.isUpdating()) {
-      this.handleRoomEvents();
-      // this.checkForRequests();
+      if (!this.movingRooms) {
+        this.scheduleLogInOffEvents();
+      }
+      this.handleEvents();
       if (ActionSel.currentMenu) {
         ActionSel.currentMenu.update();
       }
@@ -118,16 +120,20 @@ class GameState extends Phaser.State {
     // add a loading image later
     this.groups.doorObjects.inputEnableChildren = false;
     const target = sprite.model;
+    this.movingRooms = true;
     ClientAPI.moveToRoom(target)
-      .catch(err => this.addConsoleMessage("Failed to move to room!"))
+      .catch(err => {
+        this.addConsoleMessage("Failed to move to room!");
+        this.movingRooms = false;
+      })
       .then(res => {
         const start = this.player.position;
         const end = sprite.position;
         this.moveAgent(this.player, start, end, () => {
           this.enterNewRoom();
+          this.movingRooms = false;
         });
-      })
-      .catch(err => this.addConsoleMessage(err));
+      });
   };
 
   // HUD code //
@@ -136,7 +142,13 @@ class GameState extends Phaser.State {
   public updateHUD() {}
 
   private createPlayer(x: number, y: number): void {
-    this.player = new AgentSprite(this.game, x, y, ClientAPI.playerAgent, false);
+    this.player = new AgentSprite(
+      this.game,
+      x,
+      y,
+      ClientAPI.playerAgent,
+      false
+    );
     this.groups.gameWorld.add(this.player);
   }
 
@@ -164,7 +176,7 @@ class GameState extends Phaser.State {
     agent.visible = true;
   }
 
-  private addConsoleMessage(messageString: string): void {
+  public addConsoleMessage(messageString: string): void {
     console.log(messageString);
     this.UI.addMessage(messageString);
   }
@@ -175,8 +187,8 @@ class GameState extends Phaser.State {
     this.UI.setRoom(this.room);
     this.addConsoleMessage("Moved to " + this.room.roomName);
 
-    this.mapLoader.loadMap(this.room);
     this.clearAgents();
+    this.mapLoader.loadMap(this.room);
     this.loadAgents();
 
     const end = this.standingLocs.getRandomLoc();
@@ -188,10 +200,7 @@ class GameState extends Phaser.State {
       }
     }
     this.player.standLocIndex = end.index;
-    this.player.animating = true;
-    this.moveAgent(this.player, start, end.pos, () => {
-      this.player.animating = false;
-    });
+    this.player.move(start, end.pos, () => {});
   }
 
   private clearAgents(): void {
@@ -209,7 +218,7 @@ class GameState extends Phaser.State {
     });
     this.agentSpriteMap = new Map();
     this.agentsInRoom = new Set();
-    this.roomEvents = new Array();
+    this.events = new Array();
   }
 
   private loadAgents() {
@@ -217,23 +226,51 @@ class GameState extends Phaser.State {
       ClientAPI.playerAgent
     );
     currentAgents.forEach((agent: Agent) => {
-      const standLoc = this.standingLocs.getRandomLoc();
-      const agentSprite = new AgentSprite(
-        this.game,
-        standLoc.pos.x,
-        standLoc.pos.y,
-        agent
-      );
-      agentSprite.standLocIndex = standLoc.index;
-      agentSprite.inputEnabled = true;
-      this.groups.otherAgents.add(agentSprite);
+      if (!this.agentsInRoom.has(agent.id)) {
+        const standLoc = this.standingLocs.getRandomLoc();
+        const agentSprite = new AgentSprite(
+          this.game,
+          standLoc.pos.x,
+          standLoc.pos.y,
+          agent
+        );
+        agentSprite.standLocIndex = standLoc.index;
+        agentSprite.inputEnabled = true;
+        this.groups.otherAgents.add(agentSprite);
 
-      this.agentsInRoom.add(agent.id);
-      this.agentSpriteMap.set(agent.id, agentSprite);
+        this.agentsInRoom.add(agent.id);
+        this.agentSpriteMap.set(agent.id, agentSprite);
+      }
     });
   }
 
-  private scheduleRoomEvents(info: Info) {
+  // for agents who may have logged out or in
+  private scheduleLogInOffEvents() {
+    const currentAgents = ClientAPI.playerAgent.room.getAgents(
+      ClientAPI.playerAgent
+    );
+    const theRoom = new Set(currentAgents.map(a => a.id));
+    const removes = [];
+    // Who logged out?
+    this.agentsInRoom.forEach(id => {
+      if (!theRoom.has(id)) {
+        removes.push(id);
+      }
+    });
+    removes.forEach(id => {
+      this.agentsInRoom.delete(id);
+      this.events.push(new LogOffEvent(this, Agent.getByID(id)));
+    });
+    // Who logged in?
+    currentAgents.forEach(agent => {
+      if (!this.agentsInRoom.has(agent.id)) {
+        this.agentsInRoom.add(agent.id);
+        this.events.push(new LogInEvent(this, agent));
+      }
+    });
+  }
+
+  private scheduleEventsFromInfo(info: Info) {
     const playerID = ClientAPI.playerAgent.id;
     if (!info.owner || info.isQuery() || info.owner.id !== playerID) {
       return;
@@ -243,101 +280,25 @@ class GameState extends Phaser.State {
     // MOVE Events
     if (info.action === "MOVE" && terms.agent.id !== playerID) {
       if (curRoomID === terms.loc1.id) {
-        this.roomEvents.push({
-          agentID: terms.agent.id,
-          type: "left",
-          data: terms.loc2
-        });
+        this.events.push(new LeaveEvent(this, terms.agent, terms.loc2));
       } else if (curRoomID === terms.loc2.id) {
-        this.roomEvents.push({
-          agentID: terms.agent.id,
-          type: "entered",
-          data: terms.loc1
-        });
+        this.events.push(new EnterEvent(this, terms.agent, terms.loc1));
       }
     }
   }
 
-  private handleEnter(event: RoomEvent) {
-    const end = this.standingLocs.getRandomLoc();
-    let start = end.pos;
-    for (const door of this.groups.doorObjects.getAll()) {
-      if (door.model.id === event.data.id) {
-        start = door.position;
-        break;
-      }
-    }
-    const agentSprite = new AgentSprite(this.game, 0, 0, Agent.getByID(event.agentID));
-    agentSprite.visible = false;
-    agentSprite.standLocIndex = end.index;
-    agentSprite.inputEnabled = true;
-    this.groups.otherAgents.add(agentSprite);
-    this.agentSpriteMap.set(event.agentID, agentSprite);
-    this.agentsInRoom.add(event.agentID);
-    agentSprite.animating = true;
-    this.moveAgent(agentSprite, start, end.pos, () => {
-      agentSprite.animating = false;
-    });
-    // Console Message
-    const message =
-      "Agent " + Agent.getByID(event.agentID).agentName + " entered the room";
-    this.addConsoleMessage(message);
-  }
-
-  private handleLeave(agent: AgentSprite, event: RoomEvent) {
-    let end = agent.position;
-    for (const door of this.groups.doorObjects.getAll()) {
-      if (door.model.id === event.data.id) {
-        end = door.position;
-        break;
-      }
-    }
-    this.standingLocs.releaseIndex(agent.standLocIndex);
-    this.moveAgent(agent, agent.position, end, () => {
-      if (this.agentSpriteMap.has(event.agentID)) {
-        this.agentSpriteMap.get(event.agentID).destroy();
-        this.agentSpriteMap.delete(event.agentID);
-        this.agentsInRoom.delete(event.agentID);
-      }
-    });
-
-    // Console Message
-    const message =
-      "Agent " + Agent.getByID(event.agentID).agentName + " left the room";
-    this.addConsoleMessage(message);
-  }
-
-  private checkForRequests() {
-    if (this.UI.prompting) {
-      return;
-    }
-    const convoRequesters = ClientAPI.playerAgent.conversationRequesters;
-    if (convoRequesters.length > 0) {
-      return;
-    }
-    const tradeRequesters = ClientAPI.playerAgent.tradeRequesters;
-    if (tradeRequesters.length > 0) {
-      return;
-    }
-  }
-
-  private handleRoomEvents() {
-    const unHandledEvents: RoomEvent[] = [];
-    while (this.roomEvents.length) {
-      const event = this.roomEvents.shift();
+  private handleEvents() {
+    const unHandledEvents: Event[] = [];
+    while (this.events.length) {
+      const event = this.events.shift();
       console.log(event);
-      if (event.type === "entered") {
-        this.handleEnter(event);
-      } else if (event.type === "left") {
-        const agent = this.agentSpriteMap.get(event.agentID);
-        if (agent && !agent.animating) {
-          this.handleLeave(agent, event);
-        }
+      if (event.canProcess()) {
+        event.process();
       } else {
         unHandledEvents.push(event);
       }
     }
-    this.roomEvents = unHandledEvents;
+    this.events = unHandledEvents;
   }
 }
 

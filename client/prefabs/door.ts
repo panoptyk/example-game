@@ -53,4 +53,11 @@ export class DoorSprite extends Phaser.Sprite {
     this.menu = undefined;
   }
 
+  public destroy() {
+    if (this.menu) {
+      this.menu.destroy();
+    }
+    super.destroy();
+  }
+
 }

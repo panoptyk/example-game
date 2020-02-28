@@ -17,6 +17,7 @@ const ToSprite = function(agent: Agent) {
 export class AgentSprite extends Phaser.Sprite {
   private menu: ActionSel;
   public animating = false;
+  public curTween: Phaser.Tween = undefined;
   public model: Agent;
   public standLocIndex = -1;
   private hoverText;
@@ -77,5 +78,47 @@ export class AgentSprite extends Phaser.Sprite {
   public destroyMenu() {
     this.menu.destroy();
     this.menu = undefined;
+  }
+
+  public destroy() {
+    if (this.menu) {
+      this.menu.destroy();
+    }
+    super.destroy();
+  }
+
+  public busy(): boolean {
+    return this.animating;
+  }
+
+  public move(
+    start: Phaser.Point,
+    end: Phaser.Point,
+    callback = function() {}
+  ) {
+    this.visible = false;
+    if (this.curTween) {
+      this.curTween.stop();
+      this.curTween = undefined;
+    }
+    this.animating = true;
+    this.position.set(start.x, start.y);
+    const ms = start.distance(end, true) * 0.8;
+    const tween = this.game.add.tween(this).to(
+      {
+        x: end.x,
+        y: end.y
+      },
+      ms,
+      Phaser.Easing.Linear.None,
+      true
+    );
+    tween.onComplete.add(() => {
+      this.animating = false;
+      this.curTween = undefined;
+      callback();
+    });
+    this.curTween = tween;
+    this.visible = true;
   }
 }
