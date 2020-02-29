@@ -37,9 +37,7 @@ export class AgentSprite extends Phaser.Sprite {
       0
     );
     this.model = agent;
-    this.loadTexture(ToSprite(agent));
-    this.animations.add("standing", [1], 0, true);
-    this.animations.play("standing", 0, true);
+    this.loadTexture(ToSprite(agent), 1);
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
     const style = { font: "25px Arial", fill: "#ffffff" };
