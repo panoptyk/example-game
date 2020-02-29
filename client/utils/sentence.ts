@@ -335,8 +335,8 @@ class Sentence {
         break;
       case Info.ACTIONS.QUEST_COMPLETE.name:
         arr.push({
-          type: Sentence.BlockType.ACTION,
-          text: "completed a quest "
+          type: Sentence.BlockType.NONE,
+          text: "noted that a quest "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -347,8 +347,8 @@ class Sentence {
           text: "info#" + terms.info.id + " "
         });
         arr.push({
-          type: Sentence.BlockType.NONE,
-          text: "to "
+          type: Sentence.BlockType.ACTION,
+          text: "was completed by "
         });
         arr.push({
           type: Sentence.BlockType.AGENT,
@@ -365,8 +365,8 @@ class Sentence {
         break;
       case Info.ACTIONS.QUEST_FAILED.name:
         arr.push({
-          type: Sentence.BlockType.ACTION,
-          text: "failed a quest "
+          type: Sentence.BlockType.NONE,
+          text: "noted that a quest "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -377,8 +377,8 @@ class Sentence {
           text: "info#" + terms.info.id + " "
         });
         arr.push({
-          type: Sentence.BlockType.NONE,
-          text: "to "
+          type: Sentence.BlockType.ACTION,
+          text: "was failed by "
         });
         arr.push({
           type: Sentence.BlockType.AGENT,

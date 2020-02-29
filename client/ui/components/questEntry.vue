@@ -5,6 +5,14 @@
     <span v-for="b in sentence" v-bind:key="b.text" v-bind:class="b.type">
       {{ b.text }}
     </span>
+    <template v-for="i of turnedInInfo">
+      <div class="info-box" v-bind:key="i.id">
+        <div class="info-id">#{{ i.id }}</div>
+        <div class="info-text">
+          <info-entry v-bind:info="i"></info-entry>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -16,11 +24,17 @@ import Sentence from "../../utils/sentence";
 @Component({})
 export default class QuestEntry extends Vue {
   @Prop({ default: {} }) quest: Quest;
+
+  get turnedInInfo() {
+    return this.quest.turnedInInfo;
+  }
+
   get status() {
     if (this.quest) {
       return "Status: " + this.quest.status + "\n";
     }
   }
+
   get taskDescription() {
     if (this.quest) {
       let sentence =
