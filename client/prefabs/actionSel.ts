@@ -3,6 +3,7 @@ import { ClientAPI, Agent } from "panoptyk-engine/dist/client";
 import { UI } from "../ui/ui";
 import { AgentSprite } from "./agent";
 import { DoorSprite } from "./door";
+import GS from "./../states/game";
 
 export class ActionSel {
   static DIST_FROM_SPRITE = 40; // px
@@ -130,7 +131,9 @@ export class ActionSel {
       () => {
         tradeIcon.inputEnabled = true;
         tradeIcon.events.onInputDown.add(() => {
-          ClientAPI.requestTrade(agent.model);
+          ClientAPI.requestTrade(agent.model).then(res => {
+            GS.instance.logTradeRequest(agent.model);
+          });
         });
       }
     );
@@ -149,7 +152,9 @@ export class ActionSel {
       convIcon.inputEnabled = true;
       convIcon.events.onInputDown.add(() => {
         console.log("convo: " + agent.model.agentName);
-        ClientAPI.requestConversation(agent.model);
+        ClientAPI.requestConversation(agent.model).then(res => {
+          GS.instance.logConvoRequest(agent.model);
+        });
       });
     });
   }

@@ -18,16 +18,23 @@ import { EnterEvent } from "../components/events/enterEvent";
 import { LeaveEvent } from "../components/events/leaveEvent";
 import { LogOffEvent } from "../components/events/logOffEvent";
 import { LogInEvent } from "../components/events/logInEvent";
+import { request } from "http";
 
 const offset = Date.UTC(2019, 9, 28); // Current server beginning of time
 
 class GameState extends Phaser.State {
+  // idk how good this code is...
+  public static instance: GameState;
+
   UI: UI;
   mapLoader: MapLoader;
 
   room: Room;
   previousRoom: Room;
   movingRooms = false;
+
+  convoRequests = new Set<Agent>();
+  tradeRequests = new Set<Agent>();
 
   player: AgentSprite;
   standingLocs: LocationIndex;
@@ -51,6 +58,8 @@ class GameState extends Phaser.State {
 
   // PHASER CREATE FUNCTION //
   public create(): void {
+    // Link static reference to this
+    GameState.instance = this;
     this.mapLoader = new MapLoader(this);
 
     ActionSel.doorEnterCallback = this.onDoorEnter;
@@ -66,7 +75,7 @@ class GameState extends Phaser.State {
     this.createGroups();
 
     this.room = ClientAPI.playerAgent.room;
-    this.createHUD();
+    this.createUI();
 
     // load map and set gameWorld location
     this.UI.setRoom(this.room);
@@ -103,7 +112,8 @@ class GameState extends Phaser.State {
   public update(): void {
     // Update time
     this.UI.setTime(getPanoptykDatetime(offset));
-    if (!ClientAPI.isUpdating()) {
+    if (ClientAPI.playerAgent && !ClientAPI.isUpdating()) {
+      // Schedule/handle events
       if (!this.movingRooms) {
         this.scheduleLogInOffEvents();
       }
@@ -111,8 +121,9 @@ class GameState extends Phaser.State {
       if (ActionSel.currentMenu) {
         ActionSel.currentMenu.update();
       }
+      // update any UI
+      this.updateUI();
     }
-    this.updateHUD();
   }
 
   // onClick server actions //
@@ -130,16 +141,57 @@ class GameState extends Phaser.State {
         const start = this.player.position;
         const end = sprite.position;
         this.moveAgent(this.player, start, end, () => {
+          this.convoRequests = new Set();
+          this.tradeRequests = new Set();
           this.enterNewRoom();
           this.movingRooms = false;
         });
       });
   };
 
-  // HUD code //
-  public createHUD() {}
+  // UI code //
+  public createUI() {}
 
-  public updateHUD() {}
+  public updateUI() {
+    const player = ClientAPI.playerAgent;
+    // Check for accepts
+    if (player.conversation) {
+      const otherAgent = player.conversation.getAgents(player)[0];
+      if (this.convoRequests.has(otherAgent)) {
+        this.addConsoleMessage(otherAgent.agentName + " accepted your conversation request");
+        this.convoRequests = new Set();
+      }
+    }
+
+    if (player.trade) {
+      const otherAgent = player.trade.conversation.getAgents(player)[0];
+      if (this.tradeRequests.has(otherAgent)) {
+        this.addConsoleMessage(otherAgent.agentName + " accepted your trade request");
+        this.tradeRequests = new Set();
+      }
+    }
+
+    // Check for decline
+    let requests = new Set();
+    this.convoRequests.forEach(agent => {
+      if (!player.conversationRequested.includes(agent)) {
+        this.addConsoleMessage(agent.agentName + " has declined your conversation request");
+      } else {
+        requests.add(agent);
+      }
+    });
+    this.convoRequests = requests;
+
+    requests = new Set();
+    this.tradeRequests.forEach(agent => {
+      if (!player.tradeRequested.includes(agent)) {
+        this.addConsoleMessage(agent.agentName + " has declined your trade request");
+      } else {
+        requests.add(agent);
+      }
+    });
+    this.tradeRequests = requests;
+  }
 
   private createPlayer(x: number, y: number): void {
     this.player = new AgentSprite(
@@ -299,6 +351,16 @@ class GameState extends Phaser.State {
       }
     }
     this.events = unHandledEvents;
+  }
+
+  public logConvoRequest(agent: Agent) {
+    this.convoRequests.add(agent);
+    this.addConsoleMessage("Conversation requested with " + agent.agentName);
+  }
+
+  public logTradeRequest(agent: Agent) {
+    this.tradeRequests.add(agent);
+    this.addConsoleMessage("Trade requested with " + agent.agentName);
   }
 }
 
