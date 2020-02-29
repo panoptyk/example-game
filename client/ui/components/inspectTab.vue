@@ -5,16 +5,24 @@
       Name: <span class="agent"> {{ player.agentName }} </span> <br />
       Gold: <span class="gold"> {{ player.gold }} </span>
     </div>
-    <span id=inspect-title> Inspection Target </span>
+
+    <span id="inspect-title"> Inspection Target </span>
     <div id="inspect-window" class="game-tab" v-if="isAgent">
-      Agent: <span class="agent">{{ realTarget.agentName }}</span><br />
+      Agent: <span class="agent">{{ realTarget.agentName }}</span> <br />
       Faction: <span class="faction">{{ factionName }}</span>
     </div>
+
     <div id="inspect-window" class="game-tab" v-else-if="isDoor">
-      Door to: <span class="room">{{ realTarget.roomName }}</span><br />
+      Door to: <span class="room">{{ realTarget.roomName }}</span> <br />
     </div>
+
     <div id="inspect-window" class="game-tab" v-else-if="isCurRoom">
-      Current room: <span class="room">{{ realTarget.roomName }}</span><br />
+      Current room: <span class="room">{{ realTarget.roomName }}</span> <br />
+    </div>
+
+    <div id="inspect-window" class="game-tab" v-else-if="isItem">
+      Item: <span class="Item">{{ realTarget.itemName }}</span> <br />
+      Type: {{ realTarget.type}}
     </div>
 
     <div id="inspect-window" class="game-tab" v-else>
@@ -45,7 +53,6 @@ export default class InspectTab extends Vue {
   @Watch("trigger")
   @Watch("target")
   update() {
-    console.log(ClientAPI.playerAgent);
     this.realTarget = this.target;
     this.player = ClientAPI.playerAgent;
   }
@@ -65,10 +72,19 @@ export default class InspectTab extends Vue {
     return this.realTarget instanceof Agent;
   }
   get isDoor() {
-    return this.realTarget instanceof Room && ClientAPI.playerAgent.room.id !== this.realTarget.id;
+    return (
+      this.realTarget instanceof Room &&
+      ClientAPI.playerAgent.room.id !== this.realTarget.id
+    );
   }
   get isCurRoom() {
-    return this.realTarget instanceof Room && ClientAPI.playerAgent.room.id !== this.realTarget.id;
+    return (
+      this.realTarget instanceof Room &&
+      ClientAPI.playerAgent.room.id !== this.realTarget.id
+    );
+  }
+  get isItem() {
+    return this.realTarget instanceof Item;
   }
 }
 </script>
@@ -88,7 +104,7 @@ export default class InspectTab extends Vue {
 }
 
 #inspect-title {
-  font-weight: bold
+  font-weight: bold;
 }
 
 #inspect-window {

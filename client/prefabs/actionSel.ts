@@ -4,6 +4,7 @@ import { UI } from "../ui/ui";
 import { AgentSprite } from "./agent";
 import { DoorSprite } from "./door";
 import GS from "./../states/game";
+import { ItemSprite } from "./item";
 
 const iconSel = function(x, y) {
   return y * 16 + x;
@@ -49,6 +50,8 @@ export class ActionSel {
       this.createAgentActions();
     } else if (this.sprite instanceof DoorSprite) {
       this.createDoorActions();
+    } else if (this.sprite instanceof ItemSprite) {
+      this.createItemActions();
     }
   }
 
@@ -68,12 +71,19 @@ export class ActionSel {
     this.createEnterIcon(door);
   }
 
+  public createItemActions() {
+    const item = this.sprite as ItemSprite;
+    this.createPickupIcon(item);
+  }
+
   // Update Call //
   public update() {
     if (this.sprite instanceof AgentSprite) {
       this.updateAgentActions();
     } else if (this.sprite instanceof DoorSprite) {
       this.updateDoorActions();
+    } else if (this.sprite instanceof DoorSprite) {
+      this.updateItemActions();
     }
   }
 
@@ -96,6 +106,10 @@ export class ActionSel {
     // NO-OP
   }
 
+  public updateItemActions() {
+    // NO-OP
+  }
+
   // Create Icons //
   private createEnterIcon(door: DoorSprite) {
     const relativePos = this.createRelativeCoord();
@@ -115,6 +129,29 @@ export class ActionSel {
         enterIcon.inputEnabled = true;
         enterIcon.events.onInputDown.add(() => {
           ActionSel.doorEnterCallback(door);
+        });
+      }
+    );
+  }
+
+  private createPickupIcon(item: ItemSprite) {
+    const relativePos = this.createRelativeCoord();
+    const pickupIcon = this.sprite.game.make.sprite(
+      0,
+      0,
+      Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+      iconSel(0, 8)
+    );
+    this.group.addChild(pickupIcon);
+    this.icons.set("pickup", pickupIcon);
+    this.animateIcon(
+      this.getCenterPos(pickupIcon),
+      relativePos,
+      pickupIcon,
+      () => {
+        pickupIcon.inputEnabled = true;
+        pickupIcon.events.onInputDown.add(() => {
+          ClientAPI.takeItems([item.model]);
         });
       }
     );

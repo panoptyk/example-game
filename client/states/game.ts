@@ -12,13 +12,13 @@ import { UI } from "../ui/ui";
 import { LocationIndex } from "../components/locationIndex";
 import { MapLoader } from "../components/mapLoader";
 import { DoorSprite } from "../prefabs/door";
+import { ItemSprite } from "../prefabs/item";
 import { ActionSel } from "../prefabs/actionSel";
 import { Event } from "../components/events/event";
 import { EnterEvent } from "../components/events/enterEvent";
 import { LeaveEvent } from "../components/events/leaveEvent";
 import { LogOffEvent } from "../components/events/logOffEvent";
 import { LogInEvent } from "../components/events/logInEvent";
-import { request } from "http";
 
 const offset = Date.UTC(2019, 9, 28); // Current server beginning of time
 
@@ -28,19 +28,22 @@ class GameState extends Phaser.State {
 
   UI: UI;
   mapLoader: MapLoader;
+  events: Event[] = new Array();
 
   room: Room;
   previousRoom: Room;
   movingRooms = false;
+  standingLocs: LocationIndex;
 
   convoRequests = new Set<Agent>();
   tradeRequests = new Set<Agent>();
 
+  itemSpriteMap: Map<number, ItemSprite> = new Map();
+  itemsInRoom: Set<number> = new Set();
+
   player: AgentSprite;
-  standingLocs: LocationIndex;
   agentSpriteMap: Map<number, AgentSprite> = new Map();
   agentsInRoom: Set<number> = new Set();
-  events: Event[] = new Array();
 
   // Groups
   groups: GameState.Groups = {} as any;
@@ -49,9 +52,11 @@ class GameState extends Phaser.State {
     this.groups.mapLayers = this.game.add.group();
     this.groups.otherAgents = this.game.add.group();
     this.groups.doorObjects = this.game.add.group();
+    this.groups.items = this.game.add.group();
     this.groups.gameWorld.add(this.groups.mapLayers);
     this.groups.gameWorld.add(this.groups.otherAgents);
     this.groups.gameWorld.add(this.groups.doorObjects);
+    this.groups.gameWorld.add(this.groups.items);
 
     this.groups.HUD = this.game.add.group();
   }
@@ -80,6 +85,7 @@ class GameState extends Phaser.State {
     // load map and set gameWorld location
     this.UI.setRoom(this.room);
     this.mapLoader.loadMap(this.room);
+    this.updateItems();
 
     // Initialize player
     const standLoc = this.standingLocs.getRandomLoc();
@@ -94,6 +100,7 @@ class GameState extends Phaser.State {
       models.Info.forEach(i => {
         this.scheduleEventsFromInfo(i);
       });
+      this.updateItems();
       this.UI.refresh();
     });
 
@@ -144,6 +151,7 @@ class GameState extends Phaser.State {
           this.convoRequests = new Set();
           this.tradeRequests = new Set();
           this.enterNewRoom();
+          this.updateItems();
           this.movingRooms = false;
         });
       });
@@ -158,7 +166,9 @@ class GameState extends Phaser.State {
     if (player.conversation) {
       const otherAgent = player.conversation.getAgents(player)[0];
       if (this.convoRequests.has(otherAgent)) {
-        this.addConsoleMessage(otherAgent.agentName + " accepted your conversation request");
+        this.addConsoleMessage(
+          otherAgent.agentName + " accepted your conversation request"
+        );
         this.convoRequests = new Set();
       }
     }
@@ -166,7 +176,9 @@ class GameState extends Phaser.State {
     if (player.trade) {
       const otherAgent = player.trade.conversation.getAgents(player)[0];
       if (this.tradeRequests.has(otherAgent)) {
-        this.addConsoleMessage(otherAgent.agentName + " accepted your trade request");
+        this.addConsoleMessage(
+          otherAgent.agentName + " accepted your trade request"
+        );
         this.tradeRequests = new Set();
       }
     }
@@ -175,7 +187,9 @@ class GameState extends Phaser.State {
     let requests = new Set();
     this.convoRequests.forEach(agent => {
       if (!player.conversationRequested.includes(agent)) {
-        this.addConsoleMessage(agent.agentName + " has declined your conversation request");
+        this.addConsoleMessage(
+          agent.agentName + " has declined your conversation request"
+        );
       } else {
         requests.add(agent);
       }
@@ -185,7 +199,9 @@ class GameState extends Phaser.State {
     requests = new Set();
     this.tradeRequests.forEach(agent => {
       if (!player.tradeRequested.includes(agent)) {
-        this.addConsoleMessage(agent.agentName + " has declined your trade request");
+        this.addConsoleMessage(
+          agent.agentName + " has declined your trade request"
+        );
       } else {
         requests.add(agent);
       }
@@ -296,6 +312,47 @@ class GameState extends Phaser.State {
     });
   }
 
+  private updateItems() {
+    console.log("updateitems", this.room.getItems());
+    const inRoom = new Set(this.room.getItems().map(item => item.id));
+    const removes = [];
+    this.itemsInRoom.forEach(id => {
+      if (!inRoom.has(id)) {
+        removes.push(id);
+      }
+    });
+    removes.forEach(id => {
+      this.itemsInRoom.delete(id);
+      const sprite = this.itemSpriteMap.get(id);
+      if (sprite) {
+        this.standingLocs.releaseIndex(sprite.standLocIndex);
+        sprite.destroy();
+        this.itemSpriteMap.delete(id);
+      }
+    });
+
+    this.room.getItems().forEach(item => {
+      if (!this.itemsInRoom.has(item.id)) {
+        // add item
+        this.itemsInRoom.add(item.id);
+        const sprite = this.itemSpriteMap.get(item.id);
+        if (!sprite) {
+          const loc = this.standingLocs.getRandomLoc();
+          const itemSprite = new ItemSprite(
+            this.game,
+            loc.pos.x,
+            loc.pos.y,
+            item,
+            true
+          );
+          itemSprite.standLocIndex = loc.index;
+          this.groups.items.add(itemSprite);
+          this.itemSpriteMap.set(item.id, itemSprite);
+        }
+      }
+    });
+  }
+
   // for agents who may have logged out or in
   private scheduleLogInOffEvents() {
     const currentAgents = ClientAPI.playerAgent.room.getAgents(
@@ -369,6 +426,7 @@ namespace GameState {
     gameWorld: Phaser.Group;
     mapLayers: Phaser.Group;
     otherAgents: Phaser.Group;
+    items: Phaser.Group;
     doorObjects: Phaser.Group;
     HUD: Phaser.Group;
   }
