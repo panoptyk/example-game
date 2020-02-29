@@ -85,7 +85,10 @@ export class UI {
   // Console management
   private msgID = 0;
   private maxMsgs;
-  public addMessage(m: string) {
+  public addMessage(m: string, consoleLog = false) {
+    if (consoleLog) {
+      console.log(m);
+    }
     this.main.$data.messages.push({ msg: m, id: this.msgID++ });
     this.msgID = this.msgID % (this.maxMsgs * 2);
   }

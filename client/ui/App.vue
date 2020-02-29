@@ -33,7 +33,7 @@
       </div>
       <div id="game-outline">
         <div id="game-top-bar">
-          <div v-if="showTopBar">Room: {{ room }} | {{ dateString }}</div>
+          <div v-if="showTopBar"><span class="room">{{ room }}</span> | <span class="time">{{ dateString }}</span></div>
         </div>
         <div id="phaser-game"></div>
         <console
