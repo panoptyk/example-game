@@ -12,8 +12,7 @@
       type="is-success"
       outlined
       class="request-button"
-      >Accept</b-button
-    >
+      >Accept</b-button>
     <b-button
       @click="onDecline"
       size="is-small"

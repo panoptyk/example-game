@@ -39,7 +39,6 @@ export default class Console extends Vue {
   overflow-y: scroll;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */
-  margin-top: 5px;
   padding: 10px;
 
   border: 0px;

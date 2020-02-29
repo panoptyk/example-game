@@ -87,8 +87,8 @@ export default class ItemTab extends Vue {
 .item-box {
   border: 2px;
   border-style: solid;
-  border-color: var(--borders);
-  background-color: dimgrey;
+  border-color: var(--item-border);
+  background-color: var(--item-background);
   display: flex;
   margin-top: 5px;
   margin-bottom: 5px;

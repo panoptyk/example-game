@@ -151,29 +151,50 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
+// Overall bulma edits
+$text: rgb(243, 227, 193);
+$scheme-main: #83796F;
+$border-light: #DFD2B5;
+
 // Import Bulma's core
 @import "~bulma/sass/utilities/_all";
 
 // Set your colors
-$primary: #8c67ef;
+$primary: #82232B;
 $primary-invert: findColorInvert($primary);
 $twitter: #4099ff;
 $twitter-invert: findColorInvert($twitter);
+$success: #DFD2B5;
+$success-invert: findColorInvert($primary);
+$danger: #82232B;
+$danger-invert: findColorInvert($primary);
+
+// Notification color edits
+$notification-background-color: #83796F;
+
+// Dropdown color edits
+$dropdown-content-background-color: #83796F;
+$dropdown-item-color: $text;
+
+// Card color edits
+$card-color: rgb(243, 227, 193);
+$card-header-color: #25050E;
+$card-background-color: $scheme-main;
 
 // Panoptyk Colors
-$action: #073269;
+$action: #E1AD5B;
 $action-invert: findColorInvert($action);
-$agent: #274603;
+$agent: #62A1C3;
 $agent-invert: findColorInvert($agent);
-$room: #68050d;
+$room: #C79386;
 $room-invert: findColorInvert($room);
-$item: #5e5f04;
+$item: #7CC890;
 $item-invert: findColorInvert($item);
-$info: #8b5806;
+$info: #64C87E;
 $info-invert: findColorInvert($info);
-$time: #417432;
+$time: #F3EED9;
 $time-invert: findColorInvert($time);
-$faction: #046685;
+$faction: #CBB96D;
 $faction-invert: findColorInvert($faction);
 
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
@@ -274,8 +295,11 @@ input.is-small.input {
 
 // Panoptyk UI variables
 :root {
-  --borders: #eff6c5;
-  --text-color-primary: antiquewhite;
+  --borders: #DFD2B5;
+  --background: rgb(12, 8, 9);
+  --item-border: #DFD2B5;
+  --item-background: #83796F;
+  --text-color-primary: rgb(243, 227, 193);
   --text-color-secondary: antiquewhite;
 }
 
@@ -311,7 +335,7 @@ span.faction {
 body {
   width: 100%;
   text-align: center;
-  background-color: black;
+  background-color: var(--background);
 }
 #app {
   width: 1900px;
