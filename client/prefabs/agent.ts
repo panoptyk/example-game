@@ -3,8 +3,8 @@ import { ClientAPI, Agent } from "panoptyk-engine/dist/client";
 import { ActionSel } from "./actionSel";
 
 const SpriteMap = {
-  "test": Assets.Spritesheets.SpritesheetsMale22323212.getName(),
-  "agent2": Assets.Spritesheets.SpritesheetsMale22323212.getName()
+  test: Assets.Spritesheets.SpritesheetsMale22323212.getName(),
+  agent2: Assets.Spritesheets.SpritesheetsMale22323212.getName()
 };
 const ToSprite = function(agent: Agent) {
   const sprite = SpriteMap[agent.agentName];
@@ -14,6 +14,10 @@ const ToSprite = function(agent: Agent) {
   return Assets.Spritesheets.SpritesheetsMale21323212.getName();
 };
 
+const iconSel = function(x, y) {
+  return y * 16 + x;
+};
+
 export class AgentSprite extends Phaser.Sprite {
   private menu: ActionSel;
   public animating = false;
@@ -21,6 +25,8 @@ export class AgentSprite extends Phaser.Sprite {
   public model: Agent;
   public standLocIndex = -1;
   private hoverText;
+  private inConvo = false;
+  private chatBubble;
 
   constructor(
     game: Phaser.Game,
@@ -46,10 +52,12 @@ export class AgentSprite extends Phaser.Sprite {
     this.hoverText.position.set((this.width - this.hoverText.width) / 2, -28);
     this.hoverText.visible = false;
 
+    this.createChatBubble();
+
     this.inputEnabled = enableInput;
     this.events.onInputDown.add(this.onDown);
     this.events.onInputOver.add(() => {
-      this.hoverText.visible = true;
+      this.hoverText.visible = !this.inConvo;
     });
     this.events.onInputOut.add(() => {
       this.hoverText.visible = false;
@@ -87,6 +95,23 @@ export class AgentSprite extends Phaser.Sprite {
 
   public busy(): boolean {
     return this.animating;
+  }
+
+  private createChatBubble() {
+    this.chatBubble = this.game.make.sprite(
+      0,
+      0,
+      Assets.Spritesheets.SpritesheetsIconsTransparent3232320.getName(),
+      iconSel(1, 4)
+    );
+    this.addChild(this.chatBubble);
+    this.chatBubble.position.set((this.width - this.chatBubble.width) / 2, -this.chatBubble.height);
+    this.chatBubble.visible = false;
+  }
+
+  public update() {
+    this.inConvo = this.model.conversation !== undefined;
+    this.chatBubble.visible = this.inConvo;
   }
 
   public move(

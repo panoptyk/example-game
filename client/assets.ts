@@ -65,6 +65,16 @@ export namespace Spritesheets {
         static getMargin(): number { return 0; }
         static getSpacing(): number { return 0; }
     }
+    export class SpritesheetsIconsTransparent3232320 {
+        static getName(): string { return 'iconsTransparent.[32,32,320,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/iconsTransparent.[32,32,320,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 320; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
     export class SpritesheetsMale21323212 {
         static getName(): string { return 'Male 02-1.[32,32,12,0,0]'; }
 

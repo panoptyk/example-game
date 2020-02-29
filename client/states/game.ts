@@ -130,6 +130,11 @@ class GameState extends Phaser.State {
       }
       // update any UI
       this.updateUI();
+      // update chat bubbles
+      this.player.update();
+      this.groups.otherAgents.forEach((agent: AgentSprite) => {
+        agent.update();
+      });
     }
   }
 

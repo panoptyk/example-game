@@ -3,6 +3,7 @@
     <div id="player-info">
       Character<br />
       Name: <span class="agent"> {{ player.agentName }} </span> <br />
+      Faction: <span class="faction">{{ player.faction.factionName }}</span>
       Gold: <span class="gold"> {{ player.gold }} </span>
     </div>
 
@@ -21,7 +22,7 @@
     </div>
 
     <div id="inspect-window" class="game-tab" v-else-if="isItem">
-      Item: <span class="Item">{{ realTarget.itemName }}</span> <br />
+      Item: <span class="item">{{ realTarget.itemName }}</span> <br />
       Type: {{ realTarget.type}}
     </div>
 

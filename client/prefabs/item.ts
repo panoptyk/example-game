@@ -14,7 +14,7 @@ const ToSprite = function(item: Item): { key: string; frame: number } {
     return { key, frame };
   }
   return {
-    key: Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+    key: Assets.Spritesheets.SpritesheetsIconsTransparent3232320.getName(),
     frame: iconSel(11, 11)
   };
 };
@@ -38,7 +38,7 @@ export class ItemSprite extends Phaser.Sprite {
       game,
       x,
       y,
-      Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+      Assets.Spritesheets.SpritesheetsIconsTransparent3232320.getName(),
       iconSel(11, 11)
     );
     this.model = model;
