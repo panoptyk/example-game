@@ -291,7 +291,7 @@ class GameState extends Phaser.State {
     const unHandledEvents: Event[] = [];
     while (this.events.length) {
       const event = this.events.shift();
-      console.log(event);
+      // console.log(event);
       if (event.canProcess()) {
         event.process();
       } else {
