@@ -168,7 +168,7 @@
         role="button"
         aria-controls="complete-quest"
       >
-        <p class="card-header-title">Turn in Quest</p>
+        <p class="card-header-title">Quest</p>
         <a class="card-header-icon">
           <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
         </a>
@@ -179,19 +179,27 @@
             <b-select
               placeholder="-- quest --"
               size="is-small"
-              v-model="completeQuest"
+              v-model="targetQuest"
               @input="onQuestSelect"
             >
               <option disabled value>-- quest --</option>
               <option
-                v-for="quest in assignedQuests"
+                v-for="quest in quests"
                 v-bind:key="quest.id"
                 v-bind:value="quest"
                 >{{ quest.id }}</option
               >
             </b-select>
           </b-field>
-          <quest-entry v-bind:key="completeQuest.id" v-bind:quest="completeQuest"></quest-entry>
+          <quest-entry v-bind:key="targetQuest.id" v-bind:quest="targetQuest"></quest-entry>
+          <template v-for="i of turnedInInfo">
+            <div class="info-box" v-bind:key="i.id">
+              <div class="info-id">#{{ i.id }}</div>
+              <div class="info-text">
+                <info-entry v-bind:info="i"></info-entry>
+              </div>
+            </div>
+          </template>
           <b-field>
             <b-select
               placeholder="-- info --"
@@ -211,7 +219,10 @@
         </div>
       </div>
       <footer class="card-footer">
-        <a class="card-footer-item" @click="onQuestComplete">Complete Quest</a>
+        <a class="card-footer-item" @click="onQuestTurnIn">Turn in Info</a>
+        <div v-if="isQuestGiver">
+          <a class="card-footer-item" @click="onCompleteQuest">Mark as Complete</a>
+        </div>
       </footer>
     </b-collapse>
   </div>
@@ -361,18 +372,23 @@ export default class ConverstaionTab extends Vue {
 
   // Update asked questions in conversation
   questions = [];
-  assignedQuests: Quest[] = [];
+  quests: Quest[] = [];
   inventory: Item[] = [];
   @Watch("trigger")
   updateTab() {
     if (!ClientAPI.playerAgent || !ClientAPI.playerAgent.conversation) {
       return;
     }
-    this.assignedQuests = [];
+    this.quests = [];
     // add any new quests assigned by agent
     for (const quest of ClientAPI.playerAgent.activeAssignedQuests) {
       if (ClientAPI.playerAgent.conversation.contains_agent(quest.giver)) {
-        this.assignedQuests.push(quest);
+        this.quests.push(quest);
+      }
+    }
+    for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
+      if (ClientAPI.playerAgent.conversation.contains_agent(quest.giver)) {
+        this.quests.push(quest);
       }
     }
     this.inventory = ClientAPI.playerAgent.inventory;
@@ -380,22 +396,36 @@ export default class ConverstaionTab extends Vue {
   }
 
   relevantInfo = [];
-  completeQuest: Quest = {} as any;
+  targetQuest: Quest = {} as any;
+  turnedInInfo: Info [] = [];
   questInfo: Info = {} as any;
+
+  get isQuestGiver(): boolean {
+    return (ClientAPI.playerAgent === this.targetQuest.giver)
+  }
+
   // For quest turn in
   onQuestSelect() {
     // list of info that can complete quest
     this.relevantInfo = [];
-    if (this.completeQuest) {
+    if (this.targetQuest) {
+      this.turnedInInfo = this.targetQuest.turnedInInfo;
       for (const info of ClientAPI.playerAgent.knowledge) {
-        if (this.completeQuest.checkSatisfiability(info)) {
+        if (!this.targetQuest.hasTurnedIn(info) &&
+          this.targetQuest.checkSatisfiability(info)
+        ) {
           this.relevantInfo.push(info);
         }
       }
     }
   }
-  onQuestComplete() {
-    ClientAPI.completeQuest(this.completeQuest, this.questInfo);
+
+  onQuestTurnIn() {
+    ClientAPI.turnInQuestInfo(this.targetQuest, this.questInfo);
+  }
+
+  onCompleteQuest() {
+    ClientAPI.completeQuest(this.targetQuest);
   }
 
   tellItem: Item = {} as any;
