@@ -232,6 +232,8 @@ class GameState extends Phaser.State {
     this.addConsoleMessage("Moved to " + this.room.roomName);
 
     this.clearAgents();
+    this.clearItems();
+    this.events = new Array();
     this.mapLoader.loadMap(this.room);
     this.loadAgents();
 
@@ -262,7 +264,6 @@ class GameState extends Phaser.State {
     });
     this.agentSpriteMap = new Map();
     this.agentsInRoom = new Set();
-    this.events = new Array();
   }
 
   private loadAgents() {
@@ -286,6 +287,23 @@ class GameState extends Phaser.State {
         this.agentSpriteMap.set(agent.id, agentSprite);
       }
     });
+  }
+
+  private clearItems(): void {
+    this.itemsInRoom.forEach(item => {
+      if (this.itemSpriteMap.has(item)) {
+        this.itemSpriteMap.get(item).destroy();
+        this.itemSpriteMap.delete(item);
+      }
+    });
+    Array.from(this.itemSpriteMap.values()).forEach(sprite => {
+      sprite.destroy();
+    });
+    this.groups.items.getAll().forEach(item => {
+      item.destroy();
+    });
+    this.itemSpriteMap = new Map();
+    this.itemsInRoom = new Set();
   }
 
   private updateItems() {
