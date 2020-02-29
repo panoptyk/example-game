@@ -7,34 +7,45 @@ export class DoorSprite extends Phaser.Sprite {
   public model: Room;
   public hoverText: Phaser.Text;
 
-  constructor(game: Phaser.Game, x: number, y: number, width: number, height: number, room: Room,  enableInput = true) {
-    super(game, x, y);
+  constructor(
+    game: Phaser.Game,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    room: Room,
+    enableInput = true
+  ) {
+    super(game, x, y, new Phaser.RenderTexture(game, width, height));
     this.model = room;
-    this.width = width;
-    this.height = height;
-
     this.alpha = 1;
-    const style = { font: "25px Arial", fill: "#ffffff" };
-    this.hoverText = this.game.make.text(0, 0, room.roomName, style);
-    this.addChild(this.hoverText);
-    this.hoverText.position.set((this.width - this.hoverText.width) / 2, -28);
-    this.hoverText.visible = false;
+
+    // this.createHoverText();
 
     this.inputEnabled = enableInput;
     this.events.onInputDown.add(this.onDown);
-    this.events.onInputOver.add(() => {
-        this.hoverText.visible = true;
-    });
-    this.events.onInputOut.add(() => {
-        this.hoverText.visible = false;
-    });
+  }
+
+  public createHoverText() {
+    const style = { font: "14px Arial", fill: "#ffffff" };
+    this.hoverText = this.game.add.text(0, 0, this.model.roomName, style);
+    this.hoverText.position.set(
+      this.world.x + (this.width * this.worldScale.x - this.hoverText.width) / 2,
+      this.world.y - 20
+    );
+
+    // this.events.onInputOver.add(() => {
+    //     this.hoverText.visible = true;
+    // });
+    // this.events.onInputOut.add(() => {
+    //     this.hoverText.visible = false;
+    // });
   }
 
   private onDown(sprite: DoorSprite) {
     if (sprite.menuCreated()) {
       sprite.destroyMenu();
-    }
-    else {
+    } else {
       sprite.createMenu();
     }
   }
@@ -57,7 +68,8 @@ export class DoorSprite extends Phaser.Sprite {
     if (this.menu) {
       this.menu.destroy();
     }
+    this.hoverText.destroy();
+    this.hoverText = undefined;
     super.destroy();
   }
-
 }

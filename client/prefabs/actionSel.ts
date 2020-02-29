@@ -5,9 +5,13 @@ import { AgentSprite } from "./agent";
 import { DoorSprite } from "./door";
 import GS from "./../states/game";
 
+const iconSel = function(x, y) {
+  return y * 16 + x;
+};
+
 export class ActionSel {
-  static DIST_FROM_SPRITE = 40; // px
-  static ANGLE_PER_ITEM = 30; // degrees
+  static DIST_FROM_SPRITE = 50; // px
+  static ANGLE_PER_ITEM = 55; // degrees
   static START_ANGLE = 225; // degrees
 
   static currentMenu: ActionSel;
@@ -24,12 +28,14 @@ export class ActionSel {
   private sprite: Phaser.Sprite;
   private group: Phaser.Group;
   private icons: Map<string, Phaser.Sprite>;
+  private lines: Phaser.Graphics[];
   private nextLoc: number;
 
   constructor(sprite: Phaser.Sprite) {
     this.sprite = sprite;
     this.group = sprite.game.add.group();
     this.icons = new Map();
+    this.lines = [];
     this.nextLoc = 0;
     ActionSel.currentMenu = this;
     UI.instance.setInspectTarget((sprite as any).model);
@@ -38,9 +44,7 @@ export class ActionSel {
 
   // Create Actions //
   public createActions() {
-    this.sprite.parent.addChild(this.group);
-    this.group.position.set(this.sprite.x, this.sprite.y);
-    this.group.scale.set(1 / this.sprite.parent.worldScale.x);
+    this.group.position.set(this.sprite.world.x, this.sprite.world.y);
     if (this.sprite instanceof AgentSprite) {
       this.createAgentActions();
     } else if (this.sprite instanceof DoorSprite) {
@@ -94,11 +98,12 @@ export class ActionSel {
 
   // Create Icons //
   private createEnterIcon(door: DoorSprite) {
-    const relativePos = this.createCoord();
+    const relativePos = this.createRelativeCoord();
     const enterIcon = this.sprite.game.make.sprite(
       0,
       0,
-      Assets.Images.ImagesConv.getName()
+      Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+      iconSel(0, 2)
     );
     this.group.addChild(enterIcon);
     this.icons.set("enter", enterIcon);
@@ -116,11 +121,12 @@ export class ActionSel {
   }
 
   private createTradeIcon(agent: AgentSprite) {
-    const relativePos = this.createCoord();
+    const relativePos = this.createRelativeCoord();
     const tradeIcon = this.sprite.game.make.sprite(
       0,
       0,
-      Assets.Images.ImagesTrade.getName()
+      Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+      iconSel(11, 12)
     );
     this.group.addChild(tradeIcon);
     this.icons.set("trade", tradeIcon);
@@ -140,11 +146,12 @@ export class ActionSel {
   }
 
   private createConvIcon(agent: AgentSprite) {
-    const relativePos = this.createCoord();
+    const relativePos = this.createRelativeCoord();
     const convIcon = this.sprite.game.make.sprite(
       0,
       0,
-      Assets.Images.ImagesConv.getName()
+      Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+      iconSel(0, 4)
     );
     this.group.addChild(convIcon);
     this.icons.set("conversation", convIcon);
@@ -159,25 +166,14 @@ export class ActionSel {
     });
   }
 
-  private createCoord(): Phaser.Point {
-    const angleAdjust =
-      ActionSel.START_ANGLE + ActionSel.ANGLE_PER_ITEM * this.nextLoc++;
-    let point = new Phaser.Point(ActionSel.DIST_FROM_SPRITE, 0);
-    point = point.rotate(0, 0, angleAdjust, true, ActionSel.DIST_FROM_SPRITE);
-    point = point.add(
-      this.sprite.width / this.group.scale.x / 2,
-      this.sprite.height / this.group.scale.y / 2
-    );
-    return point;
-  }
-
   private animateIcon(
     start: Phaser.Point,
-    end: Phaser.Point,
+    relativeEnd: Phaser.Point,
     sprite: Phaser.Sprite,
     callback: () => any
   ) {
     sprite.position.set(start.x, start.y);
+    const end = Phaser.Point.add(start, relativeEnd);
     const tween = this.sprite.game.add.tween(sprite).to(
       {
         x: end.x,
@@ -188,21 +184,41 @@ export class ActionSel {
       true
     );
     tween.onComplete.add(() => {
+      const g = this.sprite.game.add.graphics(sprite.width / 2, sprite.height / 2);
+      this.group.addChildAt(g, 0);
+      this.lines.push(g);
+      g.beginFill();
+      g.lineStyle(1, 0xffffff, 1);
+      g.moveTo(start.x, start.y);
+      g.lineTo(end.x, end.y);
+      g.endFill();
       callback();
     });
   }
 
+  private createRelativeCoord(): Phaser.Point {
+    const angleAdjust =
+      ActionSel.START_ANGLE + ActionSel.ANGLE_PER_ITEM * this.nextLoc++;
+    let point = new Phaser.Point(ActionSel.DIST_FROM_SPRITE, 0);
+    point = point.rotate(0, 0, angleAdjust, true, ActionSel.DIST_FROM_SPRITE);
+    return point;
+  }
+
   private getCenterPos(icon: Phaser.Sprite): Phaser.Point {
     return new Phaser.Point(
-      (this.sprite.width / this.group.scale.x - icon.width) / 2,
-      (this.sprite.height / this.group.scale.y - icon.height) / 2
+      (this.sprite.width * this.sprite.worldScale.x - icon.width) / 2,
+      (this.sprite.height * this.sprite.worldScale.y - icon.height) / 2
     );
   }
 
   public destroy() {
+    this.lines.forEach(g => {
+      g.clear();
+    });
     this.group.getAll().forEach(child => {
       child.destroy();
     });
+    this.lines = [];
     this.group.destroy();
     this.group = undefined;
     this.sprite = undefined;

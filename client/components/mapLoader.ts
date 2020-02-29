@@ -151,6 +151,15 @@ export class MapLoader {
       this.world.centerX - this.groups.gameWorld.width / 2,
       this.world.centerY - this.groups.gameWorld.height / 2
     );
+
+    // For things post-scaling (apparently takes time for Phaser to latch scale)
+    // tslint:disable-next-line: ban
+    setTimeout(() => {
+      // Create hover text
+      this.groups.doorObjects.getAll().forEach((door: DoorSprite) => {
+        door.createHoverText();
+      });
+    }, 300);
   }
 
 }

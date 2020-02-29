@@ -2,26 +2,6 @@
 /* AUTO GENERATED FILE. DO NOT MODIFY. YOU WILL LOSE YOUR CHANGES ON BUILD. */
 
 export namespace Images {
-    export class ImagesConv {
-        static getName(): string { return 'conv'; }
-
-        static getPNG(): string { return require('assets/images/conv.png'); }
-    }
-    export class ImagesDoor {
-        static getName(): string { return 'door'; }
-
-        static getPNG(): string { return require('assets/images/door.png'); }
-    }
-    export class ImagesSideDoor {
-        static getName(): string { return 'sideDoor'; }
-
-        static getPNG(): string { return require('assets/images/sideDoor.png'); }
-    }
-    export class ImagesTrade {
-        static getName(): string { return 'trade'; }
-
-        static getPNG(): string { return require('assets/images/trade.png'); }
-    }
     export class TilemapsTilesADirtPipo {
         static getName(): string { return '[A]Dirt_pipo'; }
 
@@ -72,6 +52,16 @@ export namespace Spritesheets {
         static getFrameWidth(): number { return 193; }
         static getFrameHeight(): number { return 71; }
         static getFrameMax(): number { return 3; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsIcons3232320 {
+        static getName(): string { return 'icons.[32,32,320,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/icons.[32,32,320,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 320; }
         static getMargin(): number { return 0; }
         static getSpacing(): number { return 0; }
     }
