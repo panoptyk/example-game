@@ -32,6 +32,7 @@ export class ActionSel {
     this.nextLoc = 0;
     ActionSel.currentMenu = this;
     UI.instance.setInspectTarget((sprite as any).model);
+    UI.instance.setLeftTab(UI.LTABS.INSPECT);
   }
 
   // Create Actions //
@@ -201,5 +202,6 @@ export class ActionSel {
     this.group = undefined;
     this.sprite = undefined;
     ActionSel.currentMenu = undefined;
+    UI.instance.setInspectTarget(undefined);
   }
 }
