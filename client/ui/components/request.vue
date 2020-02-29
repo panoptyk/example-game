@@ -66,6 +66,6 @@ export default class Request extends Vue {
   padding: 5px;
 }
 .request-entry {
-    color: black;
+    color: var(--text-color-primary);
 }
 </style>

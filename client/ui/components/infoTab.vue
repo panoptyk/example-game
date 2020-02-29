@@ -215,7 +215,7 @@ export default class InfoTab extends Vue {
 .info-box {
   border: 2px;
   border-style: solid;
-  border-color: antiquewhite;
+  border-color: var(--borders);
   background-color: dimgrey;
   display: flex;
   margin-top: 5px;

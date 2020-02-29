@@ -88,7 +88,7 @@ export default class QuestTab extends Vue {
 .quest-box {
   border: 2px;
   border-style: solid;
-  border-color: antiquewhite;
+  border-color: var(--borders);
   background-color: dimgrey;
   display: flex;
   margin-top: 5px;

@@ -163,8 +163,18 @@ $twitter-invert: findColorInvert($twitter);
 // Panoptyk Colors
 $action: #073269;
 $action-invert: findColorInvert($action);
-$agent: #5b7a38;
-$agent-invert: findColorInvert($action);
+$agent: #274603;
+$agent-invert: findColorInvert($agent);
+$room: #68050d;
+$room-invert: findColorInvert($room);
+$item: #5e5f04;
+$item-invert: findColorInvert($item);
+$info: #8b5806;
+$info-invert: findColorInvert($info);
+$time: #417432;
+$time-invert: findColorInvert($time);
+$faction: #046685;
+$faction-invert: findColorInvert($faction);
 
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 $colors: (
@@ -175,6 +185,26 @@ $colors: (
   "agent": (
     $agent,
     $agent-invert
+  ),
+  "room": (
+    $room,
+    $room-invert
+  ),
+  "item": (
+    $item,
+    $item-invert
+  ),
+  "info": (
+    $info,
+    $info-invert
+  ),
+  "time": (
+    $time,
+    $time-invert
+  ),
+  "faction": (
+    $faction,
+    $faction-invert
   ),
   "white": (
     $white,
@@ -195,10 +225,6 @@ $colors: (
   "primary": (
     $primary,
     $primary-invert
-  ),
-  "info": (
-    $info,
-    $info-invert
   ),
   "success": (
     $success,
@@ -246,12 +272,39 @@ input.is-small.input {
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
 
+// Panoptyk UI variables
+:root {
+  --borders: #eff6c5;
+  --text-color-primary: antiquewhite;
+  --text-color-secondary: antiquewhite;
+}
+
 span.action {
   color: $action;
   font-weight: bold;
 }
 span.agent {
   color: $agent;
+  font-weight: bold;
+}
+span.room {
+  color: $room;
+  font-weight: bold;
+}
+span.item {
+  color: $item;
+  font-weight: bold;
+}
+span.info {
+  color: $info;
+  font-weight: bold;
+}
+span.time {
+  color: $time;
+  font-weight: bold;
+}
+span.faction {
+  color: $faction;
   font-weight: bold;
 }
 
@@ -278,15 +331,15 @@ body {
   height: 30px;
   border: 0px;
   border-bottom: 2px;
-  border-color: antiquewhite;
+  border-color: var(--borders);
   border-style: solid;
-  color: aliceblue;
+  color: var(--text-color-primary);
 }
 #game-outline {
   margin-right: 5px;
   margin-left: 5px;
   border: 5px;
-  border-color: antiquewhite;
+  border-color: var(--borders);
   border-style: solid;
 }
 #phaser-game {
@@ -304,10 +357,10 @@ body {
   flex: 1;
 
   border: 5px;
-  border-color: antiquewhite;
+  border-color: var(--borders);
   border-style: solid;
 }
 .game-tab {
-  color: antiquewhite;
+  color: var(--text-color-primary);
 }
 </style>

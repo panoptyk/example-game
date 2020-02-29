@@ -44,7 +44,7 @@ export default class Console extends Vue {
 
   border: 0px;
   border-top: 2px;
-  border-color: antiquewhite;
+  border-color: var(--borders);
   border-style: solid;
 }
 #console::-webkit-scrollbar {
