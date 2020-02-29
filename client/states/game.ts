@@ -71,7 +71,7 @@ class GameState extends Phaser.State {
 
     this.UI = UI.instance;
     (window as any).myUI = this.UI;
-    this.UI.addMessage("Welcome to Panoptyk!");
+    this.UI.addMessage("Welcome to Panoptyk!", true);
     this.UI.refresh();
 
     // initialization code
@@ -147,7 +147,7 @@ class GameState extends Phaser.State {
       .then(res => {
         const start = this.player.position;
         const end = sprite.position;
-        this.moveAgent(this.player, start, end, () => {
+        this.player.move(start, end, () => {
           this.convoRequests = new Set();
           this.tradeRequests = new Set();
           this.enterNewRoom();
@@ -220,30 +220,6 @@ class GameState extends Phaser.State {
     this.groups.gameWorld.add(this.player);
   }
 
-  private moveAgent(
-    agent: Phaser.Sprite,
-    start: Phaser.Point,
-    end: Phaser.Point,
-    callback = function() {}
-  ) {
-    agent.visible = false;
-    agent.position.set(start.x, start.y);
-    const ms = start.distance(end, true) * 0.8;
-    const tween = this.game.add.tween(agent).to(
-      {
-        x: end.x,
-        y: end.y
-      },
-      ms,
-      Phaser.Easing.Linear.None,
-      true
-    );
-    tween.onComplete.add(() => {
-      callback();
-    });
-    agent.visible = true;
-  }
-
   public addConsoleMessage(messageString: string): void {
     console.log(messageString);
     this.UI.addMessage(messageString);
@@ -313,7 +289,6 @@ class GameState extends Phaser.State {
   }
 
   private updateItems() {
-    console.log("updateitems", this.room.getItems());
     const inRoom = new Set(this.room.getItems().map(item => item.id));
     const removes = [];
     this.itemsInRoom.forEach(id => {

@@ -5,7 +5,6 @@ export class Login extends Phaser.State {
   private ready: boolean;
 
   public create(): void {
-    console.log("hi there");
     const inputFieldHeight = 20;
     const inputFieldWidth = 200;
 

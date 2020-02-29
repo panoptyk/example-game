@@ -73,7 +73,6 @@ export default class ItemTab extends Vue {
   portionOfInfo() {
     const start = (this.curPage - 1) * this.perPage;
     const end = Math.min(start + this.perPage, this.total);
-    console.log(start, end);
     this.subsetItems = this.items
       .sort((a, b) => {
         return b - a;
