@@ -3,7 +3,7 @@
     <div id="player-info">
       Character<br />
       Name: <span class="agent"> {{ player.agentName }} </span> <br />
-      Faction: <span class="faction">{{ player.faction.factionName }}</span>
+      Faction: <span class="faction">{{ playerFaction }}</span> <br />
       Gold: <span class="gold"> {{ player.gold }} </span>
     </div>
 
@@ -56,6 +56,13 @@ export default class InspectTab extends Vue {
   update() {
     this.realTarget = this.target;
     this.player = ClientAPI.playerAgent;
+  }
+
+  get playerFaction() {
+    if (this.player.faction) {
+      return this.realTarget.faction.factionName;
+    }
+    return "no affiliation";
   }
 
   get factionName() {
