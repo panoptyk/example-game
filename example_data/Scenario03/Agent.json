@@ -3,9 +3,9 @@
     "1": {
       "id": 1,
       "_conversationID": 0,
-      "_agentName": "mitch",
+      "_agentName": "Mitch",
       "roomID": 1,
-      "_inventory": [2, 3, 4],
+      "_inventory": [],
       "_knowledge": [],
       "_gold": 50,
       "_conversationRequests": [],
@@ -18,7 +18,7 @@
     "2": {
       "id": 2,
       "_conversationID": 0,
-      "_agentName": "foaad",
+      "_agentName": "Foaad",
       "roomID": 1,
       "_inventory": [5],
       "_knowledge": [],
@@ -29,7 +29,52 @@
       "_tradeRequested": [],
       "_assignedQuests": [],
       "_givenQuests": []
+    },
+    "3": {
+      "id": 3,
+      "_conversationID": 0,
+      "_agentName": "PlayerA",
+      "roomID": 1,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 50,
+      "_conversationRequests": [],
+      "_conversationRequested": [],
+      "_tradeRequests": [],
+      "_tradeRequested": [],
+      "_assignedQuests": [],
+      "_givenQuests": []
+    },
+    "4": {
+      "id": 4,
+      "_conversationID": 0,
+      "_agentName": "PlayerB",
+      "roomID": 1,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 50,
+      "_conversationRequests": [],
+      "_conversationRequested": [],
+      "_tradeRequests": [],
+      "_tradeRequested": [],
+      "_assignedQuests": [],
+      "_givenQuests": []
+    },
+    "5": {
+      "id": 5,
+      "_conversationID": 0,
+      "_agentName": "Chief",
+      "roomID": 13,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 50,
+      "_conversationRequests": [],
+      "_conversationRequested": [],
+      "_tradeRequests": [],
+      "_tradeRequested": [],
+      "_assignedQuests": [],
+      "_givenQuests": []
     }
   },
-  "nextID": 3
+  "nextID": 6
 }
