@@ -45,6 +45,7 @@ export default class ItemTab extends Vue {
 
   items = [];
   subsetItems = [];
+  softTrigger = 0;
 
   total = 0;
   curPage = 1;
@@ -66,18 +67,19 @@ export default class ItemTab extends Vue {
   @Watch("items")
   updateTotal() {
     this.total = this.items.length;
+    this.softTrigger = (this.softTrigger + 1) % 2;
   }
 
   @Watch("curPage")
-  @Watch("total")
+  @Watch("softTrigger")
   portionOfInfo() {
     const start = (this.curPage - 1) * this.perPage;
     const end = Math.min(start + this.perPage, this.total);
     this.subsetItems = this.items
+      .slice(0)
       .sort((a, b) => {
         return b - a;
       })
-      .slice(0)
       .slice(start, end)
   }
 }

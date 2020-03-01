@@ -144,10 +144,10 @@ export default class InfoTab extends Vue {
     const start = (this.curPage - 1) * this.perPage;
     const end = Math.min(start + this.perPage, this.total);
     this.subsetInfo = this.info
+      .slice(0)
       .sort((a: Info, b: Info) => {
         return b.id - a.id;
       })
-      .slice(0)
       .slice(start, end);
   }
 

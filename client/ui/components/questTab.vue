@@ -75,10 +75,10 @@ export default class QuestTab extends Vue {
     const start = (this.curPage - 1) * this.perPage;
     const end = Math.min(start + this.perPage, this.total);
     this.subsetQuests = this.quests
+      .slice(0)
       .sort((a, b) => {
         return b - a;
       })
-      .slice(0)
       .slice(start, end);
   }
 }
