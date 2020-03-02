@@ -1,14 +1,20 @@
 import { ClientAPI, Agent, Info, Quest, Item } from "panoptyk-engine/dist/";
-import { Strategy, SuccessAction, FailureAction } from "../../../../lib";
+import {
+  Strategy,
+  SuccessAction,
+  FailureAction,
+  BehaviorState
+} from "../../../../lib";
 import {
   IdleState,
   TellInfo,
   TurnInBehavior,
   GiveQuestBehavior,
-  TradeBehavior
+  TradeBehavior,
+  IdleAndConverseBehavior,
+  CloseQuestBehavior
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
-import { IdleAndConverseBehavior } from "../../../../utils/BehaviorStates/idleAndConverseBState";
 
 export class CrimeLeader extends Strategy {
   private _lastIdx = 0;
@@ -42,10 +48,13 @@ export class CrimeLeader extends Strategy {
 
   private loadQuests() {
     for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
-      if (quest.type === "question") {
-        this._assignedInfoQuest.add(quest.task);
-      } else if (quest.type === "command") {
-        this._assignedItemQuest.add(quest.task.getTerms().item);
+      if (quest.task.action) {
+        this._assignedAgents.add(quest.receiver);
+        if (quest.type === "question") {
+          this._assignedInfoQuest.add(quest.task);
+        } else if (quest.type === "command") {
+          this._assignedItemQuest.add(quest.task.getTerms().item);
+        }
       }
     }
   }
@@ -128,24 +137,43 @@ export class CrimeLeader extends Strategy {
   }
 
   public static idleConverseTransition(this: IdleAndConverseBehavior) {
-    if (ClientAPI.playerAgent.tradeRequesters[0]) {
-      return new TradeBehavior(
-        ClientAPI.playerAgent.tradeRequesters[0],
-        CrimeLeader.tradeTransition
-      );
-    } else if (
-      CrimeLeader.instance.hasQuestToAssign() &&
-      ClientAPI.playerAgent.conversation &&
-      CrimeLeader.isValidQuestingAgent(Helper.getOthersInConversation()[0])
-    ) {
-      return CrimeLeader.instance.giveQuestBehavior(
-        Helper.getOthersInConversation()[0]
-      );
+    if (ClientAPI.playerAgent.conversation) {
+      const other = Helper.getOthersInConversation()[0];
+      if (CrimeLeader.instance._assignedAgents.has(other)) {
+        for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
+          if (quest.receiver === other && quest.turnedInInfo[0]) {
+            // complete action quests but leave patrol quests open
+            if (quest.task.action) {
+              return new CloseQuestBehavior(
+                quest,
+                true,
+                CrimeLeader.defaultTransition
+              );
+            }
+          }
+        }
+        // no more active quests for agent
+        CrimeLeader.instance._assignedAgents.delete(other);
+      }
+
+      if (ClientAPI.playerAgent.tradeRequesters[0]) {
+        return new TradeBehavior(
+          ClientAPI.playerAgent.tradeRequesters[0],
+          CrimeLeader.defaultTransition
+        );
+      } else if (
+        CrimeLeader.instance.hasQuestToAssign() &&
+        CrimeLeader.isValidQuestingAgent(other)
+      ) {
+        return CrimeLeader.instance.giveQuestBehavior(
+          Helper.getOthersInConversation()[0]
+        );
+      }
     }
     return this;
   }
 
-  public static tradeTransition(this: TradeBehavior) {
+  public static defaultTransition(this: BehaviorState) {
     if (
       this.currentActionState instanceof SuccessAction ||
       this.currentActionState instanceof FailureAction

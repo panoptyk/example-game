@@ -3,7 +3,7 @@ import { Quest, ClientAPI, ValidationResult } from "panoptyk-engine/dist/";
 import { SuccessAction } from "../../lib/ActionStates/successAState";
 import { FailureAction } from "../../lib/ActionStates/failureAState";
 
-export class CompleteQuestState extends ActionState {
+export class FailQuestState extends ActionState {
   private quest: Quest;
   private _completed = false;
   public get completed() {
@@ -25,7 +25,7 @@ export class CompleteQuestState extends ActionState {
       ClientAPI.playerAgent.conversation.contains_agent(this.quest.receiver) &&
       ClientAPI.playerAgent === this.quest.giver
     ) {
-      await ClientAPI.completeQuest(this.quest)
+      await ClientAPI.failQuest(this.quest)
         .catch((res: ValidationResult) => {
           console.log(res.message);
         })

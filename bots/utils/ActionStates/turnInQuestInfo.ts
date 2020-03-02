@@ -1,10 +1,11 @@
 import { ActionState } from "../../lib/ActionStates/actionState";
-import { Quest, ClientAPI, ValidationResult } from "panoptyk-engine/dist/";
+import { Quest, ClientAPI, ValidationResult, Info } from "panoptyk-engine/dist/";
 import { SuccessAction } from "../../lib/ActionStates/successAState";
 import { FailureAction } from "../../lib/ActionStates/failureAState";
 
-export class CompleteQuestState extends ActionState {
+export class TurnInQuestInfoState extends ActionState {
   private quest: Quest;
+  private solution: Info;
   private _completed = false;
   public get completed() {
     return this._completed;
@@ -14,18 +15,19 @@ export class CompleteQuestState extends ActionState {
     return this._doneActing;
   }
 
-  constructor(quest: Quest, nextState: () => ActionState = undefined) {
+  constructor(quest: Quest, solution: Info, nextState: () => ActionState = undefined) {
     super(nextState);
     this.quest = quest;
+    this.solution = solution;
   }
 
   public async act() {
     if (
       ClientAPI.playerAgent.conversation &&
-      ClientAPI.playerAgent.conversation.contains_agent(this.quest.receiver) &&
-      ClientAPI.playerAgent === this.quest.giver
+      ClientAPI.playerAgent.conversation.contains_agent(this.quest.giver) &&
+      this.quest.checkSatisfiability(this.solution)
     ) {
-      await ClientAPI.completeQuest(this.quest)
+      await ClientAPI.turnInQuestInfo(this.quest, this.solution)
         .catch((res: ValidationResult) => {
           console.log(res.message);
         })

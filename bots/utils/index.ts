@@ -22,3 +22,7 @@ export { PassItemReqTradeState } from "./ActionStates/passItemReqTradeAState";
 export { PassQuestionTradeState } from "./ActionStates/passQuestionTradeAState";
 export { TellItemOwnershipState } from "./ActionStates/tellItemOwnershipAState";
 export { PickupItemsState } from "./ActionStates/pickupItemsAState";
+export { IdleAndConverseBehavior } from "./BehaviorStates/idleAndConverseBState";
+export { TurnInQuestInfoState } from "./ActionStates/turnInQuestInfo";
+export { CloseQuestBehavior } from "./BehaviorStates/closeQuestBState";
+export { FailQuestState } from "./ActionStates/failQuestAState";

@@ -11,7 +11,7 @@ import * as Helper from "../helper";
 import {
   LeaveConersationState,
   RequestConversationState,
-  CompleteQuestState
+  TurnInQuestInfoState
 } from "../";
 
 export class TurnInBehavior extends BehaviorState {
@@ -38,7 +38,7 @@ export class TurnInBehavior extends BehaviorState {
       this.currentActionState = FailureAction.instance;
     } else if (ClientAPI.playerAgent.conversation) {
       if (ClientAPI.playerAgent.conversation.contains_agent(this.quest.giver)) {
-        this.currentActionState = new CompleteQuestState(
+        this.currentActionState = new TurnInQuestInfoState(
           this.quest,
           this.solution
         );
@@ -74,7 +74,7 @@ export class TurnInBehavior extends BehaviorState {
     this: RequestConversationState
   ): ActionState {
     if (ClientAPI.playerAgent.conversation) {
-      return new CompleteQuestState(
+      return new TurnInQuestInfoState(
         TurnInBehavior.activeInstance.quest,
         TurnInBehavior.activeInstance.solution
       );

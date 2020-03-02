@@ -13,13 +13,10 @@ import {
   IdleState,
   TellInfo,
   TurnInBehavior,
-  GiveQuestBehavior
+  GiveQuestBehavior,
+  IdleAndConverseBehavior
 } from "../../../../utils";
-import { PolicePatrol } from "../BehaviorStates/policePatrolBState";
-import { ArrestBehavior } from "../BehaviorStates/arrestBState";
-import { PoliceNavigateToAgent } from "../BehaviorStates/policeNavigateAgentBState";
 import { PoliceKnowledgeBase } from "../KnowledgeBase/policeKnowledge";
-import { IdleAndConverseBehavior } from "../../../../utils/BehaviorStates/idleAndConverseBState";
 
 export class PoliceLeader extends Strategy {
   targetedCriminals: Set<Agent> = new Set<Agent>();
