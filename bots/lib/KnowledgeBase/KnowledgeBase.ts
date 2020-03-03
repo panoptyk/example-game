@@ -1,8 +1,7 @@
-import { RoomMap } from "./RoomMap";
 import { ClientAPI, Info, Room } from "panoptyk-engine/dist/client";
-import { QuestionInfo } from "panoptyk-engine/dist/models/conversation";
 
-export class KnowledgeBase {
+// TODO: needs a new name
+class KnowledgeBase {
   // Singleton Pattern
   private static _instance: KnowledgeBase;
 
@@ -12,8 +11,6 @@ export class KnowledgeBase {
     }
     return KnowledgeBase._instance;
   }
-
-  public roomMap: RoomMap = new RoomMap();
 
   public isConversationRequested(): boolean {
     return ClientAPI.playerAgent.conversationRequesters.length > 0;
@@ -42,3 +39,6 @@ export class KnowledgeBase {
     return location;
   }
 }
+
+export { KnowledgeBase };
+export default KnowledgeBase.instance;

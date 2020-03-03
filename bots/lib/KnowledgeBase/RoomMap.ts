@@ -1,6 +1,6 @@
 import { Room, ClientAPI } from "panoptyk-engine/dist/client";
 
-export class RoomMap {
+class RoomMap {
   // Singleton Patten
   private static _instance: RoomMap;
 
@@ -128,3 +128,6 @@ export class RoomMap {
     return min;
   }
 }
+
+export { RoomMap };
+export default RoomMap.instance;

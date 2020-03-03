@@ -6,5 +6,9 @@ export { BehaviorState } from "./BehaviorStates/behaviorState";
 export { FailureBehavior } from "./BehaviorStates/failureBState";
 export { SuccessBehavior } from "./BehaviorStates/successBState";
 export { Strategy } from "./Strategy/strategy";
-export { KnowledgeBase } from "./KnowledgeBase/KnowledgeBase";
+export { KnowledgeBase as KnowledgeBaseClass } from "./KnowledgeBase/KnowledgeBase";
 export { RoomMap } from "./KnowledgeBase/RoomMap";
+
+import * as KB from "./KnowledgeBase";
+export { KB };
+
