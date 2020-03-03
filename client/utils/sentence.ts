@@ -172,7 +172,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item + " "
+          text: terms.item.itemName.itemName + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -190,7 +190,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item + " "
+          text: terms.item.itemName + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -266,7 +266,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item + " "
+          text: terms.item.itemName + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -400,7 +400,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item + " "
+          text: terms.item.itemName + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -414,7 +414,7 @@ class Sentence {
       case Info.ACTIONS.LOCATED_IN.name:
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item + " "
+          text: terms.item.itemName + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -443,7 +443,7 @@ class Sentence {
       text: "on "
     });
     if (terms.time) {
-      const date = new Date(Date.UTC(0, 0, 0, terms.time));
+      const date = new Date(terms.time);
       arr.push({
         type: Sentence.BlockType.TIME,
         text:
@@ -454,7 +454,9 @@ class Sentence {
           (date.getFullYear() - 1900) +
           " " +
           date.getHours() +
-          ":00."
+          ":" +
+          date.getMinutes() +
+          "."
       });
     } else {
       arr.push({

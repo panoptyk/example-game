@@ -129,7 +129,7 @@ export default class App extends Vue {
   @Watch("time")
   displayTopBar() {
     this.showTopBar = true;
-    const date = new Date(Date.UTC(0, 0, 0, this.time));
+    const date = new Date(this.time);
     this.dateString =
       date.getMonth() +
       "-" +
@@ -138,7 +138,8 @@ export default class App extends Vue {
       (date.getFullYear() - 1900) +
       " " +
       date.getHours() +
-      ":00";
+      ":" +
+      date.getMinutes();
   }
   // Sidebar data
   activeLSideBarTab = 0;
