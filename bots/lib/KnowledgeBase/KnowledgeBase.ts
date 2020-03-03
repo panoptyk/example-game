@@ -16,10 +16,7 @@ export class KnowledgeBase {
   public roomMap: RoomMap = new RoomMap();
 
   public isConversationRequested(): boolean {
-    if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
-      return true;
-    }
-    return false;
+    return ClientAPI.playerAgent.conversationRequesters.length > 0;
   }
 
   public questionAboutRoom(): Room {
