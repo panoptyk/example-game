@@ -9,12 +9,7 @@ import {
   getPanoptykDatetime,
   logger
 } from "panoptyk-engine/dist/client";
-import { WanderBehavior } from "../john_bots/wanderBState";
-import { IdleState } from "../john_bots/idleAState";
-import { MoveState } from "../john_bots/moveAState";
-import { ActionState } from "./ActionStates/actionState";
-import { State } from "./state";
-import { WanderStrategy } from "../john_bots/wanderStrategy";
+import * as KB from "./extendKB";
 
 // Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "idle";
@@ -75,6 +70,7 @@ function actWrapper() {
 
 async function act() {
   // await exampleStrategy.act();
+
 }
 
 // =======Start Bot========== //
