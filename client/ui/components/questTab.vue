@@ -63,7 +63,11 @@ export default class QuestTab extends Vue {
     }
 
     this.quests = ClientAPI.playerAgent.activeAssignedQuests;
+    const pastVal = UI.instance.main.$data.activeQuest;
     UI.instance.main.$data.activeQuest = this.quests.length;
+    if (pastVal < this.quests.length) {
+      UI.instance.addMessage("You have recieved a new quest!", true);
+    }
   }
 
   @Watch("quests")

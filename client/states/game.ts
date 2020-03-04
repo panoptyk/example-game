@@ -5,7 +5,8 @@ import {
   formatPanoptykDatetime,
   Room,
   Agent,
-  Info
+  Info,
+  Trade
 } from "panoptyk-engine/dist/client";
 import { AgentSprite } from "../prefabs/agent";
 import { UI } from "../ui/ui";
@@ -35,8 +36,12 @@ class GameState extends Phaser.State {
   movingRooms = false;
   standingLocs: LocationIndex;
 
+  convoRequesters = new Set<Agent>();
+  tradeRequesters = new Set<Agent>();
   convoRequests = new Set<Agent>();
   tradeRequests = new Set<Agent>();
+
+  lastActiveTrade: Trade = undefined;
 
   itemSpriteMap: Map<number, ItemSprite> = new Map();
   itemsInRoom: Set<number> = new Set();
@@ -128,6 +133,17 @@ class GameState extends Phaser.State {
       if (ActionSel.currentMenu) {
         ActionSel.currentMenu.update();
       }
+      // log active trade
+      if (this.lastActiveTrade && !ClientAPI.playerAgent.trade) {
+        if (this.lastActiveTrade.resultStatus === 1) {
+          this.addConsoleMessage("Trade successfully completed");
+        } else if (this.lastActiveTrade.resultStatus === 0) {
+          this.addConsoleMessage("Trade has been cancelled");
+        }
+        this.lastActiveTrade = undefined;
+      } else {
+        this.lastActiveTrade = ClientAPI.playerAgent.trade;
+      }
       // update any UI
       this.updateUI();
       // update chat bubbles
@@ -166,6 +182,7 @@ class GameState extends Phaser.State {
   public createUI() {}
 
   public updateUI() {
+    // Check all convo/trade requests' status by player
     const player = ClientAPI.playerAgent;
     // Check for accepts
     if (player.conversation) {
@@ -212,6 +229,21 @@ class GameState extends Phaser.State {
       }
     });
     this.tradeRequests = requests;
+
+    // Check recieved convo/trade requests
+    player.conversationRequesters.forEach(agent => {
+      if (!this.convoRequesters.has(agent)) {
+        this.addConsoleMessage(agent.agentName + " has requested a conversation with you");
+      }
+    });
+    this.convoRequesters = new Set(player.conversationRequesters);
+
+    player.tradeRequesters.forEach(agent => {
+      if (!this.tradeRequesters.has(agent)) {
+        this.addConsoleMessage(agent.agentName + " has requested a trade with you");
+      }
+    });
+    this.tradeRequesters = new Set(player.tradeRequesters);
   }
 
   private createPlayer(x: number, y: number): void {
@@ -234,7 +266,6 @@ class GameState extends Phaser.State {
     this.previousRoom = this.room;
     this.room = ClientAPI.playerAgent.room;
     this.UI.setRoom(this.room);
-    this.addConsoleMessage("Moved to " + this.room.roomName);
 
     this.clearAgents();
     this.clearItems();
