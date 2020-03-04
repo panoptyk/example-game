@@ -1,7 +1,7 @@
 class AnotherKB {
     // Singleton pattern
     private static _instance: AnotherKB;
-    public static get instance {
+    public static get instance() {
       if (!AnotherKB._instance) {
           AnotherKB._instance = new AnotherKB();
       }
