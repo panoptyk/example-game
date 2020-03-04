@@ -4,7 +4,10 @@ import { SuccessAction } from "../../lib/ActionStates/successAState";
 import { FailureAction } from "../../lib/ActionStates/failureAState";
 
 export class TellInfoState extends ActionState {
-    private toTell: Info;
+    private _toTell: Info;
+    public get toTell(): Info {
+        return this._toTell;
+    }
     private mask: string[];
     private _completed = false;
     public get completed() {
@@ -15,15 +18,15 @@ export class TellInfoState extends ActionState {
         return this._doneActing;
     }
 
-    constructor(toTell: Info, mask?: string[], nextState: () => ActionState = undefined) {
+    constructor(_toTell: Info, mask?: string[], nextState: () => ActionState = undefined) {
         super(nextState);
-        this.toTell = toTell;
+        this._toTell = _toTell;
         this.mask = mask;
     }
 
     public async act() {
         if (ClientAPI.playerAgent.conversation) {
-            await ClientAPI.tellInfo(this.toTell, this.mask)
+            await ClientAPI.tellInfo(this._toTell, this.mask)
             .catch((res: ValidationResult) => {
                 console.log(res.message);
             })

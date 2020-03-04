@@ -16,12 +16,13 @@ import {
 
 export class TurnInBehavior extends BehaviorState {
   quest: Quest;
-  solution: Info;
+  solutions: Info[] = [];
 
   private static _activeInstance: TurnInBehavior;
   public static get activeInstance(): TurnInBehavior {
     return TurnInBehavior._activeInstance;
   }
+
   constructor(quest: Quest, nextState?: () => BehaviorState) {
     super(nextState);
     this.quest = quest;
@@ -29,18 +30,21 @@ export class TurnInBehavior extends BehaviorState {
       this.quest.task.action
     )) {
       if (this.quest.checkSatisfiability(info)) {
-        this.solution = info;
-        break;
+        this.solutions.push(info);
       }
     }
 
-    if (!this.solution) {
+    if (
+      !this.solutions[0] ||
+      !ClientAPI.playerAgent.room.hasAgent(this.quest.giver)
+    ) {
       this.currentActionState = FailureAction.instance;
     } else if (ClientAPI.playerAgent.conversation) {
       if (ClientAPI.playerAgent.conversation.contains_agent(this.quest.giver)) {
         this.currentActionState = new TurnInQuestInfoState(
           this.quest,
-          this.solution
+          this.solutions.pop(),
+          TurnInBehavior.turnInTransition
         );
       } else {
         this.currentActionState = new LeaveConersationState(
@@ -76,10 +80,27 @@ export class TurnInBehavior extends BehaviorState {
     if (ClientAPI.playerAgent.conversation) {
       return new TurnInQuestInfoState(
         TurnInBehavior.activeInstance.quest,
-        TurnInBehavior.activeInstance.solution
+        TurnInBehavior.activeInstance.solutions.pop(),
+        TurnInBehavior.turnInTransition
       );
+    } else if (!ClientAPI.playerAgent.room.hasAgent(this.targetAgent)) {
+      return FailureAction.instance;
     }
     return this;
+  }
+
+  static turnInTransition(this: TurnInQuestInfoState): ActionState {
+    if (this.completed) {
+      if (TurnInBehavior.activeInstance.solutions[0]) {
+        return new TurnInQuestInfoState(
+          TurnInBehavior.activeInstance.quest,
+          TurnInBehavior.activeInstance.solutions.pop(),
+          TurnInBehavior.turnInTransition
+        );
+      }
+      return SuccessAction.instance;
+    } else if (this.doneActing) return FailureAction.instance;
+    else return this;
   }
 
   public nextState(): BehaviorState {

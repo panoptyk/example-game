@@ -3,7 +3,7 @@ import { Info, ClientAPI, ValidationResult } from "panoptyk-engine/dist/";
 import { SuccessAction } from "../../lib/ActionStates/successAState";
 import { FailureAction } from "../../lib/ActionStates/failureAState";
 
-export class PassQuestionTradeState extends ActionState {
+export class PassQuestionState extends ActionState {
   _question: Info;
   private _completed = false;
   public get completed() {
@@ -20,7 +20,7 @@ export class PassQuestionTradeState extends ActionState {
   }
 
   public async act() {
-    if (ClientAPI.playerAgent.trade) {
+    if (ClientAPI.playerAgent.conversation) {
       await ClientAPI.passOnQuestion(this._question)
         .catch((res: ValidationResult) => {
           console.log(res.message);
