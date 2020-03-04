@@ -30,3 +30,6 @@ export { AskQuestionState } from "./ActionStates/askQuestionAState";
 export { QuestionQuestBehavior } from "./BehaviorStates/questionQuestBState";
 export { AnswerAllBehavior } from "./BehaviorStates/answerAllBState";
 export { NavigateToAgentBehavior } from "./BehaviorStates/navigateToAgentBState";
+export { RequestItemTradeState } from "./ActionStates/reqItemTradeAState";
+export { WanderRandomlyBehavior } from "./BehaviorStates/wanderRandomlyBState";
+export { NavigateToRoomBehavior } from "./BehaviorStates/navigateToRoomBState";

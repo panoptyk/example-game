@@ -27,10 +27,15 @@ import {
   OfferItemTradeState,
   PassItemReqTradeState,
   QuestionQuestBehavior,
-  NavigateToAgentBehavior
+  NavigateToAgentBehavior,
+  RequestItemTradeState,
+  WanderRandomlyBehavior,
+  NavigateToRoomBehavior
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
 import { CrimePatrolBehavior } from "../BehaviorStates/crimePatrolBState";
+import { StealBehavior } from "../BehaviorStates/stealBState";
+import { PickupItemBehavior } from "../BehaviorStates/pickupItemBState";
 
 /**
  * NOT FUNCTIONAL
@@ -41,10 +46,6 @@ export class CrimeGoon extends Strategy {
   public get activeQuest(): Quest {
     return this._activeQuest;
   }
-  private _questBehavior: BehaviorState;
-
-  // item quest specific
-  hasGivenItem = false;
 
   private static _instance: CrimeGoon;
   public static get instance(): CrimeGoon {
@@ -63,25 +64,7 @@ export class CrimeGoon extends Strategy {
     this.currentBehavior = await this.currentBehavior.tick();
   }
 
-  /**
-   * Gets next quest prioritizing action quests
-   */
-  public static getNextValidQuest(): Quest {
-    let patrolQuest: Quest;
-    for (const quest of ClientAPI.playerAgent.activeAssignedQuests) {
-      if (
-        quest.giver.faction === ClientAPI.playerAgent.faction &&
-        quest.giver.factionRank > ClientAPI.playerAgent.factionRank
-      ) {
-        if (quest.task.action) {
-          return quest;
-        } else {
-          patrolQuest = quest;
-        }
-      }
-    }
-    return patrolQuest;
-  }
+  // =============================== GENERIC ASSIST ALLY LOGIC ========================
 
   public static tradeRequestedItems(this: TradeBehavior): ActionState {
     const trade = ClientAPI.playerAgent.trade;
@@ -132,6 +115,28 @@ export class CrimeGoon extends Strategy {
     }
   }
 
+  // =============================== QUEST ACQUISITION LOGIC ==========================
+
+  /**
+   * Gets next quest prioritizing action quests
+   */
+  public static getNextValidQuest(): Quest {
+    let patrolQuest: Quest;
+    for (const quest of ClientAPI.playerAgent.activeAssignedQuests) {
+      if (
+        quest.giver.faction === ClientAPI.playerAgent.faction &&
+        quest.giver.factionRank > ClientAPI.playerAgent.factionRank
+      ) {
+        if (quest.task.action) {
+          return quest;
+        } else {
+          patrolQuest = quest;
+        }
+      }
+    }
+    return patrolQuest;
+  }
+
   public static idleTransition(this: IdleAndConverseBehavior) {
     if (
       ClientAPI.playerAgent.conversation &&
@@ -156,9 +161,9 @@ export class CrimeGoon extends Strategy {
             CrimeGoon.questionQuestTransition
           );
         } else if (newQuest.type === "command") {
-          // assuming give item quest
-          CrimeGoon.instance.hasGivenItem = false;
-          return CrimeGoon.nextGiveItemQuestBehavior();
+          if (newQuest.task.action === "GAVE") {
+            return CrimeGoon.instance.startGiveItemQuest();
+          }
         }
       } else {
         return CrimePatrolBehavior.start(newQuest, CrimeGoon.patrolTransition);
@@ -167,6 +172,8 @@ export class CrimeGoon extends Strategy {
     }
     return this;
   }
+
+  // ============================ PATROL QUEST LOGIC ====================================
 
   public static patrolTransition(this: CrimePatrolBehavior): BehaviorState {
     for (const agent of ClientAPI.playerAgent.conversationRequesters) {
@@ -191,6 +198,8 @@ export class CrimeGoon extends Strategy {
     }
     return this;
   }
+
+  // ============================= QUESTION QUEST LOGIC =================================
 
   public static questionQuestTransition(
     this: QuestionQuestBehavior
@@ -217,6 +226,95 @@ export class CrimeGoon extends Strategy {
     }
   }
 
+  // ============================== GIVE ITEM QUEST LOGIC ==================================
+
+  static readonly TIME_BEFORE_REPEAT = 60000;
+  hasGivenItem: boolean;
+  targetItem: Item;
+  attemptedTrade: Map<Agent, number>;
+
+  public startGiveItemQuest(): BehaviorState {
+    this.hasGivenItem = false;
+    this.targetItem = this.activeQuest.task.getTerms().item;
+    this.attemptedTrade.clear();
+    return CrimeGoon.nextGiveItemQuestBehavior();
+  }
+
+  public static findMostRecentFactAboutItem(item: Item) {
+    const itemInfo = ClientAPI.playerAgent.getInfoByItem(item);
+    let latestInfo: Info = undefined;
+    let time = 0;
+    for (const info of itemInfo) {
+      const terms = info.getTerms();
+      if (
+        terms.time > time &&
+        !info.isCommand &&
+        !info.isQuery &&
+        (terms.agent || terms.agent2)
+      ) {
+        latestInfo = info;
+        time = terms.time;
+      }
+    }
+    return latestInfo;
+  }
+
+  /**
+   * dumb trade logic to give everything for desiredItem
+   * @param this
+   */
+  public static tradeForItem(this: TradeBehavior): ActionState {
+    const trade = ClientAPI.playerAgent.trade;
+    if (trade) {
+      const other = Helper.getOtherInTrade();
+      const myReqItems = trade.getAgentsRequestedItems(ClientAPI.playerAgent);
+      // make sure desired item has been requested
+      if (!myReqItems.has(CrimeGoon.instance.targetItem)) {
+        return new RequestItemTradeState(
+          CrimeGoon.instance.targetItem,
+          this.getNextTradeAction
+        );
+      }
+      // agent has passed on what we want
+      else if (myReqItems.get(CrimeGoon.instance.targetItem)) {
+        return FailureAction.instance;
+      }
+      // give other agent anything they want for it
+      if (!trade.getAgentReadyStatus(other)) {
+        for (const [desiredItem, passed] of trade.getAgentsRequestedItems(
+          other
+        )) {
+          if (
+            !trade
+              .getAgentItemsData(ClientAPI.playerAgent)
+              .includes(desiredItem)
+          ) {
+            if (ClientAPI.playerAgent.hasItem(desiredItem)) {
+              return new OfferItemTradeState(
+                [desiredItem],
+                this.getNextTradeAction
+              );
+            } else if (!passed) {
+              return new PassItemReqTradeState(
+                desiredItem,
+                this.getNextTradeAction
+              );
+            }
+          }
+        }
+      }
+      if (!trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
+        return new SetTradeState(true, this.getNextTradeAction);
+      }
+      return new IdleState(this.getNextTradeAction);
+    }
+    return SuccessAction.instance;
+  }
+
+  /**
+   * Trade logic to give item freely to quest target
+   * @param this
+   */
   public static giveQuestItem(this: TradeBehavior): ActionState {
     const trade = ClientAPI.playerAgent.trade;
     const targetItem = CrimeGoon.instance.activeQuest.task.getTerms().item;
@@ -233,9 +331,6 @@ export class CrimeGoon extends Strategy {
     return SuccessAction.instance;
   }
 
-  /**
-   * this should probably exist as its own strategy
-   */
   public static nextGiveItemQuestBehavior(): BehaviorState {
     const terms = this.instance.activeQuest.task.getTerms();
     if (!CrimeGoon.instance.hasGivenItem) {
@@ -243,12 +338,96 @@ export class CrimeGoon extends Strategy {
         if (ClientAPI.playerAgent.room.hasAgent(terms.agent2)) {
           return new TradeBehavior(
             terms.agent2,
-            CrimeGoon.nextGiveItemQuestBehavior,
+            CrimeGoon.giveItemQuestTransition,
             CrimeGoon.giveQuestItem
+          );
+        } else {
+          return NavigateToAgentBehavior.start(
+            terms.agent2,
+            CrimeGoon.giveItemQuestTransition
           );
         }
       }
-    } else if (
+
+      const latestInfo: Info = CrimeGoon.findMostRecentFactAboutItem(
+        terms.item
+      );
+      if (latestInfo) {
+        const terms = latestInfo.getTerms();
+        if (
+          latestInfo.action === "DROP" ||
+          latestInfo.action === "LOCATED_IN"
+        ) {
+          const room = terms.loc;
+          if (ClientAPI.playerAgent.room !== room) {
+            return NavigateToRoomBehavior.start(
+              room,
+              CrimeGoon.giveItemQuestTransition
+            );
+          } else {
+            return new PickupItemBehavior(
+              [terms.item],
+              CrimeGoon.giveItemQuestTransition
+            );
+          }
+        } else if (
+          latestInfo.action === "PICKUP" ||
+          latestInfo.action === "GAVE"
+        ) {
+          const owner =
+            latestInfo.action === "PICKUP" ? terms.agent : terms.agent2;
+          // navigate to owner if they arent in our room
+          if (!ClientAPI.playerAgent.room.hasAgent(owner)) {
+            return NavigateToAgentBehavior.start(
+              owner,
+              CrimeGoon.giveItemQuestTransition
+            );
+          }
+          // attempt trade if we havent recently
+          if (
+            !CrimeGoon.instance.attemptedTrade.has(owner) ||
+            CrimeGoon.instance.attemptedTrade.get(owner) >
+              CrimeGoon.TIME_BEFORE_REPEAT
+          ) {
+            CrimeGoon.instance.attemptedTrade.set(owner, Date.now());
+            return new TradeBehavior(
+              owner,
+              CrimeGoon.giveItemQuestTransition,
+              CrimeGoon.tradeForItem
+            );
+          }
+          // steal if we have already attempted to trade
+          else {
+            return new StealBehavior(
+              owner,
+              terms.item,
+              CrimeGoon.giveItemQuestTransition
+            );
+          }
+        } else {
+          console.log(ClientAPI.playerAgent + " uanble to process item info!");
+        }
+
+        // randomly wander and try to trade for item
+        for (const agent of Helper.getOthersInRoom()) {
+          if (
+            !CrimeGoon.instance.attemptedTrade.has(agent) ||
+            CrimeGoon.instance.attemptedTrade.get(agent) >
+              CrimeGoon.TIME_BEFORE_REPEAT
+          ) {
+            CrimeGoon.instance.attemptedTrade.set(agent, Date.now());
+            return new TradeBehavior(
+              agent,
+              CrimeGoon.giveItemQuestTransition,
+              CrimeGoon.tradeForItem
+            );
+          }
+        }
+        return new WanderRandomlyBehavior(CrimeGoon.giveItemQuestTransition);
+      }
+    }
+    // already has accomplished quest task
+    else if (
       !ClientAPI.playerAgent.room.hasAgent(CrimeGoon.instance.activeQuest.giver)
     ) {
       return NavigateToAgentBehavior.start(
@@ -263,6 +442,29 @@ export class CrimeGoon extends Strategy {
     }
   }
 
+  public static giveItemQuestTransition(this: BehaviorState): BehaviorState {
+    if (
+      ClientAPI.playerAgent.conversation &&
+      Helper.getOthersInConversation()[0].faction ===
+        ClientAPI.playerAgent.faction
+    ) {
+      const helpBehavior = CrimeGoon.helpAllyInConversation(
+        Helper.getOthersInConversation()[0],
+        this
+      );
+      if (helpBehavior) {
+        return helpBehavior;
+      }
+    }
+    if (
+      this.currentActionState instanceof SuccessAction ||
+      this.currentActionState instanceof FailureAction
+    ) {
+      return CrimeGoon.nextGiveItemQuestBehavior();
+    }
+    return this;
+  }
+
   public static turnInMoveTransition(
     this: NavigateToAgentBehavior
   ): BehaviorState {
@@ -273,6 +475,10 @@ export class CrimeGoon extends Strategy {
       );
     }
   }
+
+  // ============================ SHARED QUEST LOGIC ===============================
+
+  private _questBehavior: BehaviorState; // Stores question behavior to transition back to
 
   public static turnInTransition(this: TurnInBehavior): BehaviorState {
     if (this.currentActionState instanceof SuccessAction) {

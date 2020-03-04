@@ -1,7 +1,6 @@
 import { ClientAPI, Agent, Info, Item } from "panoptyk-engine/dist/";
-import { KnowledgeBase } from "../../../../lib";
 
-export class PoliceKnowledgeBase extends KnowledgeBase {
+export class PoliceKnowledgeBase {
   criminals: Set<Agent> = new Set<Agent>();
   crimeDatabase: Set<Info> = new Set<Info>();
   infoIdx = 0;
