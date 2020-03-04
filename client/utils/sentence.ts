@@ -124,7 +124,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.INFO,
-          text: "info#" + terms.info.id + " "
+          text: "Question#" + terms.info.id + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -234,7 +234,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.INFO,
-          text: "info#" + terms.info.id + " "
+          text: "Info#" + terms.info.id + " "
         });
         break;
       case Info.ACTIONS.MOVE.name:
@@ -284,7 +284,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.INFO,
-          text: "info#" + terms.info.id + " "
+          text: "Info#" + terms.info.id + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,

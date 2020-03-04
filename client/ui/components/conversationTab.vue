@@ -57,7 +57,10 @@
               >
             </b-select>
           </b-field>
-          <info-entry v-bind:newFoundQuery="true" v-bind:query="questionInfoEntry"></info-entry>
+          <info-entry
+            v-bind:newFoundQuery="true"
+            v-bind:query="questionInfoEntry"
+          ></info-entry>
         </div>
       </div>
       <footer class="card-footer">
@@ -91,11 +94,14 @@
                 v-for="info in knowledge"
                 v-bind:key="info.id"
                 v-bind:value="info"
-                >{{ info.id }}</option
+                >{{ getType(info) }}#{{ info.id }}</option
               >
             </b-select>
           </b-field>
-          <info-entry v-bind:key="tellInfo.id" v-bind:info="tellInfo"></info-entry>
+          <info-entry
+            v-bind:key="tellInfo.id"
+            v-bind:info="tellInfo"
+          ></info-entry>
         </div>
       </div>
       <footer class="card-footer">
@@ -117,7 +123,7 @@
       </div>
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div v-for="q in questions" v-bind:key="q.id"> 
+          <div v-for="q in questions" v-bind:key="q.id">
             <info-entry v-bind:info="q"></info-entry>
           </div>
         </div>
@@ -153,7 +159,10 @@
               >
             </b-select>
           </b-field>
-          <item-entry v-bind:key="tellItem.id" v-bind:item="tellItem"></item-entry>
+          <item-entry
+            v-bind:key="tellItem.id"
+            v-bind:item="tellItem"
+          ></item-entry>
         </div>
       </div>
       <footer class="card-footer">
@@ -191,7 +200,10 @@
               >
             </b-select>
           </b-field>
-          <quest-entry v-bind:key="targetQuest.id" v-bind:quest="targetQuest"></quest-entry>
+          <quest-entry
+            v-bind:key="targetQuest.id"
+            v-bind:quest="targetQuest"
+          ></quest-entry>
           <template v-for="i of turnedInInfo">
             <div class="info-box" v-bind:key="i.id">
               <div class="info-id">#{{ i.id }}</div>
@@ -211,17 +223,22 @@
                 v-for="info in relevantInfo"
                 v-bind:key="info.id"
                 v-bind:value="info"
-                >{{ info.id }}</option
+                >{{ getType(info) }}#{{ info.id }}</option
               >
             </b-select>
           </b-field>
-          <info-entry v-bind:key="questInfo.id" v-bind:info="questInfo"></info-entry>
+          <info-entry
+            v-bind:key="questInfo.id"
+            v-bind:info="questInfo"
+          ></info-entry>
         </div>
       </div>
       <footer class="card-footer">
         <a class="card-footer-item" @click="onQuestTurnIn">Turn in Info</a>
         <div v-if="isQuestGiver">
-          <a class="card-footer-item" @click="onCompleteQuest">Mark as Complete</a>
+          <a class="card-footer-item" @click="onCompleteQuest"
+            >Mark as Complete</a
+          >
         </div>
       </footer>
     </b-collapse>
@@ -281,6 +298,17 @@ export default class ConverstaionTab extends Vue {
     ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
   }
 
+  // Style
+  getType(i: Info) {
+    if (i.isQuery()) {
+      return "Question";
+    } else if (i.isCommand()) {
+      return "Command";
+    } else {
+      return "Info";
+    }
+  }
+
   // For question asking
   @Prop({ default: [] }) defaultActions: string[];
   @Prop({ default: [] }) agents;
@@ -320,20 +348,28 @@ export default class ConverstaionTab extends Vue {
     if (ClientAPI.playerAgent === undefined) {
       return [];
     }
-    let items: {name: string, id: number, model: any}[];
+    let items: { name: string; id: number; model: any }[];
     val = val.replace(/\d/, "");
     switch (val) {
       case "agent":
-        items = this.agents.map(a => {return {id: a.id, text: a.agentName, model: a}; });
+        items = this.agents.map(a => {
+          return { id: a.id, text: a.agentName, model: a };
+        });
         break;
       case "loc":
-        items = this.rooms.map(r => {return {id: r.id, text: r.roomName, model: r}; });
+        items = this.rooms.map(r => {
+          return { id: r.id, text: r.roomName, model: r };
+        });
         break;
       case "item":
-        items = this.items.map(i => {return {id: i.id, text: i.itemName, model: i}; });
+        items = this.items.map(i => {
+          return { id: i.id, text: i.itemName, model: i };
+        });
         break;
       case "info":
-        items = this.knowledge.map(k => {return {id: k.id, text: k.id, model: k}; });
+        items = this.knowledge.map(k => {
+          return { id: k.id, text: k.id, model: k };
+        });
         break;
       case "faction":
         items = [];
@@ -346,13 +382,19 @@ export default class ConverstaionTab extends Vue {
   }
   get questionInfoEntry() {
     const q: any = Object.assign({}, this.questionInfo);
-    q.action = this.actionSelected === this.defaultActions[0] ? undefined : this.actionSelected;
+    q.action =
+      this.actionSelected === this.defaultActions[0]
+        ? undefined
+        : this.actionSelected;
     return q;
   }
   onAsk() {
     console.log("Asked!");
     const q: any = Object.assign({}, this.questionInfo);
-    q.action = this.actionSelected === this.defaultActions[0] ? undefined : this.actionSelected;
+    q.action =
+      this.actionSelected === this.defaultActions[0]
+        ? undefined
+        : this.actionSelected;
     ClientAPI.askQuestion(q);
   }
 
@@ -397,11 +439,11 @@ export default class ConverstaionTab extends Vue {
 
   relevantInfo = [];
   targetQuest: Quest = {} as any;
-  turnedInInfo: Info [] = [];
+  turnedInInfo: Info[] = [];
   questInfo: Info = {} as any;
 
   get isQuestGiver(): boolean {
-    return (ClientAPI.playerAgent === this.targetQuest.giver)
+    return ClientAPI.playerAgent === this.targetQuest.giver;
   }
 
   // For quest turn in
@@ -411,7 +453,8 @@ export default class ConverstaionTab extends Vue {
     if (this.targetQuest) {
       this.turnedInInfo = this.targetQuest.turnedInInfo;
       for (const info of ClientAPI.playerAgent.knowledge) {
-        if (!this.targetQuest.hasTurnedIn(info) &&
+        if (
+          !this.targetQuest.hasTurnedIn(info) &&
           this.targetQuest.checkSatisfiability(info)
         ) {
           this.relevantInfo.push(info);

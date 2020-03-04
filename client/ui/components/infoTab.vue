@@ -67,7 +67,7 @@
     </div>
     <template v-for="i of subsetInfo">
       <div class="info-box" v-bind:key="i.id">
-        <div class="info-id">#{{ i.id }}</div>
+        <div class="info-id">{{getType(i)}}#{{ i.id }}</div>
         <div class="info-text">
           <info-entry v-bind:info="i"></info-entry>
         </div>
@@ -149,6 +149,17 @@ export default class InfoTab extends Vue {
         return b.id - a.id;
       })
       .slice(start, end);
+  }
+
+  // Style
+  getType(i: Info) {
+    if (i.isQuery()) {
+      return "Question";
+    } else if (i.isCommand()) {
+      return "Command";
+    } else {
+      return "Info";
+    }
   }
 
   // Filter controls
