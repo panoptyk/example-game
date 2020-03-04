@@ -191,6 +191,7 @@ class GameState extends Phaser.State {
         this.addConsoleMessage(
           otherAgent.agentName + " accepted your conversation request"
         );
+        this.UI.setRightTab(UI.RTABS.CONVERSATION);
         this.convoRequests = new Set();
       }
     }
@@ -201,6 +202,7 @@ class GameState extends Phaser.State {
         this.addConsoleMessage(
           otherAgent.agentName + " accepted your trade request"
         );
+        this.UI.setRightTab(UI.RTABS.TRADE);
         this.tradeRequests = new Set();
       }
     }

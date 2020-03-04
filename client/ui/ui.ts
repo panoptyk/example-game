@@ -45,6 +45,9 @@ export class UI {
     QUEST: 3
   };
 
+  private lastLeftTab: typeof UI.LTABS;
+  private lastRightTab: typeof UI.RTABS;
+
   private vm: Vue;
   public main: Vue;
   private trigger = 0;
@@ -75,6 +78,9 @@ export class UI {
 
   public setInspectTarget(model) {
     this.main.$data.inspectTarget = model;
+    if (model === undefined) {
+      this.goBackLeftTab();
+    }
   }
 
   public refresh() {
@@ -94,10 +100,20 @@ export class UI {
   }
 
   public setLeftTab(index) {
+    this.lastLeftTab = this.main.$data.activeLSideBarTab;
     this.main.$data.activeLSideBarTab = index;
   }
 
+  public goBackLeftTab() {
+    this.setLeftTab(this.lastLeftTab);
+  }
+
   public setRightTab(index) {
+    this.lastRightTab = this.main.$data.activeRSideBarTab;
     this.main.$data.activeRSideBarTab = index;
+  }
+
+  public goBackRightTab() {
+    this.setRightTab(this.lastRightTab);
   }
 }
