@@ -95,7 +95,9 @@ export class ActionSel {
 
     if (this.icons.has("trade") && !inConvo) {
       this.icons.get("trade").destroy();
+      this.icons.get("tradeLine").destroy();
       this.icons.delete("trade");
+      this.icons.delete("tradeLine");
       this.nextLoc--;
     } else if (inConvo && !this.icons.has("trade")) {
       this.createTradeIcon(agent);
@@ -172,6 +174,9 @@ export class ActionSel {
       relativePos,
       tradeIcon,
       () => {
+        const g = this.lines.pop();
+        this.icons.set("tradeLine", g as any);
+        this.lines.push(g);
         tradeIcon.inputEnabled = true;
         tradeIcon.events.onInputDown.add(() => {
           ClientAPI.requestTrade(agent.model).then(res => {
