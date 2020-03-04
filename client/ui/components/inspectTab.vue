@@ -60,7 +60,7 @@ export default class InspectTab extends Vue {
 
   get playerFaction() {
     if (this.player.faction) {
-      return this.realTarget.faction.factionName;
+      return this.player.faction.factionName;
     }
     return "no affiliation";
   }
