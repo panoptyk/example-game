@@ -6,6 +6,7 @@ export class DoorSprite extends Phaser.Sprite {
   private menu: ActionSel;
   public model: Room;
   public hoverText: Phaser.Text;
+  public graphics: Phaser.Graphics;
 
   constructor(
     game: Phaser.Game,
@@ -33,6 +34,13 @@ export class DoorSprite extends Phaser.Sprite {
       this.world.x + (this.width * this.worldScale.x - this.hoverText.width) / 2,
       this.world.y - 20
     );
+
+    this.graphics = this.game.make.graphics(0, 0);
+    this.addChild(this.graphics);
+    this.graphics.beginFill(0x000000, 0);
+    this.graphics.lineStyle(2, 0xFFFFFF, 0.75);
+    this.graphics.drawRect(-2, -2, this.width, this.height);
+    this.graphics.endFill();
 
     // this.events.onInputOver.add(() => {
     //     this.hoverText.visible = true;
@@ -68,6 +76,9 @@ export class DoorSprite extends Phaser.Sprite {
     if (this.menu) {
       this.menu.destroy();
     }
+    this.graphics.clear();
+    this.graphics.destroy();
+    this.graphics = undefined;
     this.hoverText.destroy();
     this.hoverText = undefined;
     super.destroy();
