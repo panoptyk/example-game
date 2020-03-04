@@ -26,7 +26,7 @@
             ></info-tab>
           </b-tab-item>
 
-          <b-tab-item label="Quests">
+          <b-tab-item v-bind:label="'Quests [' + activeQuests + ']'">
             <quest-tab v-bind:trigger="trigger"></quest-tab>
           </b-tab-item>
         </b-tabs>
@@ -48,7 +48,7 @@
           type="is-boxed"
           position="is-centered"
         >
-          <b-tab-item label="Requests">
+          <b-tab-item v-bind:label="'Requests [' + requestsTally + ']'">
             <request-tab v-bind:trigger="trigger"></request-tab>
           </b-tab-item>
 
@@ -120,6 +120,12 @@ export default class App extends Vue {
     this.assignedQuests = ClientAPI.playerAgent.activeAssignedQuests;
     this.givenQuests = ClientAPI.playerAgent.activeGivenQuests;
   }
+
+  // Tab logic
+  activeQuests = 0;
+  requestsTally = 0;
+
+
   // Top Bar logic
   showTopBar = false;
   room = "";
@@ -141,10 +147,12 @@ export default class App extends Vue {
       ":" +
       date.getMinutes();
   }
+
   // Sidebar data
   activeLSideBarTab = 0;
   activeRSideBarTab = 0;
   listOfActions = [];
+
   // Console data
   maxMsgs = 6;
   messages = [];

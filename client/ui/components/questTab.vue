@@ -35,6 +35,7 @@ import {
 } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import QuestEntry from "./questEntry.vue";
+import { UI } from "./../ui";
 
 @Component({
   components: {
@@ -62,6 +63,7 @@ export default class QuestTab extends Vue {
     }
 
     this.quests = ClientAPI.playerAgent.activeAssignedQuests;
+    UI.instance.main.$data.activeQuest = this.quests.length;
   }
 
   @Watch("quests")

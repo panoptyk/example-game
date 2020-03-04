@@ -46,7 +46,7 @@ export class UI {
   };
 
   private vm: Vue;
-  private main: Vue;
+  public main: Vue;
   private trigger = 0;
   public prompting = false;
   constructor() {

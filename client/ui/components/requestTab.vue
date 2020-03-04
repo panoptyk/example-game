@@ -21,6 +21,7 @@
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import { ClientAPI } from "panoptyk-engine/dist/client";
 import request from "./request.vue";
+import { UI } from "./../ui";
 
 @Component({
   components: {
@@ -37,6 +38,7 @@ export default class RequestTab extends Vue {
     if (ClientAPI.playerAgent) {
       this.conversationRequests = ClientAPI.playerAgent.conversationRequesters;
       this.tradeRequests = ClientAPI.playerAgent.tradeRequesters;
+      UI.instance.main.$data.requestsTally = this.conversationRequests.length + this.tradeRequests.length;
     }
   }
 }
