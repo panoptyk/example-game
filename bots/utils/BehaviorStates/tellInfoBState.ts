@@ -78,7 +78,7 @@ export class TellInfo extends BehaviorState {
     }
     else if (
       (!this.completed && this.doneActing) ||
-      this.deltaTime > Helper.WAIT_FOR_OTHER ||
+      Date.now() - this.startTime > Helper.WAIT_FOR_OTHER ||
       !ClientAPI.playerAgent.room.hasAgent(this.targetAgent)
     ) {
       return FailureAction.instance;

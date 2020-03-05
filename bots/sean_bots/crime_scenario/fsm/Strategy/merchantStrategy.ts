@@ -86,7 +86,7 @@ export class Merchant extends Strategy {
     }
   }
 
-  public static tradeLogic(): ActionState {
+  public static tradeLogic(this: TradeBehavior): ActionState {
     const trade = ClientAPI.playerAgent.trade;
     if (trade) {
       const other = Helper.getOtherInTrade();
@@ -97,18 +97,22 @@ export class Merchant extends Strategy {
           !trade.getAgentItemsData(ClientAPI.playerAgent).includes(desiredItem)
         ) {
           if (ClientAPI.playerAgent.hasItem(desiredItem)) {
-            return new OfferItemTradeState([desiredItem], Merchant.tradeLogic);
+            return new OfferItemTradeState([desiredItem], () =>
+              this.getNextTradeAction()
+            );
           } else if (!passed) {
-            return new PassItemReqTradeState(desiredItem, Merchant.tradeLogic);
+            return new PassItemReqTradeState(desiredItem, () =>
+              this.getNextTradeAction()
+            );
           }
         }
       }
 
       const desiredGold = trade.getAgentItemsData(ClientAPI.playerAgent).length;
       if (trade.getAgentsOfferedGold(other) >= desiredGold) {
-        return new SetTradeState(true, Merchant.tradeLogic);
+        return new SetTradeState(true, () => this.getNextTradeAction());
       } else {
-        return new SetTradeState(false, Merchant.tradeLogic);
+        return new SetTradeState(false, () => this.getNextTradeAction());
       }
     }
     return SuccessAction.instance;

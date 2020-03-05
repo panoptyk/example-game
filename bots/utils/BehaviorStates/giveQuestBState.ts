@@ -90,7 +90,7 @@ export class GiveQuestBehavior extends BehaviorState {
         );
       }
     } else if (
-      this.deltaTime > Helper.WAIT_FOR_OTHER ||
+      Date.now() - this.startTime > Helper.WAIT_FOR_OTHER ||
       !ClientAPI.playerAgent.room.hasAgent(this.targetAgent)
     ) {
       return FailureAction.instance;

@@ -39,7 +39,7 @@ export class TradeBehavior extends BehaviorState {
     if (ClientAPI.playerAgent.conversation) {
       if (ClientAPI.playerAgent.conversation.contains_agent(this._targetAgent)) {
         if (ClientAPI.playerAgent.trade) {
-          this.currentActionState = new IdleState(this.getNextTradeAction);
+          this.currentActionState = new IdleState(() => this.getNextTradeAction());
         } else {
           this.currentActionState = new RequestTradeState(
             this._targetAgent,
@@ -69,7 +69,7 @@ export class TradeBehavior extends BehaviorState {
     const trade = ClientAPI.playerAgent.trade;
     if (trade) {
       if (!trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
-        return new SetTradeState(true, TradeBehavior.activeInstance.getNextTradeAction);
+        return new SetTradeState(true, () => this.getNextTradeAction());
       }
       return this;
     }
@@ -86,7 +86,7 @@ export class TradeBehavior extends BehaviorState {
       );
     } else if (
       (!this.completed && this.doneActing) ||
-      this.deltaTime > Helper.WAIT_FOR_OTHER ||
+      Date.now() - this.startTime > Helper.WAIT_FOR_OTHER ||
       !ClientAPI.playerAgent.room.hasAgent(this.targetAgent)
     ) {
       return FailureAction.instance;
@@ -106,10 +106,10 @@ export class TradeBehavior extends BehaviorState {
 
   static requestTradeTransition(this: RequestTradeState): ActionState {
     if (ClientAPI.playerAgent.trade) {
-      return new IdleState(TradeBehavior.activeInstance.getNextTradeAction);
+      return new IdleState(() => TradeBehavior.activeInstance.getNextTradeAction());
     } else if (
       (!this.completed && this.doneActing) ||
-      this.deltaTime > Helper.WAIT_FOR_OTHER
+      Date.now() - this.startTime > Helper.WAIT_FOR_OTHER
     ) {
       return FailureAction.instance;
     }

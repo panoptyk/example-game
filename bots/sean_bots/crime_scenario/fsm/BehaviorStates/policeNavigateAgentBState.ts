@@ -89,7 +89,7 @@ export class PoliceNavigateToAgent extends BehaviorState {
     if (this.currentActionState instanceof SuccessAction) {
       return SuccessBehavior.instance;
     } else if (
-      this.deltaTime > this.timeout ||
+      Date.now() - this.startTime > this.timeout ||
       this.currentActionState instanceof FailureAction
     ) {
       return FailureBehavior.instance;

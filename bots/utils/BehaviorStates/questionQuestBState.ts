@@ -145,7 +145,7 @@ export class QuestionQuestBehavior extends BehaviorState {
         QuestionQuestBehavior.askTransition
       );
     } else if (
-      this.deltaTime > Helper.WAIT_FOR_OTHER ||
+      Date.now() - this.startTime > Helper.WAIT_FOR_OTHER ||
       !ClientAPI.playerAgent.room.hasAgent(this.targetAgent)
     ) {
       return QuestionQuestBehavior.instance.getNextAction();
@@ -161,7 +161,7 @@ export class QuestionQuestBehavior extends BehaviorState {
       );
       return new ListenToOther(
         Helper.WAIT_FOR_OTHER,
-        QuestionQuestBehavior.instance.getNextAction
+        () => QuestionQuestBehavior.instance.getNextAction()
       );
     }
     if (this.doneActing) {

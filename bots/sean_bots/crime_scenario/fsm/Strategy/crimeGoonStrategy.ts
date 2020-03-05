@@ -57,10 +57,19 @@ export class CrimeGoon extends Strategy {
 
   private constructor() {
     super();
-    this.currentBehavior = new IdleAndConverseBehavior();
+    this.currentBehavior = new IdleAndConverseBehavior(
+      CrimeGoon.idleTransition
+    );
   }
 
   public async act() {
+    console.log(
+      ClientAPI.playerAgent +
+        " BState: " +
+        this.currentBehavior.constructor.name +
+        ", AState: " +
+        this.currentBehavior.currentActionState.constructor.name
+    );
     this.currentBehavior = await this.currentBehavior.tick();
   }
 
@@ -68,7 +77,7 @@ export class CrimeGoon extends Strategy {
 
   public static tradeRequestedItems(this: TradeBehavior): ActionState {
     const trade = ClientAPI.playerAgent.trade;
-    if (trade) {
+    if (trade && Date.now() - this.startTime <= Helper.WAIT_FOR_OTHER) {
       const other = Helper.getOtherInTrade();
       for (const [desiredItem, passed] of trade.getAgentsRequestedItems(
         other
@@ -77,22 +86,20 @@ export class CrimeGoon extends Strategy {
           !trade.getAgentItemsData(ClientAPI.playerAgent).includes(desiredItem)
         ) {
           if (ClientAPI.playerAgent.hasItem(desiredItem)) {
-            return new OfferItemTradeState(
-              [desiredItem],
-              this.getNextTradeAction
+            return new OfferItemTradeState([desiredItem], () =>
+              this.getNextTradeAction()
             );
           } else if (!passed) {
-            return new PassItemReqTradeState(
-              desiredItem,
-              this.getNextTradeAction
+            return new PassItemReqTradeState(desiredItem, () =>
+              this.getNextTradeAction()
             );
           }
         }
       }
       if (!trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
-        return new SetTradeState(true, this.getNextTradeAction);
+        return new SetTradeState(true, () => this.getNextTradeAction());
       }
-      return new IdleState(this.getNextTradeAction);
+      return new IdleState(() => this.getNextTradeAction());
     }
     return SuccessAction.instance;
   }
@@ -113,6 +120,7 @@ export class CrimeGoon extends Strategy {
         CrimeGoon.tradeRequestedItems
       );
     }
+    return undefined;
   }
 
   // =============================== QUEST ACQUISITION LOGIC ==========================
@@ -125,7 +133,7 @@ export class CrimeGoon extends Strategy {
     for (const quest of ClientAPI.playerAgent.activeAssignedQuests) {
       if (
         quest.giver.faction === ClientAPI.playerAgent.faction &&
-        quest.giver.factionRank > ClientAPI.playerAgent.factionRank
+        quest.giver.factionRank < ClientAPI.playerAgent.factionRank
       ) {
         if (quest.task.action) {
           return quest;
@@ -137,7 +145,7 @@ export class CrimeGoon extends Strategy {
     return patrolQuest;
   }
 
-  public static idleTransition(this: IdleAndConverseBehavior) {
+  public static idleTransition(this: IdleAndConverseBehavior): BehaviorState {
     if (
       ClientAPI.playerAgent.conversation &&
       Helper.getOthersInConversation()[0].faction ===
@@ -224,6 +232,7 @@ export class CrimeGoon extends Strategy {
         return new TurnInBehavior(this.quest, CrimeGoon.turnInTransition);
       }
     }
+    return this;
   }
 
   // ============================== GIVE ITEM QUEST LOGIC ==================================
@@ -231,7 +240,7 @@ export class CrimeGoon extends Strategy {
   static readonly TIME_BEFORE_REPEAT = 60000;
   hasGivenItem: boolean;
   targetItem: Item;
-  attemptedTrade: Map<Agent, number>;
+  attemptedTrade: Map<Agent, number> = new Map<Agent, number>();
 
   public startGiveItemQuest(): BehaviorState {
     this.hasGivenItem = false;
@@ -250,7 +259,7 @@ export class CrimeGoon extends Strategy {
         terms.time > time &&
         !info.isCommand &&
         !info.isQuery &&
-        (terms.agent || terms.agent2)
+        (terms.agent || terms.agent2 || info.action === "LOCATED_IN")
       ) {
         latestInfo = info;
         time = terms.time;
@@ -267,16 +276,24 @@ export class CrimeGoon extends Strategy {
     const trade = ClientAPI.playerAgent.trade;
     if (trade) {
       const other = Helper.getOtherInTrade();
+      if (
+        trade.agentOfferedItem(other, CrimeGoon.instance.targetItem) &&
+        !trade.getAgentReadyStatus(ClientAPI.playerAgent)
+      ) {
+        return new SetTradeState(true, () => this.getNextTradeAction());
+      }
       const myReqItems = trade.getAgentsRequestedItems(ClientAPI.playerAgent);
       // make sure desired item has been requested
       if (!myReqItems.has(CrimeGoon.instance.targetItem)) {
-        return new RequestItemTradeState(
-          CrimeGoon.instance.targetItem,
-          this.getNextTradeAction
+        return new RequestItemTradeState(CrimeGoon.instance.targetItem, () =>
+          this.getNextTradeAction()
         );
       }
-      // agent has passed on what we want
-      else if (myReqItems.get(CrimeGoon.instance.targetItem)) {
+      // agent has passed on what we want or we have waited too long
+      else if (
+        myReqItems.get(CrimeGoon.instance.targetItem) ||
+        Date.now() - this.startTime > Helper.WAIT_FOR_OTHER
+      ) {
         return FailureAction.instance;
       }
       // give other agent anything they want for it
@@ -290,23 +307,18 @@ export class CrimeGoon extends Strategy {
               .includes(desiredItem)
           ) {
             if (ClientAPI.playerAgent.hasItem(desiredItem)) {
-              return new OfferItemTradeState(
-                [desiredItem],
-                this.getNextTradeAction
+              return new OfferItemTradeState([desiredItem], () =>
+                this.getNextTradeAction()
               );
             } else if (!passed) {
-              return new PassItemReqTradeState(
-                desiredItem,
-                this.getNextTradeAction
+              return new PassItemReqTradeState(desiredItem, () =>
+                this.getNextTradeAction()
               );
             }
           }
         }
       }
-      if (!trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
-        return new SetTradeState(true, this.getNextTradeAction);
-      }
-      return new IdleState(this.getNextTradeAction);
+      return new IdleState(() => this.getNextTradeAction());
     }
     return SuccessAction.instance;
   }
@@ -320,12 +332,14 @@ export class CrimeGoon extends Strategy {
     const targetItem = CrimeGoon.instance.activeQuest.task.getTerms().item;
     if (trade) {
       if (!trade.agentOfferedItem(ClientAPI.playerAgent, targetItem)) {
-        return new OfferItemTradeState([targetItem], this.getNextTradeAction);
+        return new OfferItemTradeState([targetItem], () =>
+          this.getNextTradeAction()
+        );
       }
       if (!trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
-        return new SetTradeState(true, this.getNextTradeAction);
+        return new SetTradeState(true, () => this.getNextTradeAction());
       }
-      return new IdleState(this.getNextTradeAction);
+      return new IdleState(() => this.getNextTradeAction());
     }
     CrimeGoon.instance.hasGivenItem = true;
     return SuccessAction.instance;
@@ -386,7 +400,7 @@ export class CrimeGoon extends Strategy {
           // attempt trade if we havent recently
           if (
             !CrimeGoon.instance.attemptedTrade.has(owner) ||
-            CrimeGoon.instance.attemptedTrade.get(owner) >
+            Date.now() - CrimeGoon.instance.attemptedTrade.get(owner) >
               CrimeGoon.TIME_BEFORE_REPEAT
           ) {
             CrimeGoon.instance.attemptedTrade.set(owner, Date.now());
@@ -407,24 +421,23 @@ export class CrimeGoon extends Strategy {
         } else {
           console.log(ClientAPI.playerAgent + " uanble to process item info!");
         }
-
-        // randomly wander and try to trade for item
-        for (const agent of Helper.getOthersInRoom()) {
-          if (
-            !CrimeGoon.instance.attemptedTrade.has(agent) ||
-            CrimeGoon.instance.attemptedTrade.get(agent) >
-              CrimeGoon.TIME_BEFORE_REPEAT
-          ) {
-            CrimeGoon.instance.attemptedTrade.set(agent, Date.now());
-            return new TradeBehavior(
-              agent,
-              CrimeGoon.giveItemQuestTransition,
-              CrimeGoon.tradeForItem
-            );
-          }
-        }
-        return new WanderRandomlyBehavior(CrimeGoon.giveItemQuestTransition);
       }
+      // randomly wander and try to trade for item
+      for (const agent of Helper.getOthersInRoom()) {
+        if (
+          !CrimeGoon.instance.attemptedTrade.has(agent) ||
+          CrimeGoon.instance.attemptedTrade.get(agent) >
+            CrimeGoon.TIME_BEFORE_REPEAT
+        ) {
+          CrimeGoon.instance.attemptedTrade.set(agent, Date.now());
+          return new TradeBehavior(
+            agent,
+            CrimeGoon.giveItemQuestTransition,
+            CrimeGoon.tradeForItem
+          );
+        }
+      }
+      return new WanderRandomlyBehavior(CrimeGoon.giveItemQuestTransition);
     }
     // already has accomplished quest task
     else if (
@@ -482,6 +495,9 @@ export class CrimeGoon extends Strategy {
 
   public static turnInTransition(this: TurnInBehavior): BehaviorState {
     if (this.currentActionState instanceof SuccessAction) {
+      console.log(
+        ClientAPI.playerAgent + " turned in solution(s) for " + this.quest
+      );
       return new IdleAndConverseBehavior(CrimeGoon.idleTransition);
     }
     if (this.currentActionState instanceof FailureAction) {
@@ -511,7 +527,7 @@ export class CrimeGoon extends Strategy {
       }
     } else if (
       this.currentActionState instanceof FailureAction ||
-      this.deltaTime > Helper.WAIT_FOR_OTHER
+      Date.now() - this.startTime > Helper.WAIT_FOR_OTHER
     ) {
       return CrimeGoon.instance._questBehavior;
     }
