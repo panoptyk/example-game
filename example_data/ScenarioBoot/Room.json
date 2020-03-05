@@ -1,0 +1,131 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_roomName": "East Bentham",
+      "adjacent": [3, 4, 14],
+      "_occupants": [],
+      "itemIDs": [1],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "2": {
+      "id": 2,
+      "_roomName": "West Bentham",
+      "adjacent": [3, 4],
+      "_occupants": [],
+      "itemIDs": [2],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "3": {
+      "id": 3,
+      "_roomName": "South Bentham",
+      "adjacent": [1, 2, 4, 13],
+      "_occupants": [],
+      "itemIDs": [],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "4": {
+      "id": 4,
+      "_roomName": "North Bentham",
+      "adjacent": [1, 2, 3, 5, 6, 7, 8, 12],
+      "_occupants": [],
+      "itemIDs": [],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "5": {
+      "id": 5,
+      "_roomName": "North Bentham Gate",
+      "adjacent": [4],
+      "_occupants": [],
+      "itemIDs": [],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "6": {
+      "id": 6,
+      "_roomName": "Redbrick Cafe",
+      "adjacent": [4],
+      "_occupants": [],
+      "itemIDs": [3],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "7": {
+      "id": 7,
+      "_roomName": "Straw Roof Inn",
+      "adjacent": [4, 11],
+      "_occupants": [],
+      "itemIDs": [4],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "8": {
+      "id": 8,
+      "_roomName": "Crooked Sword Tavern (main)",
+      "adjacent": [4, 9, 10],
+      "_occupants": [],
+      "itemIDs": [],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "9": {
+      "id": 9,
+      "_roomName": "Crooked Sword Tavern (back room)",
+      "adjacent": [8, 10, 11],
+      "_occupants": [],
+      "itemIDs": [7],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "10": {
+      "id": 10,
+      "_roomName": "Crooked Sword Tavern (upper)",
+      "adjacent": [8, 9],
+      "_occupants": [],
+      "itemIDs": [],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "11": {
+      "id": 11,
+      "_roomName": "Crooked Sword Back Alley",
+      "adjacent": [7, 9, 13],
+      "_occupants": [],
+      "itemIDs": [6],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "12": {
+      "id": 12,
+      "_roomName": "Guild#1",
+      "adjacent": [4],
+      "_occupants": [],
+      "itemIDs": [],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "13": {
+      "id": 13,
+      "_roomName": "Guild#2",
+      "adjacent": [3, 11],
+      "_occupants": [],
+      "itemIDs": [],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    },
+    "14": {
+      "id": 14,
+      "_roomName": "***'s House",
+      "adjacent": [1],
+      "_occupants": [],
+      "itemIDs": [],
+      "conversationIDs": [],
+      "_maxOccupants": 15
+    }
+  },
+  "nextID": 15
+}

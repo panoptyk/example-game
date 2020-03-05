@@ -1,0 +1,54 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_itemName": "Rusty spoon",
+      "_type": "Weapon",
+      "roomID": 1,
+      "inTransaction": false
+    },
+    "2": {
+      "id": 2,
+      "_itemName": "Sword",
+      "_type": "Weapon",
+      "roomID": 2,
+      "inTransaction": false
+    },
+    "3": {
+      "id": 3,
+      "_itemName": "Wooden Breastplate",
+      "_type": "Armor",
+      "roomID": 6,
+      "inTransaction": false
+    },
+    "4": {
+      "id": 4,
+      "_itemName": "Iron Shield",
+      "_type": "Weapon",
+      "roomID": 7,
+      "inTransaction": false
+    },
+    "5": {
+      "id": 5,
+      "_itemName": "Macintosh Laptop",
+      "_type": "Laptop",
+      "agentID": 2,
+      "inTransaction": false
+    },
+    "6": {
+      "id": 6,
+      "_itemName": "PlayerA quest item",
+      "_type": "key item",
+      "roomID": 11,
+      "inTransaction": false
+    },
+    "7": {
+      "id": 7,
+      "_itemName": "PlayerB quest item",
+      "_type": "key item",
+      "roomID": 9,
+      "inTransaction": false
+    }
+  },
+  "nextID": 8
+}
