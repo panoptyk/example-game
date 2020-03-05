@@ -426,7 +426,7 @@ export class CrimeGoon extends Strategy {
       for (const agent of Helper.getOthersInRoom()) {
         if (
           !CrimeGoon.instance.attemptedTrade.has(agent) ||
-          CrimeGoon.instance.attemptedTrade.get(agent) >
+          Date.now() - CrimeGoon.instance.attemptedTrade.get(agent) >
             CrimeGoon.TIME_BEFORE_REPEAT
         ) {
           CrimeGoon.instance.attemptedTrade.set(agent, Date.now());
