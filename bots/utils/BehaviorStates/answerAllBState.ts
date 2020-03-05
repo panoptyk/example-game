@@ -43,11 +43,11 @@ export class AnswerAllBehavior extends BehaviorState {
               AnswerAllBehavior.tellTransition
             );
           } else {
-            return new PassQuestionState(question, this.getNextAction);
+            return new PassQuestionState(question, () => this.getNextAction());
           }
         }
       }
-      return new IdleState(this.getNextAction);
+      return new IdleState(() => this.getNextAction());
     } else {
       return SuccessAction.instance;
     }

@@ -1,21 +1,17 @@
-import {
-  ActionState,
-  BehaviorState,
-  SuccessAction,
-  FailureAction,
-  SuccessBehavior,
-  FailureBehavior
-} from "../../lib";
+import { ActionState, BehaviorState } from "../../lib";
 import { ClientAPI, Agent, Info } from "panoptyk-engine/dist/";
 import * as Helper from "../helper";
 import {
   LeaveConersationState,
   ListenToOther,
   IdleState,
-  AcceptConersationState
+  AcceptConersationState,
+  RequestConversationState
 } from "../";
 
 export class IdleAndConverseBehavior extends BehaviorState {
+  agentsToRequest: Agent[] = [];
+
   private static _activeInstance: IdleAndConverseBehavior;
   static get activeInstance(): IdleAndConverseBehavior {
     return IdleAndConverseBehavior._activeInstance;
@@ -33,17 +29,7 @@ export class IdleAndConverseBehavior extends BehaviorState {
     if (converseRequirement) {
       this.wantsToConverseWith = converseRequirement;
     }
-
-    if (ClientAPI.playerAgent.conversation) {
-      this.currentActionState = new ListenToOther(
-        Helper.WAIT_FOR_OTHER,
-        IdleAndConverseBehavior.listenTransition
-      );
-    } else {
-      this.currentActionState = new IdleState(
-        IdleAndConverseBehavior.idleTransition
-      );
-    }
+    this.currentActionState = this.getNextAction();
   }
 
   public async act() {
@@ -51,7 +37,7 @@ export class IdleAndConverseBehavior extends BehaviorState {
     this.currentActionState = await this.currentActionState.tick();
   }
 
-  static idleTransition(this: IdleState): ActionState {
+  public getNextAction(): ActionState {
     if (ClientAPI.playerAgent.conversation) {
       return new ListenToOther(
         Helper.WAIT_FOR_OTHER,
@@ -59,38 +45,23 @@ export class IdleAndConverseBehavior extends BehaviorState {
       );
     }
     for (const agent of ClientAPI.playerAgent.conversationRequesters) {
-      if (IdleAndConverseBehavior.activeInstance.wantsToConverseWith(agent)) {
-        return new AcceptConersationState(
-          agent,
-          IdleAndConverseBehavior.acceptConvTransition
-        );
+      if (this.wantsToConverseWith(agent)) {
+        return new AcceptConersationState(agent, () => this.getNextAction());
       }
     }
-    return this;
-  }
-
-  static acceptConvTransition(this: AcceptConersationState) {
-    if (ClientAPI.playerAgent.conversation) {
-      return new ListenToOther(
-        Helper.WAIT_FOR_OTHER,
-        IdleAndConverseBehavior.listenTransition
+    if (this.agentsToRequest[0]) {
+      return new RequestConversationState(this.agentsToRequest.pop(), () =>
+        this.getNextAction()
       );
-    } else if (!this.completed && this.doneActing) {
-      return new IdleState(IdleAndConverseBehavior.idleTransition);
     }
-    return this;
-  }
-
-  static leaveTransition(this: LeaveConersationState): ActionState {
-    if (this.completed) {
-      return new IdleState(IdleAndConverseBehavior.idleTransition);
-    }
-    return this;
+    return new IdleState(() => this.getNextAction());
   }
 
   static listenTransition(this: ListenToOther) {
     if (Date.now() - this.lastUpdate > this.timeout) {
-      return new LeaveConersationState(IdleAndConverseBehavior.leaveTransition);
+      return new LeaveConersationState(() =>
+        IdleAndConverseBehavior.activeInstance.getNextAction()
+      );
     }
     return this;
   }

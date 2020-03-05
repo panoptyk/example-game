@@ -125,7 +125,7 @@ export class Merchant extends Strategy {
       );
     } else if (Merchant.instance._crimesToReport.size > 0) {
       for (const other of Helper.getOthersInRoom()) {
-        if (other.faction.factionType === "police") {
+        if (other.faction && other.faction.factionType === "police") {
           return new TellInfo(
             other,
             Array.from(Merchant.instance._crimesToReport),

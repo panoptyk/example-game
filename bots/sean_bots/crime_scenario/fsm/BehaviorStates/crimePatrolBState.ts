@@ -63,7 +63,7 @@ export class CrimePatrolBehavior extends BehaviorState {
       return new MoveState(nextRoom, CrimePatrolBehavior.moveTransition);
     }
     this.processInfo();
-    return new IdleState(this.getNextAction);
+    return new IdleState(() => this.getNextAction());
   }
 
   public async act() {

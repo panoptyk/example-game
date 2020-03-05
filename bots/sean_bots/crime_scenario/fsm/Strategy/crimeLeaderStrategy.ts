@@ -101,7 +101,7 @@ export class CrimeLeader extends Strategy {
     return false;
   }
 
-  giveQuestBehavior(agent: Agent) {
+  giveQuestBehavior(agent: Agent): BehaviorState {
     for (const info of this._unassignedInfoQuest) {
       this._unassignedInfoQuest.delete(info);
       this._assignedInfoQuest.add(info);
@@ -136,24 +136,48 @@ export class CrimeLeader extends Strategy {
     }
   }
 
-  public static idleConverseTransition(this: IdleAndConverseBehavior) {
+  giveGenericQuestBehavior(agent: Agent): BehaviorState {
+    console.log(
+      ClientAPI.playerAgent + " is assigning a generic quest to " + agent
+    );
+    const command = Info.PREDICATE.TAL.getTerms({
+      time: undefined,
+      agent,
+      loc: undefined
+    } as any);
+    return new GiveQuestBehavior(
+      agent,
+      command,
+      false,
+      [],
+      CrimeLeader.defaultTransition
+    );
+  }
+
+  assignQuestToIdleAgent(agent: Agent) {
+    if (CrimeLeader.instance.hasQuestToAssign()) {
+      return CrimeLeader.instance.giveQuestBehavior(agent);
+    } else {
+      return CrimeLeader.instance.giveGenericQuestBehavior(agent);
+    }
+  }
+
+  public static idleConverseTransition(
+    this: IdleAndConverseBehavior
+  ): BehaviorState {
     if (ClientAPI.playerAgent.conversation) {
       const other = Helper.getOthersInConversation()[0];
       if (CrimeLeader.instance._assignedAgents.has(other)) {
         for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
           if (quest.receiver === other && quest.turnedInInfo[0]) {
-            // complete action quests but leave patrol quests open
-            if (quest.task.action) {
-              return new CloseQuestBehavior(
-                quest,
-                true,
-                CrimeLeader.defaultTransition
-              );
-            }
+            CrimeLeader.instance._assignedAgents.delete(other);
+            return new CloseQuestBehavior(
+              quest,
+              true,
+              CrimeLeader.defaultTransition
+            );
           }
         }
-        // no more active quests for agent
-        CrimeLeader.instance._assignedAgents.delete(other);
       }
 
       if (ClientAPI.playerAgent.tradeRequesters[0]) {
@@ -161,13 +185,16 @@ export class CrimeLeader extends Strategy {
           ClientAPI.playerAgent.tradeRequesters[0],
           CrimeLeader.defaultTransition
         );
-      } else if (
-        CrimeLeader.instance.hasQuestToAssign() &&
-        CrimeLeader.isValidQuestingAgent(other)
-      ) {
-        return CrimeLeader.instance.giveQuestBehavior(
-          Helper.getOthersInConversation()[0]
-        );
+      } else if (CrimeLeader.isValidQuestingAgent(other)) {
+        return CrimeLeader.instance.assignQuestToIdleAgent(other);
+      }
+    }
+    // request idle agents to assign them quests
+    else {
+      for (const agent of Helper.getOthersInRoom()) {
+        if (CrimeLeader.isValidQuestingAgent(agent)) {
+          this.agentsToRequest.push(agent);
+        }
       }
     }
     return this;

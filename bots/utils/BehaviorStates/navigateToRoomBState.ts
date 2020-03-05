@@ -35,11 +35,11 @@ export class NavigateToRoomBehavior extends BehaviorState {
     // TODO: add better logic here later
     const neighbors = ClientAPI.playerAgent.room.getAdjacentRooms();
     if (neighbors.includes(this.target)) {
-      return new MoveState(this.target, this.getNextAction);
+      return new MoveState(this.target, () => this.getNextAction());
     }
     return new MoveState(
       neighbors[Helper.randomInt(0, neighbors.length)],
-      this.getNextAction
+      () => this.getNextAction()
     );
   }
 

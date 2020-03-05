@@ -50,11 +50,11 @@ export class NavigateToAgentBehavior extends BehaviorState {
     // TODO: add better logic here later
     const neighbors = ClientAPI.playerAgent.room.getAdjacentRooms();
     if (!this.visitedLastLoc && neighbors.includes(this.lastKnownLoc)) {
-      return new MoveState(this.lastKnownLoc, this.getNextAction);
+      return new MoveState(this.lastKnownLoc, () => this.getNextAction());
     }
     return new MoveState(
       neighbors[Helper.randomInt(0, neighbors.length)],
-      this.getNextAction
+      () => this.getNextAction()
     );
   }
 

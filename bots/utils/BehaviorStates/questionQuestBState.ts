@@ -103,7 +103,7 @@ export class QuestionQuestBehavior extends BehaviorState {
     const neighbors = ClientAPI.playerAgent.room.getAdjacentRooms();
     return new MoveState(
       neighbors[Helper.randomInt(0, neighbors.length)],
-      this.getNextAction
+      () => this.getNextAction()
     );
   }
 
