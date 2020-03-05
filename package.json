@@ -12,7 +12,7 @@
     "webpack-client-server:dev": "webpack-dev-server --config webpack.dev.config.js --open",
     "webpack-client-server:dist": "webpack-dev-server --config webpack.dist.config.js --open",
     "bot": "ts-node --project ./bot.tsconfig.json",
-    "update": "npm install panoptyk/panoptyk-engine#master",
+    "update": "npm install panoptyk/panoptyk-engine#mitch",
     "load-scenario": "./loadScenario.sh",
     "assets:dev": "node ./scripts/generateAssetsClass.js --dev",
     "assets": "node ./scripts/generateAssetsClass.js"
@@ -43,7 +43,7 @@
     "html-webpack-plugin": "^3.2.0",
     "imagejs": "^0.0.9",
     "lodash": "^4.17.15",
-    "panoptyk-engine": "github:panoptyk/panoptyk-engine#master",
+    "panoptyk-engine": "github:panoptyk/panoptyk-engine#mitch",
     "phaser-ce": "^2.11.1",
     "pngjs-image": "^0.11.7",
     "shelljs": "^0.8.3",
