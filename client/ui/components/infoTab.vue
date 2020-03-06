@@ -2,6 +2,22 @@
   <div id="info-tab" class="game-tab">
     <div class="container">
       Filters:
+      <b-field type="is-type">
+        <b-select
+          placeholder="-- action --"
+          size="is-small"
+          v-model="filterType"
+          @input="onTypeChange"
+        >
+          <option disabled value>-- type --</option>
+          <option
+            v-for="act in filteredTypes"
+            v-bind:key="act"
+            v-bind:value="act"
+            >{{ act }}</option
+          >
+        </b-select>
+      </b-field>
       <b-field type="is-action">
         <b-select
           placeholder="-- action --"
@@ -67,7 +83,7 @@
     </div>
     <template v-for="i of subsetInfo">
       <div class="info-box" v-bind:key="i.id">
-        <div class="info-id">{{getType(i)}}#{{ i.id }}</div>
+        <div class="info-id">{{ getType(i) }}#{{ i.id }}</div>
         <div class="info-text">
           <info-entry v-bind:info="i"></info-entry>
         </div>
@@ -162,11 +178,18 @@ export default class InfoTab extends Vue {
     }
   }
 
+  filteredTypes = ["EVENTS", "QUESTIONS", "COMMANDS", "ALL"];
+
   // Filter controls
+  filterType = "EVENTS";
   filterAction = "NONE";
   filterAgent;
   filterItem;
   filterRoom;
+
+  onTypeChange() {
+    this.updateInfo();
+  }
 
   onFilterChange() {
     this.updateInfo();
@@ -193,7 +216,7 @@ export default class InfoTab extends Vue {
       this.info = [];
       return;
     }
-    let filterInfo;
+    let filterInfo = [];
     const agent = this.filterAgent ? this.filterAgent : undefined;
     const room = this.filterRoom ? this.filterRoom : undefined;
     const item = this.filterItem ? this.filterItem : undefined;
@@ -208,12 +231,24 @@ export default class InfoTab extends Vue {
       filterInfo = ClientAPI.playerAgent.getInfoByAction(this.filterAction);
     } else {
       filterInfo = this.knowledge;
-      this.info = filterInfo;
-      return;
     }
     if ((agent || room || item) && this.filterAction !== "NONE") {
       filterInfo = filterInfo.filter((val: Info) => {
         return val.action === this.filterAction;
+      });
+    }
+
+    if (this.filterType === "EVENTS") {
+      filterInfo = filterInfo.filter((val: Info) => {
+        return !val.isQuery() && !val.isCommand();
+      });
+    } else if (this.filterType === "QUESTIONS") {
+      filterInfo = filterInfo.filter((val: Info) => {
+        return val.isQuery();
+      });
+    } else if (this.filterType === "COMMANDS") {
+      filterInfo = filterInfo.filter((val: Info) => {
+        return val.isCommand();
       });
     }
 
