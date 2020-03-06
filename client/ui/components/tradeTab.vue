@@ -148,6 +148,31 @@
       </div>
     </b-collapse>
 
+    <b-collapse class="card" aria-id="your-requests">
+      <div
+        slot="trigger"
+        slot-scope="props"
+        class="card-header"
+        role="button"
+        aria-controls="your-requests"
+      >
+        <p class="card-header-title">Your requests</p>
+        <a class="card-header-icon">
+          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+        </a>
+      </div>
+      <div class="card-content">
+        <div class="content" style="max-height: 200px; overflow-y:auto;">
+          <div> Gold: {{ myGoldRequest }} </div>
+          <div> Items: 
+            <span v-for="row in myItemRequests" v-bind:key="row[0].id">{{ row[0].itemName }} 
+              <span v-if="row[1]">(Refused)</span>, 
+            </span>
+          </div>
+        </div>
+      </div>
+    </b-collapse>
+
     <b-collapse class="card" aria-id="other-offer">
       <div
         slot="trigger"
@@ -167,6 +192,35 @@
           <div> Items: <span v-for="i in otherItemOffers" v-bind:key="i.id">{{ i.itemName }}, </span></div>
           <div> Answers </div>
           <div v-for="a in otherAnswerOffers" v-bind:key="a.qID">One answer to question({{ a.qID }}) <span v-if="a.masked"> masked.</span> <span v-else> not masked.</span> </div>
+        </div>
+      </div>
+    </b-collapse>
+
+    <b-collapse class="card" aria-id="other-requests">
+      <div
+        slot="trigger"
+        slot-scope="props"
+        class="card-header"
+        role="button"
+        aria-controls="your-requests"
+      >
+        <p class="card-header-title">{{ otherAgent.agentName }}'s requests</p>
+        <a class="card-header-icon">
+          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+        </a>
+      </div>
+      <div class="card-content">
+        <div class="content" style="max-height: 200px; overflow-y:auto;">
+          <div> Gold: {{ otherGoldRequest }} </div>
+          <div> Items: 
+            <span v-for="row in otherItemRequests" v-bind:key="row[0].id">{{ row[0].itemName }} 
+              <b-button class="button" v-if="!row[1]" size="is-small" @click="onRejectItem(row[0])"
+                >Reject</b-button
+              >
+              <span v-if="row[1]">(Refused)</span>
+              , 
+            </span>
+          </div>
         </div>
       </div>
     </b-collapse>
@@ -207,6 +261,11 @@ export default class TradeTab extends Vue {
   otherItemOffers: Item[];
   myAnswerOffers;
   otherAnswerOffers;
+  myGoldRequest: number;
+  otherGoldRequest: number;
+  myItemRequests;
+  otherItemRequests;
+
   @Watch("trigger")
   updateTrade() {
     if (!this.inTrade) {
@@ -230,6 +289,12 @@ export default class TradeTab extends Vue {
     // Get answer offers
     this.myAnswerOffers = trade.getAnswersOffered(player);
     this.otherAnswerOffers = trade.getAnswersOffered(this.otherAgent);
+    // Get gold requests
+    this.myGoldRequest = trade.getAgentsRequestedGold(player);
+    this.otherGoldOffer = trade.getAgentsRequestedGold(this.otherAgent);
+    // Get item requests
+    this.myItemRequests = trade.getAgentsRequestedItems(player);
+    this.otherItemRequests = trade.getAgentsRequestedItems(this.otherAgent);
   }
   // Indicator for if player is ready
   indicateReady = false;
@@ -255,7 +320,7 @@ export default class TradeTab extends Vue {
     ClientAPI.addGoldToTrade(this.gold - this.myGoldOffer);
   }
   onReqGold() {
-    console.log("Not Implemented!");
+    ClientAPI.requestGoldTrade(this.gold);
   }
   onOfferItem() {
     ClientAPI.offerItemsTrade([this.item]);
@@ -268,6 +333,9 @@ export default class TradeTab extends Vue {
   }
   onReqAnswer() {
     console.log("Not Implemented!");
+  }
+  onRejectItem(item: Item) {
+    ClientAPI.passItemRequestTrade(item);
   }
 }
 </script>
