@@ -11,6 +11,14 @@
         </div>
       </div>
     </template>
+    <template v-for="q of closedQuests">
+      <div class="quest-box" v-bind:key="q.id">
+        <div class="quest-id">#{{ q.id }}</div>
+        <div class="quest-text">
+          <quest-entry v-bind:quest="q"></quest-entry>
+        </div>
+      </div>
+    </template>
     <b-pagination
       :total="total"
       :current="curPage"
@@ -47,6 +55,7 @@ export default class QuestTab extends Vue {
 
   quests = [];
   subsetQuests = [];
+  closedQuests = [];
 
   total = 0;
   curPage = 1;
@@ -63,6 +72,7 @@ export default class QuestTab extends Vue {
     }
 
     this.quests = ClientAPI.playerAgent.activeAssignedQuests;
+    this.closedQuests = ClientAPI.playerAgent.closedAssignedQuests;
     const pastVal = UI.instance.main.$data.activeQuest;
     UI.instance.main.$data.activeQuests = this.quests.length;
     if (pastVal < this.quests.length) {
