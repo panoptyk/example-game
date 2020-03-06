@@ -165,7 +165,7 @@
         <div class="content" style="max-height: 200px; overflow-y:auto;">
           <div> Gold: {{ myGoldRequest }} </div>
           <div> Items: 
-            <span v-for="row in myItemRequests" v-bind:key="row[0].id">{{ row[0].itemName }} 
+            <span v-for="row in myItemRequests" v-bind:key="row[0].id">{{ row[0].itemName }}
               <span v-if="row[1]">(Refused)</span>, 
             </span>
           </div>
@@ -213,7 +213,7 @@
         <div class="content" style="max-height: 200px; overflow-y:auto;">
           <div> Gold: {{ otherGoldRequest }} </div>
           <div> Items: 
-            <span v-for="row in otherItemRequests" v-bind:key="row[0].id">{{ row[0].itemName }} 
+            <span v-for="row in otherItemRequests" v-bind:key="row[0].id">{{ row[0].itemName }}
               <b-button class="button" v-if="!row[1]" size="is-small" @click="onRejectItem(row[0])"
                 >Reject</b-button
               >
