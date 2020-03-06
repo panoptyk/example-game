@@ -71,7 +71,7 @@ export class TradeBehavior extends BehaviorState {
       if (!trade.getAgentReadyStatus(ClientAPI.playerAgent)) {
         return new SetTradeState(true, () => this.getNextTradeAction());
       }
-      return this;
+      return new IdleState(() => this.getNextTradeAction());
     }
     return SuccessAction.instance;
   }
@@ -106,7 +106,7 @@ export class TradeBehavior extends BehaviorState {
 
   static requestTradeTransition(this: RequestTradeState): ActionState {
     if (ClientAPI.playerAgent.trade) {
-      return new IdleState(() => TradeBehavior.activeInstance.getNextTradeAction());
+      return TradeBehavior.activeInstance.getNextTradeAction();
     } else if (
       (!this.completed && this.doneActing) ||
       Date.now() - this.startTime > Helper.WAIT_FOR_OTHER

@@ -4,7 +4,8 @@ import {
   Info,
   Quest,
   Item,
-  Conversation
+  Conversation,
+  Room
 } from "panoptyk-engine/dist/";
 import {
   Strategy,
@@ -38,7 +39,6 @@ import { StealBehavior } from "../BehaviorStates/stealBState";
 import { PickupItemBehavior } from "../BehaviorStates/pickupItemBState";
 
 /**
- * NOT FUNCTIONAL
  * being saved so it can eventually be broken into multiple strategies
  */
 export class CrimeGoon extends Strategy {
@@ -241,11 +241,13 @@ export class CrimeGoon extends Strategy {
   hasGivenItem: boolean;
   targetItem: Item;
   attemptedTrade: Map<Agent, number> = new Map<Agent, number>();
+  investigatedRoom: Map<Room, number> = new Map<Room, number>();
 
   public startGiveItemQuest(): BehaviorState {
     this.hasGivenItem = false;
     this.targetItem = this.activeQuest.task.getTerms().item;
     this.attemptedTrade.clear();
+    this.investigatedRoom.clear();
     return CrimeGoon.nextGiveItemQuestBehavior();
   }
 
@@ -255,12 +257,7 @@ export class CrimeGoon extends Strategy {
     let time = 0;
     for (const info of itemInfo) {
       const terms = info.getTerms();
-      if (
-        terms.time > time &&
-        !info.isCommand &&
-        !info.isQuery &&
-        (terms.agent || terms.agent2 || info.action === "LOCATED_IN")
-      ) {
+      if (terms.time > time && !info.isCommand() && !info.isQuery()) {
         latestInfo = info;
         time = terms.time;
       }
@@ -373,12 +370,16 @@ export class CrimeGoon extends Strategy {
           latestInfo.action === "LOCATED_IN"
         ) {
           const room = terms.loc;
-          if (ClientAPI.playerAgent.room !== room) {
+          if (
+            ClientAPI.playerAgent.room !== room &&
+            (!this.instance.investigatedRoom.has(room) ||
+              this.instance.investigatedRoom.get(room) < terms.time)
+          ) {
             return NavigateToRoomBehavior.start(
               room,
-              CrimeGoon.giveItemQuestTransition
+              CrimeGoon.pickupItemNavigateTransition
             );
-          } else {
+          } else if (ClientAPI.playerAgent.room.hasItem(terms.item)) {
             return new PickupItemBehavior(
               [terms.item],
               CrimeGoon.giveItemQuestTransition
@@ -386,15 +387,16 @@ export class CrimeGoon extends Strategy {
           }
         } else if (
           latestInfo.action === "PICKUP" ||
-          latestInfo.action === "GAVE"
+          latestInfo.action === "GAVE" ||
+          latestInfo.action === "POSSESS"
         ) {
           const owner =
-            latestInfo.action === "PICKUP" ? terms.agent : terms.agent2;
+            latestInfo.action === "GAVE" ? terms.agent2 : terms.agent;
           // navigate to owner if they arent in our room
           if (!ClientAPI.playerAgent.room.hasAgent(owner)) {
             return NavigateToAgentBehavior.start(
               owner,
-              CrimeGoon.giveItemQuestTransition
+              CrimeGoon.pickupItemNavigateTransition
             );
           }
           // attempt trade if we havent recently
@@ -437,7 +439,7 @@ export class CrimeGoon extends Strategy {
           );
         }
       }
-      return new WanderRandomlyBehavior(CrimeGoon.giveItemQuestTransition);
+      return new WanderRandomlyBehavior(CrimeGoon.pickupItemNavigateTransition);
     }
     // already has accomplished quest task
     else if (
@@ -453,6 +455,24 @@ export class CrimeGoon extends Strategy {
         CrimeGoon.turnInTransition
       );
     }
+  }
+
+  public static pickupItemNavigateTransition(
+    this: BehaviorState
+  ): BehaviorState {
+    CrimeGoon.instance.investigatedRoom.set(ClientAPI.playerAgent.room, Date.now());
+    if (ClientAPI.playerAgent.room.hasItem(CrimeGoon.instance.targetItem)) {
+      return new PickupItemBehavior(
+        [CrimeGoon.instance.targetItem],
+        CrimeGoon.giveItemQuestTransition
+      );
+    } else if (
+      this.currentActionState instanceof SuccessAction ||
+      this.currentActionState instanceof FailureAction
+    ) {
+      return CrimeGoon.nextGiveItemQuestBehavior();
+    }
+    return this;
   }
 
   public static giveItemQuestTransition(this: BehaviorState): BehaviorState {

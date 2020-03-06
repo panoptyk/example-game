@@ -20,6 +20,7 @@ export class StealItemState extends ActionState {
   ) {
     super(nextState);
     this.targetAgent = targetAgent;
+    this.targetItem = targetItem;
   }
 
   public async act() {
