@@ -425,6 +425,50 @@ class Sentence {
           text: terms.loc.roomName + " "
         });
         break;
+      case Info.ACTIONS.STOLE.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "stole "
+        });
+        arr.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.item.itemName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: " from "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
+      case Info.ACTIONS.ARRESTED.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "arrested "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
       case "???":
         arr.push({
           type: Sentence.BlockType.ACTION,

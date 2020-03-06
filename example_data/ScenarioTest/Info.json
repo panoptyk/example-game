@@ -1,0 +1,39 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_query": false,
+      "_command": false,
+      "_reference": false,
+      "_location": [9],
+      "_agent": [5, 15],
+      "_item": [2],
+      "_quantity": [1],
+      "_mask": {},
+      "_time": 5903,
+      "_predicate": "TAAILQ",
+      "_action": "STOLE"
+    },
+    "2": {
+      "id": 2,
+      "_query": false,
+      "_command": false,
+      "_reference": true,
+      "_mask": {},
+      "_time": 5903,
+      "_infoID": 1,
+      "_owner": 15
+    },
+    "3": {
+      "id": 3,
+      "_query": false,
+      "_command": false,
+      "_reference": true,
+      "_mask": {},
+      "_time": 5903,
+      "_infoID": 1,
+      "_owner": 5
+    }
+  },
+  "nextID": 7
+}
