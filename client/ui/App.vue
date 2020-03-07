@@ -118,6 +118,7 @@ export default class App extends Vue {
     this.items = ClientAPI.seenItems;
     this.knowledge = ClientAPI.playerAgent.knowledge;
     this.assignedQuests = ClientAPI.playerAgent.activeAssignedQuests;
+    this.activeQuests = this.assignedQuests.length;
     this.givenQuests = ClientAPI.playerAgent.activeGivenQuests;
   }
 
