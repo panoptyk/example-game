@@ -1,0 +1,29 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_factionName": "Craftsman",
+      "_factionType": "Guild",
+      "_members": [[1, { "lvl": 0, "exp": 0 }]],
+      "_lvlToName": [
+        [0, "Novice"],
+        [2, "Apprentice"],
+        [5, "Experienced"],
+        [15, "Master"]
+      ]
+    },
+    "2": {
+      "id": 2,
+      "_factionName": "Informants",
+      "_factionType": "Guild",
+      "_members": [[2, { "lvl": 0, "exp": 0 }]],
+      "_lvlToName": [
+        [0, "Novice"],
+        [2, "Apprentice"],
+        [5, "Experienced"],
+        [15, "Master"]
+      ]
+    }
+  },
+  "nextID": 3
+}

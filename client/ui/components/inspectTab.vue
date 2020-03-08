@@ -50,17 +50,21 @@ export default class InspectTab extends Vue {
   @Prop({ default: 0 }) target;
   realTarget: any = 0;
   player: Agent = 0 as any;
+  playerFactionStatus: any = 0;
 
   @Watch("trigger")
   @Watch("target")
   update() {
     this.realTarget = this.target;
     this.player = ClientAPI.playerAgent;
+    if (this.player) {
+      this.playerFactionStatus = this.player.factionStatus;
+    }
   }
 
   get playerFaction() {
-    if (this.player.faction) {
-      return this.player.faction.factionName;
+    if (this.playerFactionStatus) {
+      return this.playerFactionStatus.rankName + " " + this.playerFactionStatus.factionName;
     }
     return "no affiliation";
   }
