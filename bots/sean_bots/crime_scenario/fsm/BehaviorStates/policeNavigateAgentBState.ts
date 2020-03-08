@@ -61,7 +61,7 @@ export class PoliceNavigateToAgent extends BehaviorState {
           );
           if (dest) {
             if (
-              Helper.getPlayerRank(ClientAPI.playerAgent) <= 100 ||
+              Helper.getPlayerRank(ClientAPI.playerAgent) >= 10 ||
               !dest.roomTags.has("private")
             ) {
               return new MoveState(
@@ -72,7 +72,7 @@ export class PoliceNavigateToAgent extends BehaviorState {
           }
         }
       }
-      if (Helper.getPlayerRank(ClientAPI.playerAgent) > 100) {
+      if (Helper.getPlayerRank(ClientAPI.playerAgent) < 10) {
         potentialRooms = potentialRooms.filter(
           room => !room.roomTags.has("private")
         );

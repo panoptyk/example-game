@@ -58,10 +58,14 @@ export class IdleAndConverseBehavior extends BehaviorState {
   }
 
   static listenTransition(this: ListenToOther) {
-    if (Date.now() - this.lastUpdate > this.timeout) {
-      return new LeaveConersationState(() =>
-        IdleAndConverseBehavior.activeInstance.getNextAction()
-      );
+    if (ClientAPI.playerAgent.conversation) {
+      if (Date.now() - this.lastUpdate > this.timeout) {
+        return new LeaveConersationState(() =>
+          IdleAndConverseBehavior.activeInstance.getNextAction()
+        );
+      }
+    } else {
+      return IdleAndConverseBehavior.activeInstance.getNextAction();
     }
     return this;
   }

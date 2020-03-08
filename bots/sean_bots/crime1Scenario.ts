@@ -17,7 +17,7 @@ async function startScenario() {
     policeLeader = fork("./bots/sean_bots/crime_scenario/policeLeader.ts", ["Police Leader", "password"], {execArgv: childExecArgv});
     await spawnPolice();
     await spawnNeutral();
-    //await spawnCrime();
+    // await spawnCrime();
 }
 
 function spawnNewCrimeGoon() {

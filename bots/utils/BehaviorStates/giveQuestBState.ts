@@ -20,6 +20,8 @@ export class GiveQuestBehavior extends BehaviorState {
   _task: object;
   _isQuestion: boolean;
   _toTell: Info[];
+  _reason: string;
+  _rewards: any[];
   _hasAssigned = false;
   private static _activeInstance: GiveQuestBehavior;
   public static get activeInstance(): GiveQuestBehavior {
@@ -31,6 +33,8 @@ export class GiveQuestBehavior extends BehaviorState {
     task: object,
     isQuestion: boolean,
     relatedInfo: Info[] = [],
+    reason: string,
+    rewards: any[] = [],
     nextState?: () => BehaviorState
   ) {
     super(nextState);
@@ -38,9 +42,13 @@ export class GiveQuestBehavior extends BehaviorState {
     this._task = task;
     this._isQuestion = isQuestion;
     this._toTell = relatedInfo;
+    this._reason = reason;
+    this._rewards = rewards;
 
     if (ClientAPI.playerAgent.conversation) {
-      if (ClientAPI.playerAgent.conversation.contains_agent(this._targetAgent)) {
+      if (
+        ClientAPI.playerAgent.conversation.contains_agent(this._targetAgent)
+      ) {
         if (this._toTell[0]) {
           this.currentActionState = new TellInfoState(
             this._toTell.pop(),
@@ -51,7 +59,9 @@ export class GiveQuestBehavior extends BehaviorState {
           this.currentActionState = new GiveQuestState(
             this._targetAgent,
             this._task,
-            this._isQuestion
+            this._isQuestion,
+            this._reason,
+            this._rewards
           );
         }
       } else {
@@ -86,7 +96,9 @@ export class GiveQuestBehavior extends BehaviorState {
         return new GiveQuestState(
           GiveQuestBehavior._activeInstance._targetAgent,
           GiveQuestBehavior._activeInstance._task,
-          GiveQuestBehavior._activeInstance._isQuestion
+          GiveQuestBehavior._activeInstance._isQuestion,
+          GiveQuestBehavior._activeInstance._reason,
+          GiveQuestBehavior._activeInstance._rewards
         );
       }
     } else if (
@@ -110,7 +122,9 @@ export class GiveQuestBehavior extends BehaviorState {
         return new GiveQuestState(
           GiveQuestBehavior._activeInstance._targetAgent,
           GiveQuestBehavior._activeInstance._task,
-          GiveQuestBehavior._activeInstance._isQuestion
+          GiveQuestBehavior._activeInstance._isQuestion,
+          GiveQuestBehavior._activeInstance._reason,
+          GiveQuestBehavior._activeInstance._rewards
         );
       }
     } else if (!ClientAPI.playerAgent.conversation) {

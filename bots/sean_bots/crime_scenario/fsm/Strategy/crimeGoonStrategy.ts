@@ -39,7 +39,7 @@ import { StealBehavior } from "../BehaviorStates/stealBState";
 import { PickupItemBehavior } from "../BehaviorStates/pickupItemBState";
 
 /**
- * being saved so it can eventually be broken into multiple strategies
+ * Should eventually be broken into multiple strategies
  */
 export class CrimeGoon extends Strategy {
   private _activeQuest: Quest;
@@ -70,6 +70,11 @@ export class CrimeGoon extends Strategy {
         ", AState: " +
         this.currentBehavior.currentActionState.constructor.name
     );
+    if (this._activeQuest && this._activeQuest.status !== "ACTIVE") {
+      this.currentBehavior = new IdleAndConverseBehavior(
+        CrimeGoon.idleTransition
+      );
+    }
     this.currentBehavior = await this.currentBehavior.tick();
   }
 
@@ -133,7 +138,7 @@ export class CrimeGoon extends Strategy {
     for (const quest of ClientAPI.playerAgent.activeAssignedQuests) {
       if (
         quest.giver.faction === ClientAPI.playerAgent.faction &&
-        quest.giver.factionRank < ClientAPI.playerAgent.factionRank
+        quest.giver.factionRank > ClientAPI.playerAgent.factionRank
       ) {
         if (quest.task.action) {
           return quest;

@@ -12,29 +12,19 @@ export class ListenToOther extends ActionState {
     super(nextState);
     this.timeout = timeout;
     this.lastUpdate = Date.now();
-    if (ClientAPI.playerAgent.conversation) {
-      this.other = ClientAPI.playerAgent.conversation.getAgents(
-        ClientAPI.playerAgent
-      )[0];
-      this.infoAboutOther = ClientAPI.playerAgent.getInfoByAgent(
-        this.other
-      ).length;
-    }
+    this.other = ClientAPI.playerAgent.conversation.getAgents(
+      ClientAPI.playerAgent
+    )[0];
+    this.infoAboutOther = ClientAPI.playerAgent.getInfoByAgent(
+      this.other
+    ).length;
   }
 
   public async act() {
-    if (ClientAPI.playerAgent.conversation) {
-      if (!this.other) {
-        this.other = ClientAPI.playerAgent.conversation.getAgents(
-          ClientAPI.playerAgent
-        )[0];
-      }
-      const currentInfo = ClientAPI.playerAgent.getInfoByAgent(this.other)
-        .length;
-      if (this.infoAboutOther < currentInfo) {
-        this.lastUpdate = Date.now();
-        this.infoAboutOther = currentInfo;
-      }
+    const currentInfo = ClientAPI.playerAgent.getInfoByAgent(this.other).length;
+    if (this.infoAboutOther < currentInfo) {
+      this.lastUpdate = Date.now();
+      this.infoAboutOther = currentInfo;
     }
   }
 

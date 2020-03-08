@@ -33,3 +33,4 @@ export { NavigateToAgentBehavior } from "./BehaviorStates/navigateToAgentBState"
 export { RequestItemTradeState } from "./ActionStates/reqItemTradeAState";
 export { WanderRandomlyBehavior } from "./BehaviorStates/wanderRandomlyBState";
 export { NavigateToRoomBehavior } from "./BehaviorStates/navigateToRoomBState";
+export { TellRewardQuestState } from "./ActionStates/tellrewardQuestAState";

@@ -1,19 +1,11 @@
 import { ActionState } from "../../lib/ActionStates/actionState";
-import {
-  Agent,
-  ClientAPI,
-  ValidationResult,
-  Info
-} from "panoptyk-engine/dist/";
+import { Quest, ClientAPI, ValidationResult, Info } from "panoptyk-engine/dist/";
 import { SuccessAction } from "../../lib/ActionStates/successAState";
 import { FailureAction } from "../../lib/ActionStates/failureAState";
 
-export class GiveQuestState extends ActionState {
-  private questAgent: Agent;
-  private task: object;
-  private isQuestion: boolean;
-  private reason: string;
-  private rewards: any[];
+export class TellRewardQuestState extends ActionState {
+  private quest: Quest;
+  private reward: any;
   private _completed = false;
   public get completed() {
     return this._completed;
@@ -23,35 +15,19 @@ export class GiveQuestState extends ActionState {
     return this._doneActing;
   }
 
-  constructor(
-    questAgent: Agent,
-    task: object,
-    isQuestion = false,
-    reason?: string,
-    rewards?: any[],
-    nextState: () => ActionState = undefined
-  ) {
+  constructor(quest: Quest, reward: any, nextState: () => ActionState = undefined) {
     super(nextState);
-    this.questAgent = questAgent;
-    this.task = task;
-    this.isQuestion = isQuestion;
-    this.reason = reason;
-    this.rewards = rewards;
+    this.quest = quest;
+    this.reward = reward;
   }
 
   public async act() {
     if (
       ClientAPI.playerAgent.conversation &&
-      ClientAPI.playerAgent.conversation.contains_agent(this.questAgent)
+      ClientAPI.playerAgent.conversation.contains_agent(this.quest.receiver) &&
+      ClientAPI.playerAgent === this.quest.giver
     ) {
-      await ClientAPI.giveQuest(
-        this.questAgent,
-        this.task,
-        this.isQuestion,
-        0,
-        this.reason,
-        this.rewards
-      )
+      await ClientAPI.tellRewardQuest(this.quest, this.reward)
         .catch((res: ValidationResult) => {
           console.log(res.message);
         })

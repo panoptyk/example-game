@@ -102,6 +102,7 @@ export class CrimeLeader extends Strategy {
   }
 
   giveQuestBehavior(agent: Agent): BehaviorState {
+    const rewards = [Helper.makeQuestGoldReward(agent, 5)];
     for (const info of this._unassignedInfoQuest) {
       this._unassignedInfoQuest.delete(info);
       this._assignedInfoQuest.add(info);
@@ -111,6 +112,8 @@ export class CrimeLeader extends Strategy {
         info.getTerms(),
         true,
         relevantInfo,
+        undefined,
+        rewards,
         CrimeLeader.giveQuestTransition
       );
     }
@@ -131,6 +134,8 @@ export class CrimeLeader extends Strategy {
         command,
         false,
         relevantInfo,
+        undefined,
+        rewards,
         CrimeLeader.giveQuestTransition
       );
     }
@@ -150,6 +155,8 @@ export class CrimeLeader extends Strategy {
       command,
       false,
       [],
+      undefined,
+      [Helper.makeQuestGoldReward(agent, 5)],
       CrimeLeader.defaultTransition
     );
   }
@@ -167,17 +174,14 @@ export class CrimeLeader extends Strategy {
   ): BehaviorState {
     if (ClientAPI.playerAgent.conversation) {
       const other = Helper.getOthersInConversation()[0];
-      if (CrimeLeader.instance._assignedAgents.has(other)) {
-        for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
-          if (quest.receiver === other && quest.turnedInInfo[0]) {
-            CrimeLeader.instance._assignedAgents.delete(other);
-            return new CloseQuestBehavior(
-              quest,
-              true,
-              CrimeLeader.defaultTransition
-            );
-          }
-        }
+      const questToClose = CrimeLeader.instance.getQuestToClose(other);
+      if (questToClose) {
+        CrimeLeader.instance._assignedAgents.delete(other);
+        return new CloseQuestBehavior(
+          questToClose,
+          true,
+          CrimeLeader.defaultTransition
+        );
       }
 
       if (ClientAPI.playerAgent.tradeRequesters[0]) {
@@ -200,7 +204,30 @@ export class CrimeLeader extends Strategy {
     return this;
   }
 
+  public getQuestToClose(other: Agent) {
+    if (CrimeLeader.instance._assignedAgents.has(other)) {
+      for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
+        if (quest.receiver === other && quest.turnedInInfo[0]) {
+          return quest;
+        }
+      }
+    }
+    return undefined;
+  }
+
   public static defaultTransition(this: BehaviorState) {
+    if (ClientAPI.playerAgent.conversation) {
+      const other = Helper.getOthersInConversation()[0];
+      const questToClose = CrimeLeader.instance.getQuestToClose(other);
+      if (questToClose) {
+        CrimeLeader.instance._assignedAgents.delete(other);
+        return new CloseQuestBehavior(
+          questToClose,
+          true,
+          CrimeLeader.defaultTransition
+        );
+      }
+    }
     if (
       this.currentActionState instanceof SuccessAction ||
       this.currentActionState instanceof FailureAction
@@ -238,6 +265,8 @@ export class CrimeLeader extends Strategy {
             this._task,
             this._isQuestion,
             this._toTell,
+            this._reason,
+            this._rewards,
             CrimeLeader.giveQuestTransition
           );
         }

@@ -50,7 +50,7 @@ export class PolicePatrol extends BehaviorState {
       PolicePatrol.activeInstance.idleTimeRoom
     ) {
       let potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
-      if (Helper.getPlayerRank(ClientAPI.playerAgent) > 100) {
+      if (Helper.getPlayerRank(ClientAPI.playerAgent) < 10) {
         potentialRooms = potentialRooms.filter(
           room => !room.roomTags.has("private")
         );
@@ -76,8 +76,12 @@ export class PolicePatrol extends BehaviorState {
   }
 
   static listenTransition(this: ListenToOther) {
-    if (Date.now() - this.lastUpdate > this.timeout) {
-      return new LeaveConersationState(PolicePatrol.leaveTransition);
+    if (ClientAPI.playerAgent.conversation) {
+      if (Date.now() - this.lastUpdate > this.timeout) {
+        return new LeaveConersationState(PolicePatrol.leaveTransition);
+      }
+    } else {
+      return new IdleState(PolicePatrol.idleTransition);
     }
     return this;
   }
