@@ -172,7 +172,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName.itemName + " "
+          text: terms.item.itemName + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,

@@ -5,6 +5,19 @@
     <span v-for="b in sentence" v-bind:key="b.text" v-bind:class="b.type">
       {{ b.text }}
     </span>
+    <span v-if="reason">
+      because {{ reason }}
+    </span>
+    <h2 v-if="rewards[0]">Rewards for completion:</h2>
+    <template v-for="row of rewards">
+      <div class="info-box" v-bind:key="row">
+        <div class="info-text">
+          <span v-for="b in row" v-bind:key="b.text" v-bind:class="b.type">
+            {{ b.text }}
+          </span>
+        </div>
+      </div>
+    </template>
     <h2 v-if="turnedInInfo[0]">Turned-in Info:</h2>
     <template v-for="i of turnedInInfo">
       <div class="info-box" v-bind:key="i.id">
@@ -33,6 +46,44 @@ export default class QuestEntry extends Vue {
 
   get turnedInInfo() {
     return this.quest.turnedInInfo;
+  }
+
+  get reason() {
+    return this.quest.reasonForQuest;
+  }
+
+  generateRewardTxt(reward: Info) {
+    const terms = reward.getTerms();
+    const rewardTxt = [];
+    switch (reward.action) {
+      case Info.ACTIONS.PAID.name:
+        rewardTxt.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.quantity + " gold "
+        });
+        break;
+      case Info.ACTIONS.GAVE.name:
+        rewardTxt.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.item.itemName
+        });
+        break;
+      case Info.ACTIONS.PROMOTE.name:
+        rewardTxt.push({
+          type: Sentence.BlockType.FACTION,
+          text: "Advancement to next rank "
+        });
+        break;
+    }
+    return rewardTxt;
+  }
+
+  get rewards() {
+    const rewardTxt = [];
+    for (const reward of this.quest.offeredRewards) {
+      rewardTxt.push(this.generateRewardTxt(reward));
+    }
+    return rewardTxt;
   }
 
   get status() {
