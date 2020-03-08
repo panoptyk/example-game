@@ -4,13 +4,15 @@
       Character<br />
       Name: <span class="agent"> {{ player.agentName }} </span> <br />
       Faction: <span class="faction">{{ playerFaction }}</span> <br />
+      Rank: <span class="rank">{{ playerRank }}</span> <br />
       Gold: <span class="gold"> {{ player.gold }} </span>
     </div>
 
     <span id="inspect-title"> Inspection Target </span>
     <div id="inspect-window" class="game-tab" v-if="isAgent">
       Agent: <span class="agent">{{ realTarget.agentName }}</span> <br />
-      Faction: <span class="faction">{{ factionName }}</span>
+      Faction: <span class="faction">{{ factionName }}</span> <br />
+      Rank: <span class="rank">{{ factionRank }}</span> <br />
     </div>
 
     <div id="inspect-window" class="game-tab" v-else-if="isDoor">
@@ -62,14 +64,28 @@ export default class InspectTab extends Vue {
     if (this.player.faction) {
       return this.player.faction.factionName;
     }
-    return "no affiliation";
+    return "No affiliation";
+  }
+
+  get playerRank() {
+    if (this.player.faction) {
+      return this.player.factionRank;
+    }
+    return "Not part of a faction";
   }
 
   get factionName() {
     if (this.realTarget.faction) {
       return this.realTarget.faction.factionName;
     }
-    return "no affiliation";
+    return "No affiliation";
+  }
+
+  get factionRank() {
+    if (this.realTarget.faction) {
+      return this.realTarget.factionRank;
+    }
+    return "Not part of a faction";
   }
 
   // Check type escapes to player
