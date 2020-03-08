@@ -9,6 +9,9 @@
         <div class="item-text">
           <item-entry v-bind:item="i"></item-entry>
         </div>
+        <b-button class="button" size="is-small" @click="onDropItem(i)"
+          >Drop</b-button
+        >
       </div>
     </template>
     <b-pagination
@@ -54,6 +57,10 @@ export default class ItemTab extends Vue {
     this.curPage = page;
   }
 
+  onDropItem(item: Item) {
+    ClientAPI.dropItems([item]);
+  }
+
   @Watch("trigger")
   updateInfo() {
     if (!ClientAPI.playerAgent) {
@@ -80,7 +87,7 @@ export default class ItemTab extends Vue {
       .sort((a, b) => {
         return b - a;
       })
-      .slice(start, end)
+      .slice(start, end);
   }
 }
 </script>
