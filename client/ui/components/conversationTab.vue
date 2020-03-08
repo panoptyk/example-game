@@ -435,6 +435,7 @@ export default class ConverstaionTab extends Vue {
     }
     this.inventory = ClientAPI.playerAgent.inventory;
     this.questions = ClientAPI.playerAgent.conversation.askedQuestions;
+    this.onQuestSelect();
   }
 
   relevantInfo = [];
