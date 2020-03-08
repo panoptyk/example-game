@@ -14,14 +14,14 @@ import {
 // Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "Chief";
 const password = process.argv[3] ? process.argv[3] : "password";
-const address = process.argv[4] ? process.argv[4] : "http://70.95.176.182:1791";
+const address = process.argv[4] ? process.argv[4] : "http://localhost:8080";
 
 const MAX_RETRY = 10;
 const RETRY_INTERVAL = 100; // ms before attempLogin() is called again to retry logging in
 const ACT_INTERVAL = 2000; // ms before act() is called again(possibly)
 
 function init() {
-  console.log("Logging in as: " + username + " to server: " + address);
+  console.log("Logging in as: " + username + "\nTo server: " + address);
   logger.silence();
   address ? ClientAPI.init(address) : ClientAPI.init();
   attemptLogin();
@@ -79,11 +79,12 @@ const GiveQuest = function() {
   };
   const predicate = Info.ACTIONS.PICKUP.getTerms(dummyInfo as Info);
   let item;
-  if (otherAgent.id === 3) {
+  if (otherAgent.id === 1) {
     item = {id: 6};
   } else if (otherAgent.id === 4) {
     item = {id: 7};
   }
+  predicate.quantity = 1;
   if (!gaveQuest.has(otherAgent) && item) {
     predicate.agent = {id: otherAgent.id} as Agent;
     predicate.item = item as Item;
