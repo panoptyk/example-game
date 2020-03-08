@@ -5,6 +5,7 @@
     <span v-for="b in sentence" v-bind:key="b.text" v-bind:class="b.type">
       {{ b.text }}
     </span>
+    <h2 v-if="turnedInInfo[0]">Turned-in Info:</h2>
     <template v-for="i of turnedInInfo">
       <div class="info-box" v-bind:key="i.id">
         <div class="info-id">#{{ i.id }}</div>
@@ -20,8 +21,13 @@
 import { Component, Vue, Prop } from "vue-property-decorator";
 import { Quest, Info, ClientAPI } from "panoptyk-engine/dist/client";
 import Sentence from "../../utils/sentence";
+import InfoEntry from "./infoEntry.vue";
 
-@Component({})
+@Component({
+  components: {
+    "info-entry": InfoEntry
+  }
+})
 export default class QuestEntry extends Vue {
   @Prop({ default: {} }) quest: Quest;
 
@@ -37,11 +43,7 @@ export default class QuestEntry extends Vue {
 
   get taskDescription() {
     if (this.quest) {
-      let sentence =
-        "Description: " +
-        this.quest.type +
-        " quest assigned by " +
-        this.quest.giver;
+      let sentence = "Quest assigned by " + this.quest.giver;
       switch (this.quest.type) {
         case "question":
           sentence += " with the mission to resolve the following mystery: ";
@@ -53,7 +55,7 @@ export default class QuestEntry extends Vue {
     }
   }
   get sentence() {
-    const terms = this.quest.task.getTerms();
+    const terms = Sentence.replaceMissing(this.quest.task.getTerms(), "any");
     const taskTxt = [];
     switch (this.quest.type) {
       case "command":

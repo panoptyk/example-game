@@ -36,7 +36,7 @@ class Sentence {
     return Sentence.badCreate(terms);
   }
   private static createCommand(info: Info): Sentence.Block[] {
-    const terms = Sentence.replaceMissing(info.getTerms(), "???");
+    const terms = Sentence.replaceMissing(info.getTerms(), "any");
     return Sentence.badCreate(terms);
   }
   private static createMaskedFact(info: Info): Sentence.Block[] {
@@ -52,7 +52,7 @@ class Sentence {
    * Replaces undefined terms with provided string
    *  @return new terms object
    */
-  private static replaceMissing(infoTerms, fill = "???") {
+  public static replaceMissing(infoTerms, fill = "???") {
     const dummyInfo = {
       agents: [],
       items: [],
