@@ -5,8 +5,12 @@
     <span v-for="b in sentence" v-bind:key="b.text" v-bind:class="b.type">
       {{ b.text }}
     </span>
-    <span v-if="reason">
-      because {{ reason }}
+    <span v-if="reason[0]">
+      <br />
+      because <br />
+      <span v-for="b in reason" v-bind:key="b.text" v-bind:class="b.type">
+        {{ b.text }}
+      </span>
     </span>
     <h2 v-if="rewards[0]">Rewards for completion:</h2>
     <template v-for="row of rewards">
@@ -49,7 +53,110 @@ export default class QuestEntry extends Vue {
   }
 
   get reason() {
-    return this.quest.reasonForQuest;
+    if (!this.quest.reasonForQuest) {
+      return [];
+    }
+    const terms = Sentence.replaceMissing(
+      this.quest.reasonForQuest.getTerms(),
+      "____"
+    );
+    const reasonTxt = [];
+    if (
+      this.quest.type === "command" &&
+      this.quest.task.action === Info.ACTIONS.ARRESTED.name
+    ) {
+      switch (this.quest.reasonForQuest.action) {
+        case Info.ACTIONS.GAVE.name:
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: terms.agent1.agentName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ACTION,
+            text: "traded an illegal "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ITEM,
+            text: terms.item.itemName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.NONE,
+            text: "with "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: terms.agent2.agentName + " "
+          });
+          return reasonTxt;
+        case Info.ACTIONS.STOLE.name:
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: terms.agent1.agentName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ACTION,
+            text: "stole "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ITEM,
+            text: terms.item.itemName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.NONE,
+            text: "from "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: terms.agent2.agentName + " "
+          });
+          return reasonTxt;
+        case Info.ACTIONS.DROP.name:
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: terms.agent.agentName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ACTION,
+            text: "dropped an illegal "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ITEM,
+            text: terms.item.itemName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.NONE,
+            text: "in "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ROOM,
+            text: terms.loc
+          });
+          return reasonTxt;
+        case Info.ACTIONS.PICKUP.name:
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: terms.agent.agentName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ACTION,
+            text: "grabbed an illegal "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ITEM,
+            text: terms.item.itemName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.NONE,
+            text: "in "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ROOM,
+            text: terms.loc
+          });
+          return reasonTxt;
+      }
+    }
+    return Sentence.fromInfo(this.quest.reasonForQuest);
   }
 
   generateRewardTxt(reward: Info) {
