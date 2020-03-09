@@ -34,6 +34,7 @@ export class ArrestBehavior extends BehaviorState {
     if (ClientAPI.playerAgent.room.hasAgent(this._targetAgent)) {
       this.currentActionState = new PoliceArrestAgentState(
         this._targetAgent,
+        this._warrant.reasonForQuest,
         ArrestBehavior.arrestTransition
       );
     } else {
@@ -63,6 +64,7 @@ export class ArrestBehavior extends BehaviorState {
     ) {
       return new PoliceArrestAgentState(
         ArrestBehavior.activeInstance._targetAgent,
+        ArrestBehavior.activeInstance._warrant.reasonForQuest,
         ArrestBehavior.arrestTransition
       );
     }

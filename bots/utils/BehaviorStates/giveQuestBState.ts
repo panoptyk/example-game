@@ -20,7 +20,7 @@ export class GiveQuestBehavior extends BehaviorState {
   _task: object;
   _isQuestion: boolean;
   _toTell: Info[];
-  _reason: string;
+  _reason: Info;
   _rewards: any[];
   _hasAssigned = false;
   private static _activeInstance: GiveQuestBehavior;
@@ -33,7 +33,7 @@ export class GiveQuestBehavior extends BehaviorState {
     task: object,
     isQuestion: boolean,
     relatedInfo: Info[] = [],
-    reason: string,
+    reason: Info,
     rewards: any[] = [],
     nextState?: () => BehaviorState
   ) {

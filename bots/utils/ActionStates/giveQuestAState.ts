@@ -12,7 +12,7 @@ export class GiveQuestState extends ActionState {
   private questAgent: Agent;
   private task: object;
   private isQuestion: boolean;
-  private reason: string;
+  private reason: Info;
   private rewards: any[];
   private _completed = false;
   public get completed() {
@@ -27,7 +27,7 @@ export class GiveQuestState extends ActionState {
     questAgent: Agent,
     task: object,
     isQuestion = false,
-    reason?: string,
+    reason?: Info,
     rewards?: any[],
     nextState: () => ActionState = undefined
   ) {

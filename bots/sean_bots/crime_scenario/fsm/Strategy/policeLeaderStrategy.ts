@@ -21,6 +21,7 @@ import { PoliceKnowledgeBase } from "../KnowledgeBase/policeKnowledge";
 
 export class PoliceLeader extends Strategy {
   _nextTarget: Agent;
+  _arrestReason: Info;
   private static _activeInstance: PoliceLeader;
   public static get activeInstance(): PoliceLeader {
     return this._activeInstance;
@@ -48,6 +49,8 @@ export class PoliceLeader extends Strategy {
         .crimeDatabase) {
         if (!agent.agentStatus.has("dead") && crimes.size > 0) {
           this._nextTarget = agent;
+          this._arrestReason = Array.from(crimes)[0];
+          return;
         }
       }
     }
@@ -89,7 +92,8 @@ export class PoliceLeader extends Strategy {
             agent1: agent,
             agent2: this._nextTarget,
             time: undefined,
-            loc: undefined
+            loc: undefined,
+            info: this._arrestReason
           });
           const relatedInfo = ClientAPI.playerAgent.getInfoByAgent(
             this._nextTarget
@@ -99,7 +103,7 @@ export class PoliceLeader extends Strategy {
             command,
             false,
             relatedInfo,
-            "",
+            this._arrestReason,
             [],
             PoliceLeader.giveQuestTransition
           );

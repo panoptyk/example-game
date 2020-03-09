@@ -110,7 +110,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
       switch (info.action) {
         case "STOLE":
           this.registerCrime(terms.agent1, info);
-        /* falls through */
+          break;
         case "GAVE":
           if (item.itemTags.has("illegal")) {
             this.registerCrime(terms.agent1, info);

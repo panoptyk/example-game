@@ -12,7 +12,8 @@
       "_mask": {},
       "_time": 5903,
       "_predicate": "TAAILQ",
-      "_action": "STOLE"
+      "_action": "STOLE",
+      "_agentCopies": [[5, 3], [15, 2]]
     },
     "2": {
       "id": 2,
