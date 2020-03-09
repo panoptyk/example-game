@@ -8,10 +8,7 @@ import {
 } from "../../lib";
 import { ClientAPI, Agent, Room, Info, Quest } from "panoptyk-engine/dist/";
 import * as Helper from "../helper";
-import {
-  CompleteQuestState,
-  FailQuestState
-} from "../";
+import { CompleteQuestState, FailQuestState } from "../";
 
 export class CloseQuestBehavior extends BehaviorState {
   _targetAgent: Agent;
@@ -37,9 +34,17 @@ export class CloseQuestBehavior extends BehaviorState {
       ClientAPI.playerAgent.conversation.contains_agent(this._targetAgent)
     ) {
       if (this._questSuccess) {
+        console.log(
+          ClientAPI.playerAgent +
+            " marked " +
+            this._targetQuest +
+            " as complete."
+        );
         this.currentActionState = new CompleteQuestState(this._targetQuest);
-      }
-      else {
+      } else {
+        console.log(
+          ClientAPI.playerAgent + " marked " + this._targetQuest + " as failed."
+        );
         this.currentActionState = new FailQuestState(this._targetQuest);
       }
     } else {

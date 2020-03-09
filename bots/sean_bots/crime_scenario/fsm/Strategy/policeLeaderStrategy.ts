@@ -14,12 +14,12 @@ import {
   TellInfo,
   TurnInBehavior,
   GiveQuestBehavior,
-  IdleAndConverseBehavior
+  IdleAndConverseBehavior,
+  CloseQuestBehavior
 } from "../../../../utils";
 import { PoliceKnowledgeBase } from "../KnowledgeBase/policeKnowledge";
 
 export class PoliceLeader extends Strategy {
-  targetedCriminals: Set<Agent> = new Set<Agent>();
   _nextTarget: Agent;
   private static _activeInstance: PoliceLeader;
   public static get activeInstance(): PoliceLeader {
@@ -29,7 +29,7 @@ export class PoliceLeader extends Strategy {
   constructor() {
     super();
     this.currentBehavior = new IdleAndConverseBehavior(
-      PoliceLeader.idleConverseTransition
+      PoliceLeader.genericTransition
     );
   }
 
@@ -44,11 +44,9 @@ export class PoliceLeader extends Strategy {
 
   private updateNextTarget() {
     if (!this._nextTarget) {
-      for (const agent of PoliceKnowledgeBase.instance.criminals) {
-        if (
-          !this.targetedCriminals.has(agent) &&
-          !agent.agentStatus.has("dead")
-        ) {
+      for (const [agent, crimes] of PoliceKnowledgeBase.instance
+        .crimeDatabase) {
+        if (!agent.agentStatus.has("dead") && crimes.size > 0) {
           this._nextTarget = agent;
         }
       }
@@ -57,7 +55,6 @@ export class PoliceLeader extends Strategy {
 
   onGiveQuestSuccess() {
     if (this._nextTarget) {
-      this.targetedCriminals.add(this._nextTarget);
       this._nextTarget = undefined;
     }
   }
@@ -70,6 +67,18 @@ export class PoliceLeader extends Strategy {
   }
 
   public getNextBehavior(): BehaviorState {
+    if (ClientAPI.playerAgent.conversation) {
+      const other = Helper.getOthersInConversation()[0];
+      for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
+        if (quest.receiver === other && quest.turnedInInfo[0]) {
+          return new CloseQuestBehavior(
+            quest,
+            true,
+            PoliceLeader.genericTransition
+          );
+        }
+      }
+    }
     if (this._nextTarget) {
       for (const agent of Helper.getOthersInRoom()) {
         if (
@@ -90,6 +99,8 @@ export class PoliceLeader extends Strategy {
             command,
             false,
             relatedInfo,
+            "",
+            [],
             PoliceLeader.giveQuestTransition
           );
         }
@@ -98,12 +109,10 @@ export class PoliceLeader extends Strategy {
     // idle if we have no target or agents to perform arrests
     return IdleAndConverseBehavior.activeInstance
       ? IdleAndConverseBehavior.activeInstance
-      : new IdleAndConverseBehavior(PoliceLeader.idleConverseTransition);
+      : new IdleAndConverseBehavior(PoliceLeader.genericTransition);
   }
 
-  public static idleConverseTransition(
-    this: IdleAndConverseBehavior
-  ): BehaviorState {
+  public static genericTransition(this: BehaviorState): BehaviorState {
     return PoliceLeader.activeInstance.getNextBehavior();
   }
 

@@ -8,4 +8,15 @@ export class KnowledgeBase {
     }
     return KnowledgeBase._instance;
   }
+
+  static get factionLeader() {
+    if (ClientAPI.playerAgent.faction) {
+      for (const agent of ClientAPI.playerAgent.faction.members) {
+        if (agent.factionRank === Infinity) {
+          return agent;
+        }
+      }
+    }
+    return undefined;
+  }
 }

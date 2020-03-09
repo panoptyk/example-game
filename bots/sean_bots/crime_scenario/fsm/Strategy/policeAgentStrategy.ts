@@ -60,12 +60,12 @@ export class PoliceAgent extends Strategy {
         if (
           Helper.hasToldInfo(
             agent,
-            Array.from(PoliceKnowledgeBase.instance.crimeDatabase)
+            Array.from(PoliceKnowledgeBase.instance.allCrimes)
           )
         ) {
           PolicePatrol.activeInstance.conversedAgents.add(agent);
         } else {
-          const toTell = new Set(PoliceKnowledgeBase.instance.crimeDatabase);
+          const toTell = new Set(PoliceKnowledgeBase.instance.allCrimes);
           for (const info of ClientAPI.playerAgent.getInfoByAction("TOLD")) {
             const terms = info.getTerms();
             if (terms.agent2 === agent && toTell.has(info)) {
