@@ -25,7 +25,8 @@
 
     <div id="inspect-window" class="game-tab" v-else-if="isItem">
       Item: <span class="item">{{ realTarget.itemName }}</span> <br />
-      Type: {{ realTarget.type}}
+      Type: {{ realTarget.type }} <br />
+      Item Tags: {{ itemTags }}
     </div>
 
     <div id="inspect-window" class="game-tab" v-else>
@@ -86,6 +87,18 @@ export default class InspectTab extends Vue {
       return this.realTarget.factionRank;
     }
     return "Not part of a faction";
+  }
+
+  get itemTags() {
+    if (this.realTarget instanceof Item && this.realTarget.itemTags.size > 0) {
+      const tags = Array.from(this.realTarget.itemTags);
+      let sentence = tags.pop();
+      for (const tag in tags) {
+        sentence += ", " + tag;
+      }
+      return sentence;
+    }
+    return "None";
   }
 
   // Check type escapes to player
