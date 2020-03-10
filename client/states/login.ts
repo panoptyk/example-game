@@ -1,5 +1,6 @@
 import * as Assets from "../assets";
 import { ClientAPI } from "panoptyk-engine/dist/client";
+import { UI } from "../ui/ui";
 
 export class Login extends Phaser.State {
   private ready: boolean;
@@ -32,6 +33,7 @@ export class Login extends Phaser.State {
           userField.destroy();
           passwordField.destroy();
           button.destroy();
+          UI.instance.main.$data.activeQuests = ClientAPI.playerAgent.activeAssignedQuests.length;
           this.ready = true;
       })
       .catch(err => console.log("fail!"));
