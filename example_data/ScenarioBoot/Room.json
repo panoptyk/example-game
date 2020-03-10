@@ -5,7 +5,7 @@
       "_roomName": "East Bentham",
       "adjacent": [3, 4, 14],
       "_occupants": [],
-      "itemIDs": [1],
+      "itemIDs": [8],
       "conversationIDs": [],
       "_maxOccupants": 15
     },

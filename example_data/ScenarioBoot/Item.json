@@ -4,51 +4,82 @@
       "id": 1,
       "_itemName": "Rusty spoon",
       "_type": "Weapon",
+      "_quantity": 1,
+      "_itemTags": [],
       "roomID": 1,
+      "_master": 0,
       "inTransaction": false
     },
     "2": {
       "id": 2,
       "_itemName": "Sword",
       "_type": "Weapon",
+      "_quantity": 1,
+      "_itemTags": [],
       "roomID": 2,
+      "_master": 0,
       "inTransaction": false
     },
     "3": {
       "id": 3,
       "_itemName": "Wooden Breastplate",
       "_type": "Armor",
+      "_quantity": 1,
+      "_itemTags": [],
       "roomID": 6,
+      "_master": 0,
       "inTransaction": false
     },
     "4": {
       "id": 4,
       "_itemName": "Iron Shield",
       "_type": "Weapon",
+      "_quantity": 1,
+      "_itemTags": [],
       "roomID": 7,
+      "_master": 0,
       "inTransaction": false
     },
     "5": {
       "id": 5,
       "_itemName": "Macintosh Laptop",
       "_type": "Laptop",
+      "_quantity": 1,
+      "_itemTags": [],
       "agentID": 2,
+      "_master": 0,
       "inTransaction": false
     },
     "6": {
       "id": 6,
       "_itemName": "PlayerA quest item",
       "_type": "key item",
-      "roomID": 11,
+      "_quantity": 1,
+      "_itemTags": [],
+      "roomID": 0,
+      "agentID": 1,
+      "_master": 0,
       "inTransaction": false
     },
     "7": {
       "id": 7,
       "_itemName": "PlayerB quest item",
       "_type": "key item",
+      "_quantity": 1,
+      "_itemTags": [],
       "roomID": 9,
+      "_master": 0,
+      "inTransaction": false
+    },
+    "8": {
+      "id": 8,
+      "_type": "unique",
+      "_quantity": 1,
+      "_itemTags": [],
+      "roomID": 1,
+      "_master": 1,
       "inTransaction": false
     }
   },
-  "nextID": 8
+  "nextID": 9
 }
