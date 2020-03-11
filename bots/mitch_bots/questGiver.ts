@@ -10,6 +10,8 @@ import {
   logger,
   ActionGiveQuest
 } from "panoptyk-engine/dist/client";
+import questHelp from "./questHelper";
+import * as KB from "./KBadditions";
 
 // Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "Chief";
@@ -24,10 +26,18 @@ function init() {
   console.log("Logging in as: " + username + "\nTo server: " + address);
   logger.silence();
   address ? ClientAPI.init(address) : ClientAPI.init();
+  process.on("SIGINT", () => {
+    if (!_loggedIn) {
+      process.exit(0);
+    } else {
+      _endBot = true;
+    }
+  });
   attemptLogin();
 }
 
 let _retries = 1;
+let _loggedIn = false;
 function attemptLogin() {
   ClientAPI.login(username, password)
     .catch(res => {
@@ -40,8 +50,9 @@ function attemptLogin() {
     })
     .then(res => {
       console.log("Logged in!");
+      _loggedIn = true;
       // tslint:disable-next-line: ban
-      setTimeout(actWrapper, 100);
+      setTimeout(actWrapper, 200);
     });
 }
 
@@ -61,44 +72,32 @@ function actWrapper() {
   if (!_endBot) {
     // tslint:disable-next-line: ban
     setTimeout(actWrapper, ACT_INTERVAL);
+  } else {
+    console.log("bot exiting...");
+    process.exit(0);
   }
 }
 // Boilerplate agent code ================================================== END
 // set "_endBot" to true to exit the script cleanly
 
-const gaveQuest = new Set<Agent>();
-
-const GiveQuest = function() {
-  const otherAgent = ClientAPI.playerAgent.conversation.getAgents(ClientAPI.playerAgent)[0];
-  const dummyInfo = {
-    agents: [],
-    items: [],
-    locations: [],
-    quantities: [],
-    factions: []
-  };
-  const predicate = Info.ACTIONS.PICKUP.getTerms(dummyInfo as Info);
-  let item;
-  if (otherAgent.id === 1) {
-    item = {id: 6};
-  } else if (otherAgent.id === 4) {
-    item = {id: 7};
+const DoQuest = async function() {
+  const otherAgent = KB.get.otherAgentInConvo();
+  if (questHelp.canGiveQuest(otherAgent)) {
+    await questHelp.giveQuest(otherAgent);
+    return true;
   }
-  predicate.quantity = 1;
-  if (!gaveQuest.has(otherAgent) && item) {
-    predicate.agent = {id: otherAgent.id} as Agent;
-    predicate.item = item as Item;
-    ClientAPI.giveQuest(otherAgent, predicate, false).then(res => {
-      gaveQuest.add(otherAgent);
-    });
-  }
+  return false;
 };
 
 async function act() {
   if (ClientAPI.playerAgent.conversation) {
-    GiveQuest();
+    if (! await DoQuest()) {
+      await questHelp.tryCompleteQuest();
+    }
   } else if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
-    ClientAPI.acceptConversation(ClientAPI.playerAgent.conversationRequesters[0]);
+    await ClientAPI.acceptConversation(
+      ClientAPI.playerAgent.conversationRequesters[0]
+    );
   }
 }
 
