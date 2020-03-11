@@ -132,7 +132,7 @@ class Sentence {
             terms[k] = { itemName: "what" };
             break;
           case "info":
-            terms[k] = { id: "what" };
+            terms[k] = { id: "?" };
             break;
           case "faction":
             terms[k] = { factionName: "which faction" };
@@ -224,7 +224,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName + "#" + terms.item.id + " "
+          text: terms.item.itemName + terms.item.id ? "#" + terms.item.id + " " : " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -242,7 +242,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName + "#" + terms.item.id + " "
+          text: terms.item.itemName + terms.item.id ? "#" + terms.item.id + " " : " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -318,7 +318,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName + "#" + terms.item.id + " "
+          text: terms.item.itemName + terms.item.id ? "#" + terms.item.id + " " : " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -444,7 +444,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName + "#" + terms.item.id + " "
+          text: terms.item.itemName + terms.item.id ? "#" + terms.item.id + " " : " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -458,7 +458,7 @@ class Sentence {
       case Info.ACTIONS.LOCATED_IN.name:
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName + "#" + terms.item.id + " "
+          text: terms.item.itemName + terms.item.id ? "#" + terms.item.id + " " : " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
