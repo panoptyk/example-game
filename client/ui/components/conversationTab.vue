@@ -204,15 +204,7 @@
             v-bind:key="targetQuest.id"
             v-bind:quest="targetQuest"
           ></quest-entry>
-          <template v-for="i of turnedInInfo">
-            <div class="info-box" v-bind:key="i.id">
-              <div class="info-id">#{{ i.id }}</div>
-              <div class="info-text">
-                <info-entry v-bind:info="i"></info-entry>
-              </div>
-            </div>
-          </template>
-          <b-field>
+          <b-field v-if="targetQuest.type !== 'item'">
             <b-select
               placeholder="-- info --"
               size="is-small"
@@ -227,19 +219,34 @@
               >
             </b-select>
           </b-field>
-          <info-entry
+          <b-field v-else>
+            <b-select
+              placeholder="-- item --"
+              size="is-small"
+              v-model="questItem"
+            >
+              <option disabled value>-- item --</option>
+              <option
+                v-for="item in relevantItem"
+                v-bind:key="item.id"
+                v-bind:value="item"
+                >{{ item.itemName }}</option
+              >
+            </b-select>
+          </b-field>
+          <info-entry v-if="targetQuest.type !== 'item'"
             v-bind:key="questInfo.id"
             v-bind:info="questInfo"
           ></info-entry>
+          <item-entry v-else
+            v-bind:key="questItem.id"
+            v-bind:item="questItem"
+          ></item-entry>
         </div>
       </div>
       <footer class="card-footer">
-        <a class="card-footer-item" @click="onQuestTurnIn">Turn in Info</a>
-        <div v-if="isQuestGiver">
-          <a class="card-footer-item" @click="onCompleteQuest"
-            >Mark as Complete</a
-          >
-        </div>
+        <a v-if="targetQuest.type !== 'item'" class="card-footer-item" @click="onQuestTurnInInfo">Turn in Info</a>
+        <a v-else-if="targetQuest.type === 'item'" class="card-footer-item" @click="onQuestTurnInItem">Turn in Item</a>
       </footer>
     </b-collapse>
   </div>
@@ -439,9 +446,11 @@ export default class ConverstaionTab extends Vue {
   }
 
   relevantInfo = [];
+  relevantItem = [];
   targetQuest: Quest = {} as any;
   turnedInInfo: Info[] = [];
   questInfo: Info = {} as any;
+  questItem: Item = {} as any;
 
   get isQuestGiver(): boolean {
     return ClientAPI.playerAgent === this.targetQuest.giver;
@@ -450,22 +459,35 @@ export default class ConverstaionTab extends Vue {
   // For quest turn in
   onQuestSelect() {
     // list of info that can complete quest
-    this.relevantInfo = [];
     if (this.targetQuest) {
-      this.turnedInInfo = this.targetQuest.turnedInInfo;
-      for (const info of ClientAPI.playerAgent.knowledge) {
-        if (
-          !this.targetQuest.hasTurnedIn(info) &&
-          this.targetQuest.checkSatisfiability(info)
-        ) {
-          this.relevantInfo.push(info);
+      if (this.targetQuest.type !== "item") {
+        this.relevantInfo = [];
+        this.turnedInInfo = this.targetQuest.turnedInInfo;
+        for (const info of ClientAPI.playerAgent.knowledge) {
+          if (
+            !this.targetQuest.hasTurnedIn(info) &&
+            this.targetQuest.checkSatisfiability(info)
+          ) {
+            this.relevantInfo.push(info);
+          }
+        }
+      } else if (this.targetQuest.type === "item") {
+        this.relevantItem = [];
+        for (const item of this.items) {
+          if (item.agent && item.agent.id === ClientAPI.playerAgent.id && item.sameAs(this.targetQuest.item)) {
+            this.relevantItem.push(item);
+          }
         }
       }
     }
   }
 
-  onQuestTurnIn() {
+  onQuestTurnInInfo() {
     ClientAPI.turnInQuestInfo(this.targetQuest, this.questInfo);
+  }
+
+  onQuestTurnInItem() {
+    ClientAPI.turnInQuestItem(this.targetQuest, this.questItem);
   }
 
   onCompleteQuest() {

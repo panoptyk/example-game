@@ -4,6 +4,8 @@
       Character<br />
       Name: <span class="agent"> {{ player.agentName }} </span> <br />
       Faction: <span class="faction">{{ playerFaction }}</span> <br />
+      Faction Level: <span class="faction">{{ playerFactionStatus.lvl }}</span> <br />
+      Faction XP: <span class="faction">{{ playerFactionStatus.exp }}/{{ playerFactionStatus.toNextLevel }}</span> <br />
       Gold: <span class="gold"> {{ player.gold }} </span>
     </div>
 

@@ -1,15 +1,21 @@
 <template>
   <div class="quest-entry">
-    {{ status }} <br />
-    {{ taskDescription }} <br />
-    <span v-for="b in sentence" v-bind:key="b.text" v-bind:class="b.type">
-      {{ b.text }}
-    </span>
-    <template v-for="i of turnedInInfo">
-      <div class="info-box" v-bind:key="i.id">
+    <b>{{ title }}</b> <br />
+    {{ status }} Reward: <i>{{ quest.rewardXP }}xp</i> <br />
+    <span v-for="b of taskDescription" v-bind:key="b.text" v-bind:class="b.type"> {{ b.text }} </span>
+    <template v-if="quest.type !== 'item'">
+      <div v-for="i of turnedInInfo" class="info-box" v-bind:key="i.id">
         <div class="info-id">#{{ i.id }}</div>
         <div class="info-text">
           <info-entry v-bind:info="i"></info-entry>
+        </div>
+      </div>
+    </template>
+    <template v-else>
+      <div v-for="i of turnedInItem" class="item-box" v-bind:key="i.id">
+        <div class="item-id">#{{ i.id }}</div>
+        <div class="item-text">
+          <item-entry v-bind:item="i"></item-entry>
         </div>
       </div>
     </template>
@@ -29,6 +35,22 @@ export default class QuestEntry extends Vue {
     return this.quest.turnedInInfo;
   }
 
+  get turnedInItem() {
+    return this.quest.turnedInItems;
+  }
+
+  get title() {
+    if (this.quest) {
+      if (this.quest.type === "question") {
+        "Gather Info";
+      } else if (this.quest.type === "item") {
+        return "Fetch Item";
+      } else {
+        return "QUEST";
+      }
+    }
+  }
+
   get status() {
     if (this.quest) {
       return "Status: " + this.quest.status + "\n";
@@ -36,100 +58,38 @@ export default class QuestEntry extends Vue {
   }
 
   get taskDescription() {
+    const blocks: Sentence.Block[] = [];
     if (this.quest) {
-      let sentence =
-        "Description: " +
-        this.quest.type +
-        " quest assigned by " +
-        this.quest.giver;
+      blocks.push({
+        text: this.quest.giver.agentName,
+        type: Sentence.BlockType.AGENT
+      });
       switch (this.quest.type) {
         case "question":
-          sentence += " with the mission to resolve the following mystery: ";
+          blocks.push({
+            text: " asks you to gather " + this.quest.amount + " answer(s) to the following question: ",
+            type: Sentence.BlockType.NONE
+          });
           break;
         case "command":
-          sentence += " with the mission of accomplishing the following task: ";
+          blocks.push({
+            text: " not implemented ",
+            type: Sentence.BlockType.NONE
+          });
+          break;
+        case "item":
+          blocks.push({
+            text: " asks you to fetch " + this.quest.amount + " ",
+            type: Sentence.BlockType.NONE
+          });
+          blocks.push({
+            text: this.quest.item.itemName + "(s)",
+            type: Sentence.BlockType.ITEM
+          });
+          break;
       }
-      return sentence;
+      return blocks;
     }
-  }
-  get sentence() {
-    const terms = this.quest.task.getTerms();
-    const taskTxt = [];
-    switch (this.quest.type) {
-      case "command":
-        switch (this.quest.task.action) {
-          case Info.ACTIONS.GAVE.name:
-            taskTxt.push({
-              type: Sentence.BlockType.ACTION,
-              text: "Acquire and give "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.ITEM,
-              text: terms.item + " "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.NONE,
-              text: "to "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.AGENT,
-              text: terms.agent2.agentName + " "
-            });
-            return taskTxt;
-          case Info.ACTIONS.DROP.name:
-            taskTxt.push({
-              type: Sentence.BlockType.ACTION,
-              text: "Drop "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.ITEM,
-              text: terms.item + " "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.NONE,
-              text: "in "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.ROOM,
-              text: terms.loc
-            });
-            return taskTxt;
-          case Info.ACTIONS.TOLD.name:
-            taskTxt.push({
-              type: Sentence.BlockType.ACTION,
-              text: "Tell "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.AGENT,
-              text: terms.agent2 + " "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.NONE,
-              text: "about "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.INFO,
-              text: terms.info
-            });
-            return taskTxt;
-          case Info.ACTIONS.CONVERSE.name:
-            const targetAgent =
-              terms.agent1 === ClientAPI.playerAgent
-                ? terms.agent2
-                : terms.agent1;
-
-            taskTxt.push({
-              type: Sentence.BlockType.ACTION,
-              text: "Have a conversation with "
-            });
-            taskTxt.push({
-              type: Sentence.BlockType.AGENT,
-              text: terms.agent2 + " "
-            });
-            return taskTxt;
-        }
-    }
-    return Sentence.fromInfo(this.quest.task);
   }
 }
 </script>
