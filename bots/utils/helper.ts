@@ -214,3 +214,21 @@ export function makeQuestPromotionReward(targetAgent: Agent, ranks: number) {
   });
   return rawInfo;
 }
+
+export function giveItemCommand(agent: Agent, item: Item) {
+  return Info.ACTIONS.GAVE.question({
+    agent1: agent,
+    agent2: ClientAPI.playerAgent,
+    time: undefined,
+    loc: undefined,
+    item,
+    quantity: 1
+  });
+}
+
+export function exploreItemsCommand(agent: Agent) {
+  return {
+    predicate: "TILQ",
+    quantity: 1
+  };
+}

@@ -19,4 +19,26 @@ export class KnowledgeBase {
     }
     return undefined;
   }
+
+  public calcItemVal(item: Item) {
+    let val: number;
+    switch (item.type) {
+      case "gold":
+        val = item.quantity * 1;
+        break;
+      case "uncommon":
+        val = 5;
+        break;
+      case "rare":
+        val = 10;
+        break;
+      case "legendary":
+        val = 100;
+        break;
+      default:
+        val = 1;
+        break;
+    }
+    return val;
+  }
 }
