@@ -45,6 +45,16 @@ export namespace Images {
 }
 
 export namespace Spritesheets {
+    export class SpritesheetsAlison323212 {
+        static getName(): string { return 'Alison.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Alison.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
     export class SpritesheetsButtonSpriteSheet193713 {
         static getName(): string { return 'button_sprite_sheet.[193,71,3,0,0]'; }
 
@@ -52,6 +62,46 @@ export namespace Spritesheets {
         static getFrameWidth(): number { return 193; }
         static getFrameHeight(): number { return 71; }
         static getFrameMax(): number { return 3; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsEldric323212 {
+        static getName(): string { return 'Eldric.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Eldric.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsFemale241323212 {
+        static getName(): string { return 'Female 24-1.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Female 24-1.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsFlorence323212 {
+        static getName(): string { return 'Florence.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Florence.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsHolden323212 {
+        static getName(): string { return 'Holden.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Holden.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
         static getMargin(): number { return 0; }
         static getSpacing(): number { return 0; }
     }
@@ -75,6 +125,16 @@ export namespace Spritesheets {
         static getMargin(): number { return 0; }
         static getSpacing(): number { return 0; }
     }
+    export class SpritesheetsKnox323212 {
+        static getName(): string { return 'Knox.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Knox.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
     export class SpritesheetsMale21323212 {
         static getName(): string { return 'Male 02-1.[32,32,12,0,0]'; }
 
@@ -89,6 +149,46 @@ export namespace Spritesheets {
         static getName(): string { return 'Male 02-2.[32,32,12,0,0]'; }
 
         static getPNG(): string { return require('assets/spritesheets/Male 02-2.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsMale121323212 {
+        static getName(): string { return 'Male 12-1.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Male 12-1.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsPaige323212 {
+        static getName(): string { return 'Paige.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Paige.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsTuesday323212 {
+        static getName(): string { return 'Tuesday.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Tuesday.[32,32,12,0,0].png'); }
+        static getFrameWidth(): number { return 32; }
+        static getFrameHeight(): number { return 32; }
+        static getFrameMax(): number { return 12; }
+        static getMargin(): number { return 0; }
+        static getSpacing(): number { return 0; }
+    }
+    export class SpritesheetsWilfred323212 {
+        static getName(): string { return 'Wilfred.[32,32,12,0,0]'; }
+
+        static getPNG(): string { return require('assets/spritesheets/Wilfred.[32,32,12,0,0].png'); }
         static getFrameWidth(): number { return 32; }
         static getFrameHeight(): number { return 32; }
         static getFrameMax(): number { return 12; }

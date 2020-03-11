@@ -3,8 +3,16 @@ import { ClientAPI, Agent } from "panoptyk-engine/dist/client";
 import { ActionSel } from "./actionSel";
 
 const SpriteMap = {
-  test: Assets.Spritesheets.SpritesheetsMale22323212.getName(),
-  agent2: Assets.Spritesheets.SpritesheetsMale22323212.getName()
+  Alison: Assets.Spritesheets.SpritesheetsAlison323212.getName(),
+  Eldric: Assets.Spritesheets.SpritesheetsEldric323212.getName(),
+  Florence: Assets.Spritesheets.SpritesheetsFlorence323212.getName(),
+  Holden: Assets.Spritesheets.SpritesheetsHolden323212.getName(),
+  Knox: Assets.Spritesheets.SpritesheetsKnox323212.getName(),
+  Paige: Assets.Spritesheets.SpritesheetsPaige323212.getName(),
+  Tuesday: Assets.Spritesheets.SpritesheetsTuesday323212.getName(),
+  Wilfred: Assets.Spritesheets.SpritesheetsWilfred323212.getName(),
+  "Craftsmen Guild Leader": Assets.Spritesheets.SpritesheetsMale121323212.getName(),
+  "Informants Guild Leader": Assets.Spritesheets.SpritesheetsFemale241323212.getName()
 };
 const ToSprite = function(agent: Agent) {
   const sprite = SpriteMap[agent.agentName];
