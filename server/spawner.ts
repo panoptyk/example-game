@@ -26,7 +26,11 @@ class Spawner {
       data.elapsedTime += deltaT;
       if (data.elapsedTime > data.msToNextCheck) {
         data.elapsedTime -= data.msToNextCheck;
-        if (data.room.getItems().length < data.maxQuantity) {
+        if (
+          data.room.getItems().filter(i => {
+            return i.sameAs(data.master);
+          }).length < data.maxQuantity
+        ) {
           this.spawn(data);
         }
       }

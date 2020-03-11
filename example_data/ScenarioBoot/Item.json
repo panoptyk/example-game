@@ -2,31 +2,28 @@
   "objects": {
     "1": {
       "id": 1,
-      "_itemName": "Rusty spoon",
-      "_type": "Weapon",
+      "_itemName": "Cherry Lumber",
+      "_type": "Material",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 1,
       "_master": 0,
       "inTransaction": false
     },
     "2": {
       "id": 2,
-      "_itemName": "Sword",
-      "_type": "Weapon",
+      "_itemName": "Birch Lumber",
+      "_type": "Material",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 2,
       "_master": 0,
       "inTransaction": false
     },
     "3": {
       "id": 3,
-      "_itemName": "Wooden Breastplate",
-      "_type": "Armor",
+      "_itemName": "Small Stone",
+      "_type": "Material",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 6,
       "_master": 0,
       "inTransaction": false
     },
@@ -36,50 +33,18 @@
       "_type": "Weapon",
       "_quantity": 1,
       "_itemTags": [],
-      "roomID": 7,
       "_master": 0,
       "inTransaction": false
     },
     "5": {
       "id": 5,
-      "_itemName": "Macintosh Laptop",
-      "_type": "Laptop",
+      "_itemName": "Broken Barrel",
+      "_type": "Material",
       "_quantity": 1,
       "_itemTags": [],
-      "agentID": 2,
       "_master": 0,
-      "inTransaction": false
-    },
-    "6": {
-      "id": 6,
-      "_itemName": "PlayerA quest item",
-      "_type": "key item",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 0,
-      "agentID": 1,
-      "_master": 0,
-      "inTransaction": false
-    },
-    "7": {
-      "id": 7,
-      "_itemName": "PlayerB quest item",
-      "_type": "key item",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 9,
-      "_master": 0,
-      "inTransaction": false
-    },
-    "8": {
-      "id": 8,
-      "_type": "unique",
-      "_quantity": 1,
-      "_itemTags": [],
-      "roomID": 1,
-      "_master": 1,
       "inTransaction": false
     }
   },
-  "nextID": 9
+  "nextID": 6
 }
