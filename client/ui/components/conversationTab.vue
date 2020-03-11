@@ -42,7 +42,11 @@
           >
             <!--<b-input v-if="field === 'time'" type="number" size="is-small" placeholder="0,00" style= "width: 72px;"></b-input>-->
             <b-select
-              v-if="field !== 'time' && field !== 'quantity'"
+              v-if="
+                field !== 'time' &&
+                  field !== 'quantity' &&
+                  field !== 'predicate'
+              "
               v-bind:placeholder="'-- ' + field + ' --'"
               size="is-small"
               v-model="questionInfo[field]"
@@ -58,6 +62,7 @@
             </b-select>
           </b-field>
           <info-entry
+            v-bind:key="questionInfo"
             v-bind:newFoundQuery="true"
             v-bind:query="questionInfoEntry"
           ></info-entry>
@@ -129,7 +134,11 @@
         </div>
       </div>
     </b-collapse>
-    <b-collapse class="card" aria-id="tell-item-ownership">
+    <b-collapse
+      class="card"
+      aria-id="tell-item-ownership"
+      style="display: none;"
+    >
       <div
         slot="trigger"
         slot-scope="props"
@@ -203,6 +212,7 @@
           <quest-entry
             v-bind:key="targetQuest.id"
             v-bind:quest="targetQuest"
+            v-bind:abbridged="true"
           ></quest-entry>
           <b-field v-if="targetQuest.type !== 'item'">
             <b-select
@@ -234,19 +244,31 @@
               >
             </b-select>
           </b-field>
-          <info-entry v-if="targetQuest.type !== 'item'"
+          <info-entry
+            v-if="targetQuest.type !== 'item'"
             v-bind:key="questInfo.id"
             v-bind:info="questInfo"
           ></info-entry>
-          <item-entry v-else
+          <item-entry
+            v-else
             v-bind:key="questItem.id"
             v-bind:item="questItem"
           ></item-entry>
         </div>
       </div>
       <footer class="card-footer">
-        <a v-if="targetQuest.type !== 'item'" class="card-footer-item" @click="onQuestTurnInInfo">Turn in Info</a>
-        <a v-else-if="targetQuest.type === 'item'" class="card-footer-item" @click="onQuestTurnInItem">Turn in Item</a>
+        <a
+          v-if="targetQuest.type !== 'item'"
+          class="card-footer-item"
+          @click="onQuestTurnInInfo"
+          >Turn in Info</a
+        >
+        <a
+          v-else-if="targetQuest.type === 'item'"
+          class="card-footer-item"
+          @click="onQuestTurnInItem"
+          >Turn in Item</a
+        >
       </footer>
     </b-collapse>
   </div>
@@ -340,11 +362,10 @@ export default class ConverstaionTab extends Vue {
       quantities: [],
       factions: []
     };
-    const terms: string[] = Object.keys(
-      action
-        ? Info.ACTIONS[action].getTerms(dummyInfo)
-        : Info.PREDICATE.TAL.getTerms(dummyInfo as any)
-    );
+    this.questionInfo = action
+      ? Info.ACTIONS[action].getTerms(dummyInfo)
+      : Info.PREDICATE.TAL.getTerms(dummyInfo as any);
+    const terms: string[] = Object.keys(this.questionInfo);
     const index = terms.indexOf("action");
     if (index !== -1) {
       terms.splice(index);
@@ -369,9 +390,11 @@ export default class ConverstaionTab extends Vue {
         });
         break;
       case "item":
-        items = this.items.map(i => {
-          return { id: i.id, text: i.itemName, model: i };
-        });
+        items = this.items
+          .filter(i => !i.isMaster())
+          .map(i => {
+            return { id: i.id, text: i.itemName + "#" + i.id, model: i };
+          });
         break;
       case "info":
         items = this.knowledge.map(k => {
@@ -395,6 +418,11 @@ export default class ConverstaionTab extends Vue {
         : this.actionSelected;
     return q;
   }
+  @Watch("questionInfo")
+  what() {
+    console.log(this.questionInfo);
+  }
+
   onAsk() {
     console.log("Asked!");
     const q: any = Object.assign({}, this.questionInfo);
@@ -459,7 +487,7 @@ export default class ConverstaionTab extends Vue {
   // For quest turn in
   onQuestSelect() {
     // list of info that can complete quest
-    if (this.targetQuest) {
+    if (this.targetQuest.id) {
       if (this.targetQuest.type !== "item") {
         this.relevantInfo = [];
         this.turnedInInfo = this.targetQuest.turnedInInfo;
@@ -474,7 +502,11 @@ export default class ConverstaionTab extends Vue {
       } else if (this.targetQuest.type === "item") {
         this.relevantItem = [];
         for (const item of this.items) {
-          if (item.agent && item.agent.id === ClientAPI.playerAgent.id && item.sameAs(this.targetQuest.item)) {
+          if (
+            item.agent &&
+            item.agent.id === ClientAPI.playerAgent.id &&
+            item.sameAs(this.targetQuest.item)
+          ) {
             this.relevantItem.push(item);
           }
         }

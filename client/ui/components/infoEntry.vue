@@ -20,6 +20,7 @@ export default class InfoEntry extends Vue {
   get sentence() {
     if (this.newFoundQuery) {
       // We are currently cheating the query info to be treated as fact
+      console.log("hi mom");
       return Sentence.fromInfo(this.spoofQuery(this.query));
     } else if (this.info instanceof Info) {
       return Sentence.fromInfo(this.info);

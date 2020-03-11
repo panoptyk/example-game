@@ -124,6 +124,8 @@ class Sentence {
             terms[k] = { agentName: "whom" };
             break;
           case "loc":
+          case "loc1":
+          case "loc2":
             terms[k] = { roomName: "where" };
             break;
           case "item":
@@ -222,7 +224,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName.itemName + " "
+          text: terms.item.itemName + "#" + terms.item.id + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -240,7 +242,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName + " "
+          text: terms.item.itemName + "#" + terms.item.id + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -316,7 +318,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName + " "
+          text: terms.item.itemName + "#" + terms.item.id + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -442,7 +444,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName + " "
+          text: terms.item.itemName + "#" + terms.item.id + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -456,7 +458,7 @@ class Sentence {
       case Info.ACTIONS.LOCATED_IN.name:
         arr.push({
           type: Sentence.BlockType.ITEM,
-          text: terms.item.itemName + " "
+          text: terms.item.itemName + "#" + terms.item.id + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,

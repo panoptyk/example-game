@@ -55,7 +55,7 @@ function startApp(): void {
     };
 
     // ClientAPI.init("71.93.55.224:1791");
-    ClientAPI.init();
+    ClientAPI.init("localhost:8080");
     logger.silence();
     const app = new App(gameConfig);
 }

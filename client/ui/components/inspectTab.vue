@@ -66,7 +66,7 @@ export default class InspectTab extends Vue {
 
   get playerFaction() {
     if (this.playerFactionStatus) {
-      return this.playerFactionStatus.rankName + " " + this.playerFactionStatus.factionName;
+      return this.playerFactionStatus.rankName + " " + this.playerFactionStatus.memberName;
     }
     return "no affiliation";
   }

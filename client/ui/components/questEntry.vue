@@ -2,24 +2,32 @@
   <div class="quest-entry">
     <b>{{ title }}</b> <br />
     {{ status }} Reward: <i>{{ quest.rewardXP }}xp</i> <br />
-    <span v-for="b of taskDescription" v-bind:key="b.text" v-bind:class="b.type"> {{ b.text }} </span>
+    <span
+      v-for="b of taskDescription"
+      v-bind:key="b.text"
+      v-bind:class="b.type"
+    >
+      {{ b.text }}
+    </span>
     <info-entry v-bind:info="quest.task"></info-entry>
-    Turned in ({{ turnedInCnt }}/{{ quest.amount }}): <br />
-    <template v-if="quest.type !== 'item'">
-      <div v-for="i of turnedInInfo" class="info-box" v-bind:key="i.id">
-        <div class="info-id">#{{ i.id }}</div>
-        <div class="info-text">
-          <info-entry v-bind:info="i"></info-entry>
+    <template v-if="!abbridged">
+      Turned in ({{ turnedInCnt }}/{{ quest.amount }}): <br />
+      <template v-if="quest.type !== 'item'">
+        <div v-for="i of turnedInInfo" class="info-box" v-bind:key="i.id">
+          <div class="info-id">#{{ i.id }}</div>
+          <div class="info-text">
+            <info-entry v-bind:info="i"></info-entry>
+          </div>
         </div>
-      </div>
-    </template>
-    <template v-else>
-      <div v-for="i of turnedInItem" class="item-box" v-bind:key="i.id">
-        <div class="item-id">#{{ i.id }}</div>
-        <div class="item-text">
-          <item-entry v-bind:item="i"></item-entry>
+      </template>
+      <template v-else>
+        <div v-for="i of turnedInItem" class="item-box" v-bind:key="i.id">
+          <div class="item-id">#{{ i.id }}</div>
+          <div class="item-text">
+            <item-entry v-bind:item="i"></item-entry>
+          </div>
         </div>
-      </div>
+      </template>
     </template>
   </div>
 </template>
@@ -39,6 +47,7 @@ import Sentence from "../../utils/sentence";
 })
 export default class QuestEntry extends Vue {
   @Prop({ default: {} }) quest: Quest;
+  @Prop({ default: false }) abbridged: boolean;
 
   get turnedInInfo() {
     return this.quest.turnedInInfo;
@@ -54,7 +63,7 @@ export default class QuestEntry extends Vue {
     } else if (this.quest.type === "question") {
       return this.turnedInInfo.length;
     }
-    return 0
+    return 0;
   }
 
   get title() {
@@ -85,7 +94,10 @@ export default class QuestEntry extends Vue {
       switch (this.quest.type) {
         case "question":
           blocks.push({
-            text: " asks you to gather " + this.quest.amount + " answer(s) to the following question: ",
+            text:
+              " asks you to gather " +
+              this.quest.amount +
+              " answer(s) to the following question: ",
             type: Sentence.BlockType.NONE
           });
           break;
@@ -113,7 +125,7 @@ export default class QuestEntry extends Vue {
 </script>
 
 <style>
-  .quest-entry {
-    font-size: 13px;
-  }
+.quest-entry {
+  font-size: 13px;
+}
 </style>

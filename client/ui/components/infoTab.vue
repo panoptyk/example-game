@@ -59,8 +59,8 @@
         >
           <option disabled value>-- item --</option>
           <option v-bind:value="undefined">none</option>
-          <option v-for="val in items" v-bind:key="val.id" v-bind:value="val">{{
-            val.itemName
+          <option v-for="val in filterItems" v-bind:key="val.id" v-bind:value="val">{{
+            val.itemName + "#" + val.id
           }}</option>
         </b-select>
       </b-field>
@@ -106,7 +106,7 @@ export default class InfoTab extends Vue {
   @Prop({ default: 0 }) trigger: number;
   @Prop({ default: [] }) defaultActions: string[];
   @Prop({ default: [] }) agents;
-  @Prop({ default: [] }) items;
+  @Prop({ default: [] }) items: Item[];
   @Prop({ default: [] }) rooms;
   @Prop({ default: [] }) knowledge;
   get filteredActions() {
@@ -121,6 +121,11 @@ export default class InfoTab extends Vue {
       return a.agentName === ClientAPI.playerAgent.agentName
         ? { name: "(you)", model: a }
         : { name: a.agentName, model: a };
+    });
+  }
+  get filterItems() {
+    return this.items.filter(i => {
+      return !i.isMaster();
     });
   }
 
