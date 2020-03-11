@@ -1,5 +1,6 @@
 #!/bin/bash
-# usage startServer.sh <dir> <port> 
+# usage startServer-base.sh <dir> <port> 
+EXT_IP="70.95.176.182:$2"
 mkdir -p "[temp]"/$1
 cp -r ./assets "[temp]"/$1/assets
 cp -r ./bots "[temp]"/$1/bots
@@ -15,9 +16,11 @@ cd "[temp]"/$1
 ln -s ../../node_modules node_modules
 # time to set up server
 sed -i "s/8080/$2/" panoptyk-settings.json
+sed -i "s/localhost:8080/$EXT_IP/" ./client/app.ts
 npm run load-scenario Boot
 
+npm run webpack-client:dev & 
 npm run server & 
-sleep 1
-npm run bot ./bots/mitch_bots/questGiver.ts "Craftsmen Guild Leader" & 
-npm run bot ./bots/mitch_bots/questGiver.ts "Informants Guild Leader" &
+sleep 30
+npm run bot ./bots/mitch_bots/questGiver.ts "Craftsmen Guild Leader" "pass" "http://localhost:$2" & 
+npm run bot ./bots/mitch_bots/questGiver.ts "Informants Guild Leader" "pass" "http://localhost:$2" &
