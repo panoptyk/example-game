@@ -32,8 +32,8 @@ class Sentence {
     return blocks;
   }
   private static createQuestion(info: Info): Sentence.Block[] {
-    const terms = Sentence.replaceMissing(info.getTerms(), "???");
-    return Sentence.badCreate(terms);
+    const terms = Sentence.questionReplace(info.getTerms());
+    return Sentence.badCreate(terms, true);
   }
   private static createCommand(info: Info): Sentence.Block[] {
     const terms = Sentence.replaceMissing(info.getTerms(), "???");
@@ -96,9 +96,59 @@ class Sentence {
   }
 
   /**
+   * Replaces undefined terms with provided string
+   *  @return new terms object
+   */
+  private static questionReplace(infoTerms) {
+    const dummyInfo = {
+      agents: [],
+      items: [],
+      locations: [],
+      quantities: [],
+      factions: []
+    };
+    const terms = infoTerms.action
+      ? Info.ACTIONS[infoTerms.action].getTerms(dummyInfo)
+      : Info.PREDICATE[infoTerms.predicate].getTerms(dummyInfo as any);
+    if (!terms.action) {
+      terms.action = "did what";
+    }
+    Object.keys(terms).forEach(k => {
+      if (!infoTerms[k]) {
+        switch (k) {
+          case "agent":
+          case "agent1":
+            terms[k] = { agentName: "Who" };
+            break;
+          case "agent2":
+            terms[k] = { agentName: "whom" };
+            break;
+          case "loc":
+            terms[k] = { roomName: "where" };
+            break;
+          case "item":
+            terms[k] = { itemName: "what" };
+            break;
+          case "info":
+            terms[k] = { id: "what" };
+            break;
+          case "faction":
+            terms[k] = { factionName: "which faction" };
+            break;
+          default:
+            break;
+        }
+      } else {
+        terms[k] = infoTerms[k];
+      }
+    });
+    return terms;
+  }
+
+  /**
    * This is a really bad way to make these sentences...
    */
-  private static badCreate(terms): Sentence.Block[] {
+  private static badCreate(terms, query = false): Sentence.Block[] {
     const arr = [];
     let agentName = terms.agent
       ? terms.agent.agentName
@@ -306,15 +356,11 @@ class Sentence {
       case Info.ACTIONS.QUEST.name:
         arr.push({
           type: Sentence.BlockType.ACTION,
-          text: "assigned a quest "
+          text: "assigned "
         });
         arr.push({
-          type: Sentence.BlockType.NONE,
-          text: "regarding "
-        });
-        arr.push({
-          type: Sentence.BlockType.INFO,
-          text: "info#" + terms.info.id + " "
+          type: Sentence.BlockType.QUEST,
+          text: "quest#" + terms.quest.id + " "
         });
         arr.push({
           type: Sentence.BlockType.NONE,
@@ -336,15 +382,11 @@ class Sentence {
       case Info.ACTIONS.QUEST_COMPLETE.name:
         arr.push({
           type: Sentence.BlockType.NONE,
-          text: "noted that a quest "
+          text: "acknowledged "
         });
         arr.push({
-          type: Sentence.BlockType.NONE,
-          text: "regarding "
-        });
-        arr.push({
-          type: Sentence.BlockType.INFO,
-          text: "info#" + terms.info.id + " "
+          type: Sentence.BlockType.QUEST,
+          text: "quest#" + terms.quest.id + " "
         });
         arr.push({
           type: Sentence.BlockType.ACTION,
@@ -425,10 +467,10 @@ class Sentence {
           text: terms.loc.roomName + " "
         });
         break;
-      case "???":
+      case "did what":
         arr.push({
           type: Sentence.BlockType.ACTION,
-          text: "??? "
+          text: "did what "
         });
         break;
       default:
@@ -438,12 +480,12 @@ class Sentence {
         });
         break;
     }
-    arr.push({
-      type: Sentence.BlockType.NONE,
-      text: "on "
-    });
     if (terms.time) {
       const date = new Date(terms.time);
+      arr.push({
+        type: Sentence.BlockType.NONE,
+        text: "on "
+      });
       arr.push({
         type: Sentence.BlockType.TIME,
         text:
@@ -458,7 +500,16 @@ class Sentence {
           date.getMinutes() +
           "."
       });
+    } else if (query) {
+      arr.push({
+        type: Sentence.BlockType.TIME,
+        text: "when?"
+      });
     } else {
+      arr.push({
+        type: Sentence.BlockType.NONE,
+        text: "on "
+      });
       arr.push({
         type: Sentence.BlockType.TIME,
         text: "???."
