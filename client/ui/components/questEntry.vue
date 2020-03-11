@@ -3,6 +3,8 @@
     <b>{{ title }}</b> <br />
     {{ status }} Reward: <i>{{ quest.rewardXP }}xp</i> <br />
     <span v-for="b of taskDescription" v-bind:key="b.text" v-bind:class="b.type"> {{ b.text }} </span>
+    <info-entry v-bind:info="quest.task"></info-entry>
+    Turned in ({{ turnedInCnt }}/{{ quest.amount }}): <br />
     <template v-if="quest.type !== 'item'">
       <div v-for="i of turnedInInfo" class="info-box" v-bind:key="i.id">
         <div class="info-id">#{{ i.id }}</div>
@@ -25,9 +27,16 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 import { Quest, Info, ClientAPI } from "panoptyk-engine/dist/client";
+import InfoEntry from "./infoEntry.vue";
+import ItemEntry from "./itemEntry.vue";
 import Sentence from "../../utils/sentence";
 
-@Component({})
+@Component({
+  components: {
+    "info-entry": InfoEntry,
+    "item-entry": ItemEntry
+  }
+})
 export default class QuestEntry extends Vue {
   @Prop({ default: {} }) quest: Quest;
 
@@ -39,10 +48,19 @@ export default class QuestEntry extends Vue {
     return this.quest.turnedInItems;
   }
 
+  get turnedInCnt() {
+    if (this.quest.type === "item") {
+      return this.turnedInItem.length;
+    } else if (this.quest.type === "question") {
+      return this.turnedInInfo.length;
+    }
+    return 0
+  }
+
   get title() {
-    if (this.quest) {
+    if (this.quest.type) {
       if (this.quest.type === "question") {
-        "Gather Info";
+        return "Gather Info";
       } else if (this.quest.type === "item") {
         return "Fetch Item";
       } else {
@@ -52,14 +70,14 @@ export default class QuestEntry extends Vue {
   }
 
   get status() {
-    if (this.quest) {
+    if (this.quest.status) {
       return "Status: " + this.quest.status + "\n";
     }
   }
 
   get taskDescription() {
     const blocks: Sentence.Block[] = [];
-    if (this.quest) {
+    if (this.quest.id) {
       blocks.push({
         text: this.quest.giver.agentName,
         type: Sentence.BlockType.AGENT
@@ -94,4 +112,8 @@ export default class QuestEntry extends Vue {
 }
 </script>
 
-<style></style>
+<style>
+  .quest-entry {
+    font-size: 13px;
+  }
+</style>
