@@ -42,18 +42,22 @@ export class WanderingMerchantBehavior extends BehaviorState {
 
   static idleTransition(this: IdleState) {
     if (ClientAPI.playerAgent.room.getItems()[0]) {
-      const itemsToTake = [];
-      for (const item of ClientAPI.playerAgent.room.getItems()) {
-        if (!item.itemTags.has("illegal")) {
-          itemsToTake.push(item);
-        }
-      }
-      if (itemsToTake.length > 0) {
-        return new PickupItemsState(
-          itemsToTake,
-          WanderingMerchantBehavior.pickupItemsTransition
-        );
-      }
+      // const itemsToTake = [];
+      // for (const item of ClientAPI.playerAgent.room.getItems()) {
+      //   if (!item.itemTags.has("illegal")) {
+      //     itemsToTake.push(item);
+      //   }
+      // }
+      // if (itemsToTake.length > 0) {
+      //   return new PickupItemsState(
+      //     itemsToTake,
+      //     WanderingMerchantBehavior.pickupItemsTransition
+      //   );
+      // }
+      return new PickupItemsState(
+        [ClientAPI.playerAgent.room.getItems()[0]],
+        WanderingMerchantBehavior.pickupItemsTransition
+      );
     }
 
     if (ClientAPI.playerAgent.conversation) {

@@ -19,11 +19,13 @@ import {
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
 import { WanderingMerchantBehavior } from "../BehaviorStates/wanderingMerchant";
+import { KnowledgeBase as KB } from "../KnowledgeBase/knowledgebase";
 
 export class Merchant extends Strategy {
   private _infoIdx = 0;
   private _knownCriminals: Set<Agent> = new Set<Agent>();
   private _crimesToReport: Set<Info> = new Set<Info>();
+  private _alreadyReported: Set<Info> = new Set<Info>();
 
   private static _instance: Merchant;
   public static get instance(): Merchant {
@@ -36,7 +38,7 @@ export class Merchant extends Strategy {
   private constructor() {
     super();
     this.currentBehavior = new WanderingMerchantBehavior(
-      Helper.WAIT_FOR_OTHER,
+      Helper.WAIT_FOR_OTHER / 2,
       Merchant.wanderTransition
     );
   }
@@ -108,7 +110,10 @@ export class Merchant extends Strategy {
         }
       }
 
-      const desiredGold = trade.getAgentItemsData(ClientAPI.playerAgent).length;
+      let desiredGold = 0;
+      for (const item of trade.getAgentItemsData(ClientAPI.playerAgent)) {
+        desiredGold += KB.instance.calcItemVal(item);
+      }
       if (trade.getAgentsOfferedGold(other) >= desiredGold) {
         return new SetTradeState(true, () => this.getNextTradeAction());
       } else {
@@ -151,18 +156,12 @@ export class Merchant extends Strategy {
           ClientAPI.playerAgent + " reported crimes to " + this._targetAgent
         );
         for (const info of this._toTell) {
-          Merchant.instance._crimesToReport.delete(info);
+          Merchant.instance._alreadyReported.add(info);
         }
-        if (Merchant.instance._crimesToReport.size > 0) {
-          return new TellInfo(
-            this._targetAgent,
-            Array.from(Merchant.instance._crimesToReport),
-            Merchant.reportCrimeTransition
-          );
-        }
+        Merchant.instance._crimesToReport.clear();
       }
       return new WanderingMerchantBehavior(
-        Helper.WAIT_FOR_OTHER,
+        Helper.WAIT_FOR_OTHER / 2,
         Merchant.wanderTransition
       );
     }
@@ -175,7 +174,7 @@ export class Merchant extends Strategy {
       this.currentActionState instanceof FailureAction
     ) {
       return new WanderingMerchantBehavior(
-        Helper.WAIT_FOR_OTHER,
+        Helper.WAIT_FOR_OTHER / 2,
         Merchant.wanderTransition
       );
     }
