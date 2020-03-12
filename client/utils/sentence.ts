@@ -469,6 +469,76 @@ class Sentence {
           text: terms.loc.roomName + " "
         });
         break;
+      case Info.ACTIONS.CONFISCATED.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "confiscated "
+        });
+        arr.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.item.itemName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "from "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
+      case Info.ACTIONS.PROMOTE.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "promoted "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
+      case Info.ACTIONS.PAID.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "paid "
+        });
+        arr.push({
+          type: Sentence.BlockType.ITEM,
+          text: terms.quantity + " gold "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: " to "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
       case "???":
         arr.push({
           type: Sentence.BlockType.ACTION,
