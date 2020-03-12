@@ -179,10 +179,18 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   }
 
   public getSuitableReward(agent: Agent, task: any) {
-    const rewards = [
-      Helper.makeQuestPromotionReward(agent, 10),
-      Helper.makeQuestGoldReward(agent, 5)
-    ];
+    const rewards = [];
+    switch (task.action) {
+      case Info.ACTIONS.GAVE.name:
+        rewards.push(
+          Helper.makeQuestGoldReward(agent, super.calcItemVal(task.item))
+        );
+        rewards.push(Helper.makeQuestPromotionReward(agent, 10));
+        break;
+    }
+    if (!task.action) {
+      rewards.push(Helper.makeQuestPromotionReward(agent, 1));
+    }
     return rewards;
   }
 

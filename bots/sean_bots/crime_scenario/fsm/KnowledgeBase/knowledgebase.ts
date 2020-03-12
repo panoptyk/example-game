@@ -32,7 +32,7 @@ export class KnowledgeBase {
       case "gold":
         val = item.quantity * 1;
         break;
-      case "uncommon":
+      case "common":
         val = 5;
         break;
       case "rare":

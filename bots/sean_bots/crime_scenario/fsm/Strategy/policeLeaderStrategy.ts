@@ -44,13 +44,6 @@ export class PoliceLeader extends Strategy {
   }
 
   public async act() {
-    console.log(
-      ClientAPI.playerAgent +
-        " BState: " +
-        this.currentBehavior.constructor.name +
-        ", AState: " +
-        this.currentBehavior.currentActionState.constructor.name
-    );
     PoliceLeader._activeInstance = this;
     KB.instance.parseInfo();
     this.currentBehavior = await this.currentBehavior.tick();

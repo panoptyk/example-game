@@ -100,10 +100,19 @@ export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
   }
 
   public getSuitableReward(agent: Agent, task: any) {
-    const rewards = [
-      Helper.makeQuestPromotionReward(agent, 10),
-      Helper.makeQuestGoldReward(agent, 5)
-    ];
+    const rewards = [];
+    switch (task.action) {
+      case Info.ACTIONS.GAVE.name:
+        rewards.push(Helper.makeQuestPromotionReward(agent, 10));
+        break;
+      case Info.ACTIONS.ARRESTED.name:
+        rewards.push(Helper.makeQuestGoldReward(agent, 10));
+        rewards.push(Helper.makeQuestPromotionReward(agent, 10));
+        break;
+    }
+    if (!task.action) {
+      rewards.push(Helper.makeQuestPromotionReward(agent, 1));
+    }
     return rewards;
   }
 
