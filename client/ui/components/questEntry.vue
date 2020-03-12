@@ -287,6 +287,52 @@ export default class QuestEntry extends Vue {
               text: terms.agent2 + " "
             });
             return taskTxt;
+          case Info.ACTIONS.ARRESTED.name:
+            taskTxt.push({
+              type: Sentence.BlockType.ACTION,
+              text: "Arrest the vile lawbreaker "
+            });
+            taskTxt.push({
+              type: Sentence.BlockType.AGENT,
+              text: terms.agent2 + " "
+            });
+            return taskTxt;
+        }
+        // generic info gathering quests
+        if (!this.quest.task.action && ClientAPI.playerAgent.faction) {
+          if (ClientAPI.playerAgent.faction.factionType === "police") {
+            taskTxt.push({
+              type: Sentence.BlockType.ACTION,
+              text: "Report any illegal activity "
+            });
+            taskTxt.push({
+              type: Sentence.BlockType.NONE,
+              text: "or "
+            });
+            taskTxt.push({
+              type: Sentence.BlockType.ITEM,
+              text: "items "
+            });
+            taskTxt.push({
+              type: Sentence.BlockType.NONE,
+              text: "! "
+            });
+            return taskTxt;
+          } else if (ClientAPI.playerAgent.faction.factionType === "criminal") {
+            taskTxt.push({
+              type: Sentence.BlockType.ACTION,
+              text: "Discover new "
+            });
+            taskTxt.push({
+              type: Sentence.BlockType.ITEM,
+              text: "items "
+            });
+            taskTxt.push({
+              type: Sentence.BlockType.NONE,
+              text: "for taking! "
+            });
+            return taskTxt;
+          }
         }
     }
     return Sentence.fromInfo(this.quest.task);
