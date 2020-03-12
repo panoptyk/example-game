@@ -16,7 +16,6 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
   protected _agentScores = new Map<Agent, AgentReputation>();
   protected _unownedItems = new Set<Item>();
 
-
   crimeDatabase: Map<Agent, Set<Info>> = new Map<Agent, Set<Info>>();
   activeWarrants: Set<Agent> = new Set<Agent>();
   allCrimes: Set<Info> = new Set<Info>();
@@ -98,6 +97,9 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
   }
 
   protected registerCrime(criminal: Agent, crime: Info) {
+    if (ClientAPI.playerAgent.faction === criminal.faction) {
+      return;
+    }
     if (
       criminal &&
       !criminal.agentStatus.has("dead") &&
