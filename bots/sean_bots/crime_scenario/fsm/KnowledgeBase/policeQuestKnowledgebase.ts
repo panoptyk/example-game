@@ -81,7 +81,6 @@ export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
 
   private constructor() {
     super();
-    this.parseInfo();
   }
 
   public calcItemVal(item: Item) {

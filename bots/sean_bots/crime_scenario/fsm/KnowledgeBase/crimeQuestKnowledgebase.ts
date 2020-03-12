@@ -101,7 +101,7 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
           score:
             ClientAPI.playerAgent.faction === agent2.faction
               ? 1
-              : agent2.faction.factionType === "police"
+              : agent2.faction && agent2.faction.factionType === "police"
               ? -1
               : 0,
           memorableBad: [],
@@ -115,7 +115,7 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
         score:
           ClientAPI.playerAgent.faction === agent1.faction
             ? 1
-            : agent1.faction.factionType === "police"
+            : agent1.faction && agent1.faction.factionType === "police"
             ? -1
             : 0,
         memorableBad: [],
@@ -164,7 +164,6 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
 
   private constructor() {
     super();
-    this.parseInfo();
   }
 
   public calcItemVal(item: Item) {

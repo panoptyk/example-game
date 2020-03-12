@@ -93,7 +93,6 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
 
   protected constructor() {
     super();
-    this.parseInfo();
   }
 
   protected registerCrime(criminal: Agent, crime: Info) {
@@ -133,7 +132,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
           score:
             ClientAPI.playerAgent.faction === agent2.faction
               ? 1
-              : agent2.faction.factionType === "criminal"
+              : agent2.faction && agent2.faction.factionType === "criminal"
               ? -1
               : 0,
           memorableBad: [],
@@ -147,7 +146,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
         score:
           ClientAPI.playerAgent.faction === agent1.faction
             ? 1
-            : agent1.faction.factionType === "criminal"
+            : agent1.faction && agent1.faction.factionType === "criminal"
             ? -1
             : 0,
         memorableBad: [],
