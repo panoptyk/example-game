@@ -1,7 +1,22 @@
 import { ClientAPI, Agent, Info, Item, Quest } from "panoptyk-engine/dist/";
-import { KnowledgeBase } from "./knowledgebase";
+import { KnowledgeBase, AgentReputation } from "./knowledgebase";
 
 export class PoliceKnowledgeBase extends KnowledgeBase {
+  public readonly ACTION_RATINGS = {
+    GAVE: 2,
+    MOVE: 0,
+    DROP: -1,
+    PICKUP: 1,
+    CONFISCATED: -2,
+    ARRESTED: -10,
+    QUEST_COMPLETE: 10,
+    QUEST_FAILED: -2
+  };
+
+  protected _agentScores = new Map<Agent, AgentReputation>();
+  protected _unownedItems = new Set<Item>();
+
+
   crimeDatabase: Map<Agent, Set<Info>> = new Map<Agent, Set<Info>>();
   activeWarrants: Set<Agent> = new Set<Agent>();
   allCrimes: Set<Info> = new Set<Info>();
@@ -22,7 +37,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
    * an active arrest warrant
    * @param quest
    */
-  private registerQuest(quest: Quest) {
+  protected registerQuest(quest: Quest) {
     if (quest.type === "command") {
       if (
         quest.task.action === Info.ACTIONS.ARRESTED.name &&
@@ -51,7 +66,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
     }
   }
 
-  private updateQuests() {
+  protected updateQuests() {
     // most process closed quests first to ensure correct activeWarrants
     const closedAssignedQuests = ClientAPI.playerAgent.closedAssignedQuests;
     for (
@@ -77,9 +92,9 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
     }
   }
 
-  private constructor() {
+  protected constructor() {
     super();
-    this.detectCrime();
+    this.parseInfo();
   }
 
   protected registerCrime(criminal: Agent, crime: Info) {
@@ -100,28 +115,81 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
     this.allCrimes.add(crime);
   }
 
-  public detectCrime() {
+  protected calcEffectOfAction(action: Info) {
+    const terms = action.getTerms();
+    const agent1: Agent = terms.agent1 ? terms.agent1 : terms.agent;
+    if (!agent1) {
+      return;
+    }
+    const agent2: Agent = terms.agent2;
+    let score = this.ACTION_RATINGS[action.action]
+      ? this.ACTION_RATINGS[action.action]
+      : 0;
+    if (agent2) {
+      if (!this._agentScores.has(agent2)) {
+        this._agentScores.set(agent2, {
+          score:
+            ClientAPI.playerAgent.faction === agent2.faction
+              ? 1
+              : agent2.faction.factionType === "criminal"
+              ? -1
+              : 0,
+          memorableBad: [],
+          memorableGood: []
+        });
+      }
+      score *= this._agentScores.get(agent2).score;
+    }
+    if (!this._agentScores.has(agent1)) {
+      this._agentScores.set(agent1, {
+        score:
+          ClientAPI.playerAgent.faction === agent1.faction
+            ? 1
+            : agent1.faction.factionType === "criminal"
+            ? -1
+            : 0,
+        memorableBad: [],
+        memorableGood: []
+      });
+    }
+    const agentData = this._agentScores.get(agent1);
+    agentData.score += score;
+    if (score >= 10) {
+      agentData.memorableGood.push(action);
+    } else if (score <= -10) {
+      agentData.memorableBad.push(action);
+    }
+    this._agentScores.set(agent1, agentData);
+  }
+
+  public parseInfo() {
     this.updateQuests();
     const knowledge = ClientAPI.playerAgent.knowledge;
     for (this.infoIdx; this.infoIdx < knowledge.length; this.infoIdx++) {
       const info = knowledge[this.infoIdx];
-      const terms = info.getTerms();
-      const item: Item = terms.item;
-      switch (info.action) {
-        case "STOLE":
-          this.registerCrime(terms.agent1, info);
-          break;
-        case "GAVE":
-          if (item.itemTags.has("illegal")) {
+      if (!info.isQuery() && !info.isCommand()) {
+        const terms = info.getTerms();
+        const item: Item = terms.item;
+        switch (info.action) {
+          case "STOLE":
             this.registerCrime(terms.agent1, info);
-            this.registerCrime(terms.agent2, info);
-          }
-          break;
-        case "PICKUP":
-          if (item.itemTags.has("illegal")) {
-            this.registerCrime(terms.agent, info);
-          }
-          break;
+            break;
+          case "GAVE":
+            if (item.itemTags.has("illegal")) {
+              this.registerCrime(terms.agent1, info);
+              this.registerCrime(terms.agent2, info);
+            }
+            break;
+          case "PICKUP":
+            if (item.itemTags.has("illegal")) {
+              this.registerCrime(terms.agent, info);
+            }
+            break;
+        }
+        if (item && !ClientAPI.playerAgent.hasItem(item)) {
+          this._unownedItems.add(item);
+        }
+        this.calcEffectOfAction(info);
       }
     }
   }

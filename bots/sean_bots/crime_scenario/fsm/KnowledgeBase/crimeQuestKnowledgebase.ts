@@ -1,18 +1,6 @@
 import { ClientAPI, Agent, Info, Quest, Item } from "panoptyk-engine/dist/";
-import { KnowledgeBase } from "./knowledgebase";
+import { KnowledgeBase, AgentReputation } from "./knowledgebase";
 import * as Helper from "../../../../utils/helper";
-
-interface ItemQuest {
-  item: Item;
-  score: number;
-  lastInfo: Info;
-}
-
-interface AgentReputation {
-  score: number;
-  memorableBad: Info[];
-  memorableGood: Info[];
-}
 
 export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   public readonly ACTION_RATINGS = {
@@ -168,7 +156,7 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
           this._unownedItems.add(item);
         }
       }
-      if (!info.isReference() && !info.isCommand()) {
+      if (!info.isQuery() && !info.isCommand()) {
         this.calcEffectOfAction(info);
       }
     }
@@ -200,17 +188,17 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   }
 
   public getReasonForItemQuest(agent: Agent, item: Item) {
-    if (!this._previousQuests.has(agent)) {
-      return undefined;
-    }
-    for (const quest of this._previousQuests.get(agent)) {
-      for (const turnIn of quest.turnedInInfo) {
-        const terms = turnIn.getTerms();
-        if (terms.item === item) {
-          return turnIn;
+    if (this._previousQuests.has(agent)) {
+      for (const quest of this._previousQuests.get(agent)) {
+        for (const turnIn of quest.turnedInInfo) {
+          const terms = turnIn.getTerms();
+          if (terms.item === item) {
+            return turnIn;
+          }
         }
       }
     }
+    return undefined;
   }
 
   public get validQuestItems(): { key: Item; val: number }[] {

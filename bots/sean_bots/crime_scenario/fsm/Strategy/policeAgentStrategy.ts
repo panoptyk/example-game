@@ -31,7 +31,7 @@ export class PoliceAgent extends Strategy {
 
   public async act() {
     PoliceAgent._activeInstance = this;
-    PoliceKnowledgeBase.instance.detectCrime();
+    PoliceKnowledgeBase.instance.parseInfo();
     this.currentBehavior = await this.currentBehavior.tick();
   }
 

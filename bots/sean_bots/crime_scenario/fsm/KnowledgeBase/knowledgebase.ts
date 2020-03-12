@@ -1,5 +1,11 @@
 import { ClientAPI, Agent, Info, Item } from "panoptyk-engine/dist/";
 
+export interface AgentReputation {
+  score: number;
+  memorableBad: Info[];
+  memorableGood: Info[];
+}
+
 export class KnowledgeBase {
   protected static _instance: KnowledgeBase;
   static get instance(): KnowledgeBase {
