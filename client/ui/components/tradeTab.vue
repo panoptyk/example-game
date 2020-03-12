@@ -46,17 +46,17 @@
           <b-field class="no-margin" label="Item" grouped>
             <span class="trade-text" style="margin-left: auto;"> I: </span>
             <b-select
-              placeholder="--ID--"
+              placeholder="--Item Name--"
               size="is-small"
               class="trade-select"
               v-model="item"
             >
-              <option disabled value>--ID--</option>
+              <option disabled value>--Item Name--</option>
               <option
                 v-for="i in items"
                 v-bind:key="i.id"
                 v-bind:value="i"
-                >{{ i.id }}</option
+                >{{ i.itemName }}</option
               >
             </b-select>
 
