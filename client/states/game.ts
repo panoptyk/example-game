@@ -6,7 +6,8 @@ import {
   Room,
   Agent,
   Info,
-  Trade
+  Trade,
+  Item
 } from "panoptyk-engine/dist/client";
 import { AgentSprite } from "../prefabs/agent";
 import { UI } from "../ui/ui";
@@ -40,6 +41,8 @@ class GameState extends Phaser.State {
   tradeRequesters = new Set<Agent>();
   convoRequests = new Set<Agent>();
   tradeRequests = new Set<Agent>();
+  arrestableAgents = new Map<Agent, Info>();
+  stealItems = new Set<Item>();
 
   lastActiveTrade: Trade = undefined;
 
@@ -235,17 +238,47 @@ class GameState extends Phaser.State {
     // Check recieved convo/trade requests
     player.conversationRequesters.forEach(agent => {
       if (!this.convoRequesters.has(agent)) {
-        this.addConsoleMessage(agent.agentName + " has requested a conversation with you");
+        this.addConsoleMessage(
+          agent.agentName + " has requested a conversation with you"
+        );
       }
     });
     this.convoRequesters = new Set(player.conversationRequesters);
 
     player.tradeRequesters.forEach(agent => {
       if (!this.tradeRequesters.has(agent)) {
-        this.addConsoleMessage(agent.agentName + " has requested a trade with you");
+        this.addConsoleMessage(
+          agent.agentName + " has requested a trade with you"
+        );
       }
     });
     this.tradeRequesters = new Set(player.tradeRequesters);
+
+    if (
+      ClientAPI.playerAgent.faction &&
+      ClientAPI.playerAgent.faction.factionType === "police"
+    ) {
+      this.arrestableAgents.clear();
+      player.activeAssignedQuests.forEach(quest => {
+        if (quest.task.action === Info.ACTIONS.ARRESTED.name) {
+          const terms = quest.task.getTerms();
+          this.arrestableAgents.set(terms.agent2, terms.info);
+        }
+      });
+    }
+
+    if (
+      ClientAPI.playerAgent.faction &&
+      ClientAPI.playerAgent.faction.factionType === "criminal"
+    ) {
+      this.stealItems.clear();
+      player.activeAssignedQuests.forEach(quest => {
+        const terms = quest.task.getTerms();
+        if (quest.type === "command" && terms.item) {
+          this.stealItems.add(terms.item);
+        }
+      });
+    }
   }
 
   private createPlayer(x: number, y: number): void {

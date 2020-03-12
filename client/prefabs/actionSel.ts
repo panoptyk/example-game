@@ -1,5 +1,5 @@
 import * as Assets from "../assets";
-import { ClientAPI, Agent } from "panoptyk-engine/dist/client";
+import { ClientAPI, Info, Item } from "panoptyk-engine/dist/client";
 import { UI } from "../ui/ui";
 import { AgentSprite } from "./agent";
 import { DoorSprite } from "./door";
@@ -64,6 +64,19 @@ export class ActionSel {
     ) {
       this.createTradeIcon(agent);
     }
+    if (GS.instance.arrestableAgents.has(agent.model)) {
+      this.createArrestIcon(
+        agent,
+        GS.instance.arrestableAgents.get(agent.model)
+      );
+    }
+
+    for (const item of GS.instance.stealItems) {
+      if (agent.model.hasItem(item)) {
+        this.createStealIcon(agent, item);
+        break;
+      }
+    }
   }
 
   public createDoorActions() {
@@ -101,6 +114,30 @@ export class ActionSel {
       this.nextLoc--;
     } else if (inConvo && !this.icons.has("trade")) {
       this.createTradeIcon(agent);
+    }
+
+    if (
+      this.icons.has("arrest") &&
+      !GS.instance.arrestableAgents.has(agent.model)
+    ) {
+      this.icons.get("arrest").destroy();
+      this.icons.delete("arrest");
+      this.nextLoc--;
+    } else if (
+      !this.icons.has("arrest") &&
+      GS.instance.arrestableAgents.has(agent.model)
+    ) {
+      this.createArrestIcon(
+        agent,
+        GS.instance.arrestableAgents.get(agent.model)
+      );
+    }
+
+    for (const item of GS.instance.stealItems) {
+      if (!this.icons.has("steal") && agent.model.hasItem(item)) {
+        this.createStealIcon(agent, item);
+        break;
+      }
     }
   }
 
@@ -187,6 +224,61 @@ export class ActionSel {
     );
   }
 
+  private createArrestIcon(agent: AgentSprite, warrant: Info) {
+    const relativePos = this.createRelativeCoord();
+    const arrestIcon = this.sprite.game.make.sprite(
+      0,
+      0,
+      Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+      iconSel(2, 11)
+    );
+    this.group.addChild(arrestIcon);
+    this.icons.set("arrest", arrestIcon);
+    this.animateIcon(
+      this.getCenterPos(arrestIcon),
+      relativePos,
+      arrestIcon,
+      () => {
+        arrestIcon.inputEnabled = true;
+        arrestIcon.events.onInputDown.add(() => {
+          console.log("arrest: " + agent.model.agentName);
+          ClientAPI.arrestAgent(agent.model, warrant).then(res => {
+            // TODO: make alert?
+          });
+        });
+      }
+    );
+  }
+
+  private createStealIcon(agent: AgentSprite, item: Item) {
+    const relativePos = this.createRelativeCoord();
+    const stealIcon = this.sprite.game.make.sprite(
+      0,
+      0,
+      Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+      iconSel(0, 8)
+    );
+    this.group.addChild(stealIcon);
+    this.icons.set("steal", stealIcon);
+    this.animateIcon(
+      this.getCenterPos(stealIcon),
+      relativePos,
+      stealIcon,
+      () => {
+        stealIcon.inputEnabled = true;
+        stealIcon.events.onInputDown.add(() => {
+          console.log("steal: " + agent.model.agentName);
+          ClientAPI.stealItem(agent.model, item).then(res => {
+            // TODO: make alert?
+            this.icons.get("steal").destroy();
+            this.icons.delete("steal");
+            this.nextLoc--;
+          });
+        });
+      }
+    );
+  }
+
   private createConvIcon(agent: AgentSprite) {
     const relativePos = this.createRelativeCoord();
     const convIcon = this.sprite.game.make.sprite(
@@ -226,7 +318,10 @@ export class ActionSel {
       true
     );
     tween.onComplete.add(() => {
-      const g = this.sprite.game.add.graphics(sprite.width / 2, sprite.height / 2);
+      const g = this.sprite.game.add.graphics(
+        sprite.width / 2,
+        sprite.height / 2
+      );
       this.group.addChildAt(g, 0);
       this.lines.push(g);
       g.beginFill();
