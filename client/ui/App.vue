@@ -79,7 +79,7 @@
 
 <script lang="ts">
 import "buefy/dist/buefy.css";
-import { ClientAPI, Agent, Room, Item } from "panoptyk-engine/dist/client";
+import { ClientAPI, Agent, Room, Item, Faction } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import requestTab from "./components/requestTab.vue";
 import infoTab from "./components/infoTab.vue";
@@ -105,6 +105,7 @@ import Console from "./components/console.vue";
 export default class App extends Vue {
   trigger = 0;
   agents = [];
+  factions = [];
   rooms = [];
   items = [];
   knowledge = [];
@@ -114,6 +115,7 @@ export default class App extends Vue {
   @Watch("trigger")
   updateLists() {
     this.agents = ClientAPI.seenAgents;
+    this.factions = ClientAPI.seenFactions;
     this.rooms = ClientAPI.seenRooms;
     this.items = ClientAPI.seenItems;
     this.knowledge = ClientAPI.playerAgent.knowledge;
