@@ -244,7 +244,7 @@ export default class TradeTab extends Vue {
   questions: Info[] = [];
   @Watch("knowledge") 
   updateQuestions() {
-    this.questions = ClientAPI.playerAgent.getInfoByAction(Info.ACTIONS.ASK.name).map(i => i.getTerms().info);
+    this.questions = ClientAPI.playerAgent.getInfoByAction(Info.ACTIONS.ASK.name).filter(i => !i.isQuery()).map(i => i.getTerms().info);
   }
   gold: number;
   item: Item;
