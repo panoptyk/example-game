@@ -1,11 +1,14 @@
 import * as Server from "panoptyk-engine";
 import * as util from "panoptyk-engine";
 
-const ITEMS_PER_ROOM = 10;
+const ITEMS_PER_ROOM = 5;
 let itemNum = 1;
 Server.Room.loadAll();
 for (const key in Server.Room.objects) {
   const room: Server.Room = Server.Room.objects[key];
+  if (room.id === 12 || room.id === 13) {
+    continue;
+  }
   for (let i = 0; i < ITEMS_PER_ROOM; i++) {
     const item = new Server.Item("Item " + itemNum++);
     item.putInRoom(room);

@@ -1,0 +1,23 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_factionName": "Bentham Guard",
+      "_factionType": "police",
+      "_headquarters": 12,
+      "_members": [
+        [1, "Infinity"]
+      ]
+    },
+    "2": {
+      "id": 2,
+      "_factionName": "Thieves Guild",
+      "_factionType": "criminal",
+      "_headquarters": 13,
+      "_members": [
+        [2, "Infinity"]
+      ]
+    }
+  },
+  "nextID": 3
+}
