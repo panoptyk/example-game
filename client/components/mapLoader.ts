@@ -24,8 +24,8 @@ const MapKey = {
   "Crooked Sword Tavern (back room)": Assets.TilemapJSON.TilemapsMapsCSTavernBack.getName(),
   "Crooked Sword Tavern (upper)": Assets.TilemapJSON.TilemapsMapsCSTavernUpper.getName(),
   "Crooked Sword Back Alley": Assets.TilemapJSON.TilemapsMapsBackAlley.getName(),
-  "Guild#1": Assets.TilemapJSON.TilemapsMapsGuild1.getName(),
-  "Guild#2": Assets.TilemapJSON.TilemapsMapsGuild2.getName(),
+  "Town Watch": Assets.TilemapJSON.TilemapsMapsGuild1.getName(),
+  "Shady Den": Assets.TilemapJSON.TilemapsMapsGuild2.getName(),
   "***'s House": Assets.TilemapJSON.TilemapsMapsPlayerHouseA.getName()
 };
 // map from Room.prototype.roomName to door label (if different)
@@ -36,8 +36,8 @@ const DoorKey = {
   "Crooked Sword Tavern (back room)": "Tavern#1:back",
   "Crooked Sword Tavern (upper)": "Tavern#1:upper",
   "Crooked Sword Back Alley": "BackAlley#1",
-  "Guild#1": "Guild#1",
-  "Guild#2": "Guild#2",
+  "Town Watch": "Guild#1",
+  "Shady Den": "Guild#2",
   "***'s House": "PlayerHouse#1"
 };
 

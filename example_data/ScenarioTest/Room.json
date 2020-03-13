@@ -112,7 +112,7 @@
     },
     "12": {
       "id": 12,
-      "_roomName": "Guild#1",
+      "_roomName": "Town Watch",
       "adjacent": [4],
       "_occupants": [],
       "itemIDs": [111, 112, 113, 114, 115, 116, 117, 118, 119, 120],
@@ -122,7 +122,7 @@
     },
     "13": {
       "id": 13,
-      "_roomName": "Guild#2",
+      "_roomName": "Shady Den",
       "adjacent": [3, 11],
       "_occupants": [],
       "itemIDs": [121, 122, 123, 124, 125, 126, 127, 128, 129, 130],
