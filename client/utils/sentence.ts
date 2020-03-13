@@ -170,6 +170,12 @@ class Sentence {
           type: Sentence.BlockType.ACTION,
           text: "dropped "
         });
+        if (terms.item && terms.item.itemTags.has("illegal")) {
+          arr.push({
+            type: Sentence.BlockType.ITEM,
+            text: "illegal "
+          });
+        }
         arr.push({
           type: Sentence.BlockType.ITEM,
           text: terms.item.itemName + " "
@@ -188,6 +194,12 @@ class Sentence {
           type: Sentence.BlockType.ACTION,
           text: "gave "
         });
+        if (terms.item && terms.item.itemTags.has("illegal")) {
+          arr.push({
+            type: Sentence.BlockType.ITEM,
+            text: "illegal "
+          });
+        }
         arr.push({
           type: Sentence.BlockType.ITEM,
           text: terms.item.itemName + " "
@@ -264,6 +276,12 @@ class Sentence {
           type: Sentence.BlockType.ACTION,
           text: "picked up "
         });
+        if (terms.item && terms.item.itemTags.has("illegal")) {
+          arr.push({
+            type: Sentence.BlockType.ITEM,
+            text: "illegal "
+          });
+        }
         arr.push({
           type: Sentence.BlockType.ITEM,
           text: terms.item.itemName + " "
@@ -412,6 +430,12 @@ class Sentence {
         });
         break;
       case Info.ACTIONS.LOCATED_IN.name:
+        if (terms.item && terms.item.itemTags.has("illegal")) {
+          arr.push({
+            type: Sentence.BlockType.ITEM,
+            text: "illegal "
+          });
+        }
         arr.push({
           type: Sentence.BlockType.ITEM,
           text: terms.item.itemName + " "
