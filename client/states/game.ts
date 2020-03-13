@@ -159,6 +159,14 @@ class GameState extends Phaser.State {
 
   // onClick server actions //
   private onDoorEnter = (sprite: DoorSprite) => {
+    if (
+      sprite.model.roomTags.has("private") &&
+      ClientAPI.playerAgent.faction &&
+      ClientAPI.playerAgent.faction.factionType === "police" &&
+      ClientAPI.playerAgent.factionRank < 10
+    ) {
+      return;
+    }
     // add a loading image later
     this.groups.doorObjects.inputEnableChildren = false;
     const target = sprite.model;

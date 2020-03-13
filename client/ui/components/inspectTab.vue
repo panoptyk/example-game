@@ -17,6 +17,7 @@
 
     <div id="inspect-window" class="game-tab" v-else-if="isDoor">
       Door to: <span class="room">{{ realTarget.roomName }}</span> <br />
+      Room Tags: {{ roomTags }}
     </div>
 
     <div id="inspect-window" class="game-tab" v-else-if="isCurRoom">
@@ -92,6 +93,18 @@ export default class InspectTab extends Vue {
   get itemTags() {
     if (this.realTarget instanceof Item && this.realTarget.itemTags.size > 0) {
       const tags = Array.from(this.realTarget.itemTags);
+      let sentence = tags.pop();
+      for (const tag in tags) {
+        sentence += ", " + tag;
+      }
+      return sentence;
+    }
+    return "None";
+  }
+
+  get roomTags() {
+    if (this.realTarget instanceof Room && this.realTarget.roomTags.size > 0) {
+      const tags = Array.from(this.realTarget.roomTags);
       let sentence = tags.pop();
       for (const tag in tags) {
         sentence += ", " + tag;
