@@ -3,7 +3,7 @@
 SERVER_DIR="onlyOne$1" 
 
 ./bin/startServer-base.sh $SERVER_DIR $2 &
-sleep 0.25
+sleep 5
 cd "[temp]"/$SERVER_DIR
 
 
