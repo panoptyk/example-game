@@ -10,7 +10,6 @@ import {
   logger,
   ActionGiveQuest
 } from "panoptyk-engine/dist/client";
-import questHelp from "./util/questHelper";
 import * as KB from "./kb/KBadditions";
 
 // Boilerplate agent code ================================================== START
@@ -80,25 +79,8 @@ function actWrapper() {
 // Boilerplate agent code ================================================== END
 // set "_endBot" to true to exit the script cleanly
 
-const DoQuest = async function() {
-  const otherAgent = KB.get.otherAgentInConvo();
-  if (questHelp.canGiveQuest(otherAgent)) {
-    await questHelp.giveQuest(otherAgent);
-    return true;
-  }
-  return false;
-};
-
 async function act() {
-  if (ClientAPI.playerAgent.conversation) {
-    if (! await DoQuest()) {
-      await questHelp.tryCompleteQuest();
-    }
-  } else if (ClientAPI.playerAgent.conversationRequesters.length > 0) {
-    await ClientAPI.acceptConversation(
-      ClientAPI.playerAgent.conversationRequesters[0]
-    );
-  }
+  // NO OP
 }
 
 // =======Start Bot========== //

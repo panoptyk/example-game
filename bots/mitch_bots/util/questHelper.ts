@@ -6,7 +6,7 @@ import {
   Item,
   Info
 } from "panoptyk-engine/dist/client";
-import * as KB from "./KBadditions";
+import * as KB from "../kb/KBadditions";
 
 class QuestHelper {
   // Singleton pattern
