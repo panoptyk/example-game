@@ -190,7 +190,10 @@ export class ActionSel {
       () => {
         pickupIcon.inputEnabled = true;
         pickupIcon.events.onInputDown.add(() => {
-          ClientAPI.takeItems([item.model]);
+          ClientAPI.takeItems([item.model])
+          .catch(err => {
+            GS.instance.addConsoleMessage(err.message);
+          });
         });
       }
     );
@@ -216,7 +219,11 @@ export class ActionSel {
         this.lines.push(g);
         tradeIcon.inputEnabled = true;
         tradeIcon.events.onInputDown.add(() => {
-          ClientAPI.requestTrade(agent.model).then(res => {
+          ClientAPI.requestTrade(agent.model)
+          .catch(err => {
+            GS.instance.addConsoleMessage(err.message);
+          })
+          .then(res => {
             GS.instance.logTradeRequest(agent.model);
           });
         });
@@ -242,8 +249,12 @@ export class ActionSel {
         arrestIcon.inputEnabled = true;
         arrestIcon.events.onInputDown.add(() => {
           console.log("arrest: " + agent.model.agentName);
-          ClientAPI.arrestAgent(agent.model, warrant).then(res => {
-            // TODO: make alert?
+          ClientAPI.arrestAgent(agent.model, warrant)
+          .catch(err => {
+            GS.instance.addConsoleMessage(err.message);
+          })
+          .then(res => {
+            GS.instance.addConsoleMessage("Successfully arrested " + agent.model.agentName);
           });
         });
       }
@@ -268,8 +279,12 @@ export class ActionSel {
         stealIcon.inputEnabled = true;
         stealIcon.events.onInputDown.add(() => {
           console.log("steal: " + agent.model.agentName);
-          ClientAPI.stealItem(agent.model, item).then(res => {
-            // TODO: make alert?
+          ClientAPI.stealItem(agent.model, item)
+          .catch(err => {
+            GS.instance.addConsoleMessage(err.message);
+          })
+          .then(res => {
+            GS.instance.addConsoleMessage("Successfully stole " + item.itemName);
             this.icons.get("steal").destroy();
             this.icons.delete("steal");
             this.nextLoc--;
@@ -293,7 +308,11 @@ export class ActionSel {
       convIcon.inputEnabled = true;
       convIcon.events.onInputDown.add(() => {
         console.log("convo: " + agent.model.agentName);
-        ClientAPI.requestConversation(agent.model).then(res => {
+        ClientAPI.requestConversation(agent.model)
+        .catch(err => {
+          GS.instance.addConsoleMessage(err.message);
+        })
+        .then(res => {
           GS.instance.logConvoRequest(agent.model);
         });
       });
