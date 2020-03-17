@@ -133,9 +133,6 @@ class GameState extends Phaser.State {
         this.scheduleLogInOffEvents();
       }
       this.handleEvents();
-      if (ActionSel.currentMenu) {
-        ActionSel.currentMenu.update();
-      }
       // log active trade
       if (this.lastActiveTrade && !ClientAPI.playerAgent.trade) {
         if (this.lastActiveTrade.resultStatus === 1) {
@@ -149,6 +146,9 @@ class GameState extends Phaser.State {
       }
       // update any UI
       this.updateUI();
+      if (ActionSel.currentMenu) {
+        ActionSel.currentMenu.update();
+      }
       // update chat bubbles
       this.player.update();
       this.groups.otherAgents.forEach((agent: AgentSprite) => {
@@ -219,7 +219,7 @@ class GameState extends Phaser.State {
     }
 
     // Check for decline
-    let requests = new Set();
+    let requests = new Set<Agent>();
     this.convoRequests.forEach(agent => {
       if (!player.conversationRequested.includes(agent)) {
         this.addConsoleMessage(
@@ -231,7 +231,7 @@ class GameState extends Phaser.State {
     });
     this.convoRequests = requests;
 
-    requests = new Set();
+    requests = new Set<Agent>();
     this.tradeRequests.forEach(agent => {
       if (!player.tradeRequested.includes(agent)) {
         this.addConsoleMessage(
