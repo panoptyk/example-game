@@ -1,4 +1,4 @@
-import { Agent, ClientAPI } from "panoptyk-engine/dist/client";
+import { Agent, ClientAPI, Room } from "panoptyk-engine/dist/client";
 
 class KBget {
   // Singleton pattern
@@ -9,6 +9,11 @@ class KBget {
     }
     return KBget._instance;
   }
+
+  get curRoom(): Room {
+    return ClientAPI.playerAgent ? ClientAPI.playerAgent.room : undefined;
+  }
+  previousRoom: Room;
 
   constructor() {}
 

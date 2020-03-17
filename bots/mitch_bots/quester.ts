@@ -7,13 +7,15 @@ import {
   Conversation,
   ClientAPI,
   getPanoptykDatetime,
-  logger,
-  ActionGiveQuest
+  logger
 } from "panoptyk-engine/dist/client";
 import * as KB from "./kb/KBadditions";
+import { log } from "./util/log";
+import { BehaviorState, SuccessBehavior } from "../lib";
+import { MoveToRoomBehavior } from "./behavior/moveToRoomBState";
 
 // Boilerplate agent code ================================================== START
-const username = process.argv[2] ? process.argv[2] : "Chief";
+const username = process.argv[2] ? process.argv[2] : "quester";
 const password = process.argv[3] ? process.argv[3] : "password";
 const address = process.argv[4] ? process.argv[4] : "http://localhost:8080";
 
@@ -79,8 +81,45 @@ function actWrapper() {
 // Boilerplate agent code ================================================== END
 // set "_endBot" to true to exit the script cleanly
 
+// Set up listeners for KnowledgeBase //
+let _updatingKB = false;
+const roomsAdded = new Set();
+ClientAPI.addOnUpdateListener(updates => {
+  _updatingKB = true;
+  // silent fail
+  try {
+    const curRoom = ClientAPI.playerAgent.room;
+    KB.get.previousRoom = curRoom ? curRoom : KB.get.previousRoom;
+    // update roomMap
+    if (curRoom && !roomsAdded.has(curRoom)) {
+      log("Adding " + curRoom + " to RoomMap", log.KB);
+      roomsAdded.add(curRoom);
+      KB.roomMap.addRoom(curRoom);
+      curRoom.getAdjacentRooms().forEach(neighbor => {
+        KB.roomMap.addRoom(neighbor);
+        KB.roomMap.addConnection(curRoom, neighbor);
+      });
+    }
+  } catch (err) {
+    // ignore all errors
+  }
+  _updatingKB = false;
+});
+
+// ================================== //
+
+let state: BehaviorState = SuccessBehavior.instance;
+
 async function act() {
-  // NO OP
+  if (_updatingKB) {
+    return;
+  }
+  const rooms = KB.roomMap.checkForUnexploredRooms();
+  if (rooms.length && state === SuccessBehavior.instance) {
+    const pick = Math.floor(Math.random() * rooms.length);
+    state = new MoveToRoomBehavior(rooms[pick]);
+  }
+  state = await state.tick();
 }
 
 // =======Start Bot========== //
