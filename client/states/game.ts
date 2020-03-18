@@ -140,6 +140,7 @@ class GameState extends Phaser.State {
         } else if (this.lastActiveTrade.resultStatus === 0) {
           this.addConsoleMessage("Trade has been cancelled");
         }
+        UI.instance.setRightTab(UI.RTABS.CONVERSATION);
         this.lastActiveTrade = undefined;
       } else {
         this.lastActiveTrade = ClientAPI.playerAgent.trade;

@@ -190,9 +190,14 @@ export class ActionSel {
       () => {
         pickupIcon.inputEnabled = true;
         pickupIcon.events.onInputDown.add(() => {
-          ClientAPI.takeItems([item.model]).catch(err => {
-            GS.instance.addConsoleMessage(err.message);
-          });
+          ClientAPI.takeItems([item.model]).then(
+            res => {
+              UI.instance.setLeftTab(UI.LTABS.ITEMS);
+            },
+            err => {
+              GS.instance.addConsoleMessage(err.message);
+            }
+          );
         });
       }
     );
@@ -254,6 +259,7 @@ export class ActionSel {
               GS.instance.addConsoleMessage(
                 "Successfully arrested " + agent.model.agentName
               );
+              UI.instance.setLeftTab(UI.LTABS.INFO);
             },
             err => {
               GS.instance.addConsoleMessage(err.message);
@@ -287,6 +293,7 @@ export class ActionSel {
               GS.instance.addConsoleMessage(
                 "Successfully stole " + item.itemName
               );
+              UI.instance.setLeftTab(UI.LTABS.ITEMS);
               this.icons.get("steal").destroy();
               this.icons.delete("steal");
               this.nextLoc--;
@@ -333,6 +340,7 @@ export class ActionSel {
               GS.instance.addConsoleMessage(
                 "Interrogating " + agent.model.agentName
               );
+              UI.instance.setRightTab(UI.RTABS.CONVERSATION);
             },
             err => {
               GS.instance.addConsoleMessage(err.message);
