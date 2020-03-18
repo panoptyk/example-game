@@ -315,6 +315,10 @@ export default class ConverstaionTab extends Vue {
   @Prop({ default: [] }) items;
   @Prop({ default: [] }) rooms;
   @Prop({ default: [] }) knowledge;
+  @Prop({ default: [] }) quests;
+  @Prop({ default: [] }) inventory;
+  @Prop({ default: [] }) relevantInfo;
+  @Prop({ default: [] }) turnedInInfo;
 
   actionSelected = "";
   questionFields = [];
@@ -414,8 +418,6 @@ export default class ConverstaionTab extends Vue {
 
   // Update asked questions in conversation
   questions = [];
-  quests: Quest[] = [];
-  inventory: Item[] = [];
   @Watch("trigger")
   updateTab() {
     if (!ClientAPI.playerAgent || !ClientAPI.playerAgent.conversation) {
@@ -438,9 +440,7 @@ export default class ConverstaionTab extends Vue {
     this.onQuestSelect();
   }
 
-  relevantInfo = [];
   targetQuest: Quest = {} as any;
-  turnedInInfo: Info[] = [];
   questInfo: Info = {} as any;
 
   get isQuestGiver(): boolean {
@@ -451,7 +451,7 @@ export default class ConverstaionTab extends Vue {
   onQuestSelect() {
     // list of info that can complete quest
     this.relevantInfo = [];
-    if (this.targetQuest) {
+    if (this.targetQuest && this.targetQuest instanceof Quest) {
       this.turnedInInfo = this.targetQuest.turnedInInfo;
       for (const info of ClientAPI.playerAgent.knowledge) {
         if (

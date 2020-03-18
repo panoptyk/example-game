@@ -49,6 +49,9 @@ export default class QuestEntry extends Vue {
   @Prop({ default: {} }) quest: Quest;
 
   get turnedInInfo() {
+    if (!this.quest.turnInInfo) {
+      return [];
+    }
     return this.quest.turnedInInfo;
   }
 
@@ -186,6 +189,9 @@ export default class QuestEntry extends Vue {
   }
 
   get rewards() {
+    if (!this.quest.offeredRewards) {
+      return [];
+    }
     const rewardTxt = [];
     for (const reward of this.quest.offeredRewards) {
       rewardTxt.push(this.generateRewardTxt(reward));
@@ -213,6 +219,9 @@ export default class QuestEntry extends Vue {
     }
   }
   get sentence() {
+    if (!this.quest.task) {
+      return [];
+    }
     const terms = Sentence.replaceMissing(this.quest.task.getTerms(), "any");
     const taskTxt = [];
     switch (this.quest.type) {
