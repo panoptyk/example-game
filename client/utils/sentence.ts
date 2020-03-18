@@ -563,6 +563,24 @@ class Sentence {
           text: terms.loc.roomName + " "
         });
         break;
+      case Info.ACTIONS.INTERROGATED.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "interrogated "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        break;
       case "???":
         arr.push({
           type: Sentence.BlockType.ACTION,
