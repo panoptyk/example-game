@@ -5,7 +5,7 @@
       "_roomName": "East Bentham",
       "adjacent": [3, 4, 14],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [10, 18],
       "conversationIDs": [],
       "_maxOccupants": 100
     },
@@ -14,7 +14,7 @@
       "_roomName": "West Bentham",
       "adjacent": [3, 4],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [11, 19],
       "conversationIDs": [],
       "_maxOccupants": 100
     },
@@ -23,7 +23,7 @@
       "_roomName": "South Bentham",
       "adjacent": [1, 2, 4, 13],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [9, 12],
       "conversationIDs": [],
       "_maxOccupants": 100
     },
@@ -32,7 +32,7 @@
       "_roomName": "North Bentham",
       "adjacent": [1, 2, 3, 5, 6, 7, 8, 12],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [13],
       "conversationIDs": [],
       "_maxOccupants": 100
     },
@@ -41,7 +41,7 @@
       "_roomName": "North Bentham Gate",
       "adjacent": [4],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [14, 17],
       "conversationIDs": [],
       "_maxOccupants": 100
     },
@@ -50,7 +50,7 @@
       "_roomName": "Redbrick Cafe",
       "adjacent": [4],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [1, 3],
       "conversationIDs": [],
       "_maxOccupants": 20,
       "_roomTags": ["private"]
@@ -60,7 +60,7 @@
       "_roomName": "Straw Roof Inn",
       "adjacent": [4, 11],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [4],
       "conversationIDs": [],
       "_maxOccupants": 20,
       "_roomTags": ["private"]
@@ -70,7 +70,7 @@
       "_roomName": "Crooked Sword Tavern (main)",
       "adjacent": [4, 9, 10],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [5, 6],
       "conversationIDs": [],
       "_maxOccupants": 20,
       "_roomTags": ["private"]
@@ -80,7 +80,7 @@
       "_roomName": "Crooked Sword Tavern (back room)",
       "adjacent": [8, 10, 11],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [8, 16],
       "conversationIDs": [],
       "_maxOccupants": 10,
       "_roomTags": ["private"]
@@ -90,7 +90,7 @@
       "_roomName": "Crooked Sword Tavern (upper)",
       "adjacent": [8, 9],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [7, 20],
       "conversationIDs": [],
       "_maxOccupants": 20,
       "_roomTags": ["private"]
@@ -100,7 +100,7 @@
       "_roomName": "Crooked Sword Back Alley",
       "adjacent": [7, 9, 13],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [15],
       "conversationIDs": [],
       "_maxOccupants": 20,
       "_roomTags": ["private"]
@@ -129,7 +129,7 @@
       "_roomName": "***'s House",
       "adjacent": [1],
       "_occupants": [],
-      "itemIDs": [],
+      "itemIDs": [2],
       "conversationIDs": [],
       "_maxOccupants": 20,
       "_roomTags": ["private"]
