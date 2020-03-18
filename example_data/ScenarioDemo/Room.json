@@ -5,9 +5,8 @@
       "_roomName": "East Bentham",
       "adjacent": [3, 4, 14],
       "_occupants": [],
-      "itemIDs": [1, 2, 3, 4, 5],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": [],
       "_maxOccupants": 100
     },
     "2": {
@@ -15,9 +14,8 @@
       "_roomName": "West Bentham",
       "adjacent": [3, 4],
       "_occupants": [],
-      "itemIDs": [6, 7, 8, 9, 10],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": [],
       "_maxOccupants": 100
     },
     "3": {
@@ -25,9 +23,8 @@
       "_roomName": "South Bentham",
       "adjacent": [1, 2, 4, 13],
       "_occupants": [],
-      "itemIDs": [11, 12, 13, 14, 15],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": [],
       "_maxOccupants": 100
     },
     "4": {
@@ -35,9 +32,8 @@
       "_roomName": "North Bentham",
       "adjacent": [1, 2, 3, 5, 6, 7, 8, 12],
       "_occupants": [],
-      "itemIDs": [16, 17, 18, 19, 20],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": [],
       "_maxOccupants": 100
     },
     "5": {
@@ -45,9 +41,8 @@
       "_roomName": "North Bentham Gate",
       "adjacent": [4],
       "_occupants": [],
-      "itemIDs": [21, 22, 23, 24, 25],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": [],
       "_maxOccupants": 100
     },
     "6": {
@@ -55,60 +50,60 @@
       "_roomName": "Redbrick Cafe",
       "adjacent": [4],
       "_occupants": [],
-      "itemIDs": [26, 27, 28, 29, 30],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": ["private"],
-      "_maxOccupants": 20
+      "_maxOccupants": 20,
+      "_roomTags": ["private"]
     },
     "7": {
       "id": 7,
       "_roomName": "Straw Roof Inn",
       "adjacent": [4, 11],
       "_occupants": [],
-      "itemIDs": [31, 32, 33, 34, 35],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": ["private"],
-      "_maxOccupants": 20
+      "_maxOccupants": 20,
+      "_roomTags": ["private"]
     },
     "8": {
       "id": 8,
       "_roomName": "Crooked Sword Tavern (main)",
       "adjacent": [4, 9, 10],
       "_occupants": [],
-      "itemIDs": [36, 37, 38, 39, 40],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": ["private"],
-      "_maxOccupants": 20
+      "_maxOccupants": 20,
+      "_roomTags": ["private"]
     },
     "9": {
       "id": 9,
       "_roomName": "Crooked Sword Tavern (back room)",
       "adjacent": [8, 10, 11],
       "_occupants": [],
-      "itemIDs": [41, 42, 43, 44, 45],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": ["private"],
-      "_maxOccupants": 10
+      "_maxOccupants": 10,
+      "_roomTags": ["private"]
     },
     "10": {
       "id": 10,
       "_roomName": "Crooked Sword Tavern (upper)",
       "adjacent": [8, 9],
       "_occupants": [],
-      "itemIDs": [46, 47, 48, 49, 50],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": ["private"],
-      "_maxOccupants": 20
+      "_maxOccupants": 20,
+      "_roomTags": ["private"]
     },
     "11": {
       "id": 11,
       "_roomName": "Crooked Sword Back Alley",
       "adjacent": [7, 9, 13],
       "_occupants": [],
-      "itemIDs": [51, 52, 53, 54, 55],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": ["private"],
-      "_maxOccupants": 20
+      "_maxOccupants": 20,
+      "_roomTags": ["private"]
     },
     "12": {
       "id": 12,
@@ -117,7 +112,6 @@
       "_occupants": [],
       "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": [],
       "_maxOccupants": 40
     },
     "13": {
@@ -127,18 +121,18 @@
       "_occupants": [],
       "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": ["private"],
-      "_maxOccupants": 40
+      "_maxOccupants": 40,
+      "_roomTags": ["private"]
     },
     "14": {
       "id": 14,
       "_roomName": "***'s House",
       "adjacent": [1],
       "_occupants": [],
-      "itemIDs": [56, 57, 58, 59, 60],
+      "itemIDs": [],
       "conversationIDs": [],
-      "_roomTags": ["private"],
-      "_maxOccupants": 20
+      "_maxOccupants": 20,
+      "_roomTags": ["private"]
     }
   },
   "nextID": 15

@@ -6,7 +6,10 @@
       "_factionType": "police",
       "_headquarters": 12,
       "_members": [
-        [1, "Infinity"]
+        [1, "Infinity"],
+        [7, 0],
+        [8, 0],
+        [9, 0]
       ]
     },
     "2": {
@@ -15,7 +18,10 @@
       "_factionType": "criminal",
       "_headquarters": 13,
       "_members": [
-        [2, "Infinity"]
+        [2, "Infinity"],
+        [10, 0],
+        [11, 0],
+        [12, 0]
       ]
     }
   },
