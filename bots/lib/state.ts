@@ -10,6 +10,11 @@ export abstract class State {
     public get deltaTime() {
         return this._deltaTime;
     }
+    _success = false;
+    _fail = false;
+    get _complete(): boolean {
+        return this._success || this._fail;
+    }
 
     constructor(nextState: () => State = undefined) {
         this.startTime = Date.now();
