@@ -165,6 +165,13 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
 
   public parseInfo() {
     this.updateQuests();
+
+    for (const item of this._unownedItems) {
+      if (ClientAPI.playerAgent.hasItem(item)) {
+        this._unownedItems.delete(item);
+      }
+    }
+
     const knowledge = ClientAPI.playerAgent.knowledge;
     for (this.infoIdx; this.infoIdx < knowledge.length; this.infoIdx++) {
       const info = knowledge[this.infoIdx];

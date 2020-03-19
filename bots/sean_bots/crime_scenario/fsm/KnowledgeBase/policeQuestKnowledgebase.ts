@@ -111,7 +111,7 @@ export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
         break;
     }
     if (!task.action) {
-      rewards.push(Helper.makeQuestPromotionReward(agent, 1));
+      rewards.push(Helper.makeQuestPromotionReward(agent, 5));
     }
     return rewards;
   }
@@ -134,7 +134,8 @@ export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
     const items = [];
     for (const item of this._unownedItems) {
       if (!this._assignedItemQuest.has(item)) {
-        items.push({ key: item, val: this.calcItemVal(item) });
+        const val = this.calcItemVal(item);
+        if (val > 0) items.push({ key: item, val });
       }
     }
     return items.sort((a, b) => b.val - a.val);

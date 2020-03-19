@@ -189,7 +189,7 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
         break;
     }
     if (!task.action) {
-      rewards.push(Helper.makeQuestPromotionReward(agent, 1));
+      rewards.push(Helper.makeQuestPromotionReward(agent, 5));
     }
     return rewards;
   }
