@@ -212,7 +212,7 @@
               </div>
             </div>
           </template>
-          <b-field>
+          <b-field v-if="questType === 'info'">
             <b-select
               placeholder="-- info --"
               size="is-small"
@@ -227,6 +227,11 @@
               >
             </b-select>
           </b-field>
+          <div class="container" v-if="questType === 'item'">
+            <div class="notification">
+              {{ itemQuestText }}
+            </div>
+          </div>
           <info-entry
             v-bind:key="questInfo.id"
             v-bind:info="questInfo"
@@ -447,6 +452,39 @@ export default class ConverstaionTab extends Vue {
     return ClientAPI.playerAgent === this.targetQuest.giver;
   }
 
+  get questType() {
+    if (this.targetQuest && this.targetQuest instanceof Quest) {
+      const terms = this.targetQuest.task.getTerms();
+      if (
+        this.targetQuest.type !== "question" &&
+        terms.action === "GAVE" &&
+        terms.agent2 ===
+          ClientAPI.playerAgent.conversation.getAgents(ClientAPI.playerAgent)[0]
+      ) {
+        return "item";
+      } else {
+        return "info";
+      }
+    }
+    return "empty";
+  }
+
+  get itemQuestText() {
+    const terms = this.targetQuest.task.getTerms();
+    if (ClientAPI.playerAgent.hasItem(terms.item)) {
+      return (
+        "You have the " +
+        terms.item.itemName +
+        " required to complete this quest."
+      );
+    }
+    return (
+      "You do not have the " +
+      terms.item.itemName +
+      " required to complete this quest."
+    );
+  }
+
   // For quest turn in
   onQuestSelect() {
     // list of info that can complete quest
@@ -465,7 +503,14 @@ export default class ConverstaionTab extends Vue {
   }
 
   onQuestTurnIn() {
-    ClientAPI.turnInQuestInfo(this.targetQuest, this.questInfo);
+    if (this.questType === "item") {
+      ClientAPI.turnInQuestItem(
+        this.targetQuest,
+        this.targetQuest.task.getTerms().item
+      );
+    } else {
+      ClientAPI.turnInQuestInfo(this.targetQuest, this.questInfo);
+    }
   }
 
   onCompleteQuest() {
