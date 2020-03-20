@@ -18,6 +18,25 @@ class QuestHelper {
     return QuestHelper._instance;
   }
 
+  static MAX_QUESTS = 4;
+  static MIN_QUESTS = 1;
+  static MAX_QUANTITY = 3;
+  static MIN_QUANTITY = 1;
+
+  static getMaxQuests(lvl: number) {
+    return Math.min(
+      QuestHelper.MAX_QUESTS,
+      Math.max(QuestHelper.MIN_QUESTS, Math.floor(Math.random() * lvl))
+    );
+  }
+
+  static getRandomQuantity(lvl: number) {
+    return Math.min(
+      QuestHelper.MAX_QUANTITY,
+      Math.max(QuestHelper.MIN_QUANTITY, Math.floor(Math.random() * lvl))
+    );
+  }
+
   public faction: Faction;
   private possibleItems: number[];
   private itemBag: number[];
@@ -40,13 +59,13 @@ class QuestHelper {
     // general questions about agents
     [2, 3, 4, 5, 6, 7, 8, 9].forEach(agentID => {
       const predicate = Info.PREDICATE.TAL.getTerms(dummyInfo as Info);
-      predicate.agent = {id: agentID} as Agent;
+      predicate.agent = { id: agentID } as Agent;
       this.possibleQuestions.push(predicate);
     });
   }
 
   private checkOutstandingQuests(agent: Agent) {
-    const maxQuest = Math.min(3, agent.factionStatus.lvl);
+    const maxQuest = QuestHelper.getMaxQuests(agent.factionStatus.lvl);
     return KB.get.questGivenToAgent(agent) < maxQuest;
   }
 
@@ -83,10 +102,7 @@ class QuestHelper {
   }
 
   public async giveCraftsmenQuest(agent: Agent) {
-    const quantity = Math.min(
-      Math.max(1, Math.floor(Math.random() * 3)),
-      agent.factionStatus.lvl
-    );
+    const quantity = QuestHelper.getRandomQuantity(agent.factionStatus.lvl);
     const rewardXP = 33 * quantity;
     const fetchTarget: Item = this.getFetchItem();
     await ClientAPI.giveQuest(
@@ -109,10 +125,7 @@ class QuestHelper {
   }
 
   public async giveInformantsQuest(agent: Agent) {
-    const quantity = Math.min(
-      Math.max(1, Math.floor(Math.random() * 3)),
-      agent.factionStatus.lvl
-    );
+    const quantity = QuestHelper.getRandomQuantity(agent.factionStatus.lvl);
     const rewardXP = 33 * quantity;
     const query = this.getQuery();
     await ClientAPI.giveQuest(
@@ -134,7 +147,6 @@ class QuestHelper {
       }
     }
   }
-
 }
 
 export default QuestHelper.instance;

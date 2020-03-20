@@ -14,6 +14,10 @@ class RoomMap {
   private nodes: Set<Room> = new Set<Room>();
   private edges: Map<Room, Room[]> = new Map<Room, Room[]>();
 
+  public rooms(): Set<Room> {
+    return this.nodes;
+  }
+
   public addRoom(room: Room): void {
     this.nodes.add(room);
     if (!this.edges.has(room)) {

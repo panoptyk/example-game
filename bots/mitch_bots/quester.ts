@@ -9,10 +9,14 @@ import {
   getPanoptykDatetime,
   logger
 } from "panoptyk-engine/dist/client";
-import * as KB from "./kb/KBadditions";
 import { log } from "./util/log";
+import DELAYS from "./util/humanDelay";
+import DECIDES from "./util/decision";
+import * as KB from "./kb/KBadditions";
 import { BehaviorState, SuccessBehavior } from "../lib";
-import { MoveToRoomBehavior } from "./behavior/moveToRoomBState";
+import { PickUpItemBehavior } from "./behavior/pickUpItemBState";
+import { QuestStrategy } from "./strategy/questStrat";
+import { DiscussionStrategy } from "./strategy/discussStrat";
 
 // Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "quester";
@@ -64,7 +68,7 @@ function actWrapper() {
     _acting = true;
     act()
       .catch(err => {
-        console.log(err);
+        console.error(err);
       })
       .finally(() => {
         _acting = false;
@@ -81,15 +85,30 @@ function actWrapper() {
 // Boilerplate agent code ================================================== END
 // set "_endBot" to true to exit the script cleanly
 
+// Silence types of logging
+log.ignore.push(log.STATE);
+
+// Set human delays
+DELAYS.setOverride(true);
+DELAYS.setDelay("move-room", { avg: 3000, var: 2000 });
+DELAYS.setDelay("pickup-item", { avg: 300, var: 200 });
+DELAYS.setDelay("request-convo", { avg: 500, var: 200 });
+DELAYS.setDelay("request-trade", { avg: 500, var: 200 });
+DELAYS.setDelay("leave-convo-trade", { avg: 500, var: 200 });
+DELAYS.setDelay("turn-in-quest", { avg: 300, var: 0 });
+
+// Decision probabilities
+DECIDES.set("pick-up-item", 0.1);
+
 // Set up listeners for KnowledgeBase //
 let _updatingKB = false;
+let questNum = 0;
 const roomsAdded = new Set();
 ClientAPI.addOnUpdateListener(updates => {
   _updatingKB = true;
   // silent fail
   try {
-    const curRoom = ClientAPI.playerAgent.room;
-    KB.get.previousRoom = curRoom ? curRoom : KB.get.previousRoom;
+    const curRoom = KB.get.curRoom;
     // update roomMap
     if (curRoom && !roomsAdded.has(curRoom)) {
       log("Adding " + curRoom + " to RoomMap", log.KB);
@@ -100,6 +119,32 @@ ClientAPI.addOnUpdateListener(updates => {
         KB.roomMap.addConnection(curRoom, neighbor);
       });
     }
+    // update where items located
+    if (curRoom) {
+      curRoom.getItems().forEach(item => {
+        log(
+          "Updating info on item " +
+            item.master +
+            " in room " +
+            curRoom.roomName,
+          log.KB
+        );
+        KB.item.updateItemInfo(item);
+      });
+    }
+    updates.Agent.forEach(agent => {
+      // update where agent last seen
+      if (agent.id !== ClientAPI.playerAgent.id) {
+        log("Updating info on agent " + agent.agentName, log.KB);
+        KB.agent.updateAgentInfo(agent);
+      }
+    });
+    // log new quest recieved
+    const quests = ClientAPI.playerAgent.activeAssignedQuests;
+    if (questNum < quests.length) {
+      log("Recieved new quest!", log.KB);
+    }
+    questNum = quests.length;
   } catch (err) {
     // ignore all errors
   }
@@ -107,19 +152,68 @@ ClientAPI.addOnUpdateListener(updates => {
 });
 
 // ================================== //
+// Overall variables
+const questStrat = new QuestStrategy();
+let discussStrat: DiscussionStrategy = undefined;
+let pickUpState: BehaviorState = undefined;
 
-let state: BehaviorState = SuccessBehavior.instance;
+// for item pickup checks
+let roomChecked: Room = { id: 0 } as Room;
+let itemsSeen: Set<number> = new Set();
+
+function itemToPickUp(): Item {
+  if (roomChecked.id !== KB.get.curRoom.id) {
+    roomChecked = KB.get.curRoom;
+    itemsSeen = new Set();
+  }
+  const needs = KB.get.questNeeds();
+  for (const i of KB.get.curRoom.getItems()) {
+    const owned = KB.get.numberOwned(i);
+    for (const needI of needs.items) {
+      if (needI.item.sameAs(i) && needI.amount > owned) {
+        return i;
+      }
+    }
+    if (!itemsSeen.has(i.id) && DECIDES.decide("pick-up-item")) {
+      return i;
+    }
+    itemsSeen.add(i.id);
+  }
+  return undefined;
+}
 
 async function act() {
   if (_updatingKB) {
     return;
   }
-  const rooms = KB.roomMap.checkForUnexploredRooms();
-  if (rooms.length && state === SuccessBehavior.instance) {
-    const pick = Math.floor(Math.random() * rooms.length);
-    state = new MoveToRoomBehavior(rooms[pick]);
+  // check to initiate new pickup of item
+  const item = itemToPickUp();
+  if (!pickUpState && item) {
+    pickUpState = new PickUpItemBehavior(item, function(this: PickUpItemBehavior): BehaviorState {
+      if (this._complete) {
+        return SuccessBehavior.instance;
+      } else {
+        return this;
+      }
+    });
   }
-  state = await state.tick();
+
+  // tick higher priority state
+  if (pickUpState) { // pick up an item
+    pickUpState = await pickUpState.tick();
+  } else if (discussStrat) { // handle discussion
+    await discussStrat.act();
+  } else {
+    await questStrat.act();
+  }
+
+  // Clean up states
+  if (pickUpState === SuccessBehavior.instance) {
+    pickUpState = undefined;
+  }
+  if (discussStrat && discussStrat.complete) {
+    discussStrat = undefined;
+  }
 }
 
 // =======Start Bot========== //
