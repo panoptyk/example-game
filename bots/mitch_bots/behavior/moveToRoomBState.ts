@@ -7,6 +7,7 @@ import {
   FailureAction,
   ActionState
 } from "../../lib";
+import { log } from "../util/log";
 import * as KB from "../kb/KBadditions";
 import { Room } from "panoptyk-engine/dist/client";
 import { MoveRoomAction } from "../action/moveRoomAState";
@@ -25,6 +26,7 @@ export class MoveToRoomBehavior extends BehaviorState {
     this._fail =
       !this._destination || !this._path || this._pathPos >= this._path.length;
     if (!this._fail) {
+      log("Planning to move to room: " + this._destination, log.ACT);
       this.currentActionState = new MoveRoomAction(
         this._path[this._pathPos],
         5000,

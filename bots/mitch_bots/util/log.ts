@@ -3,7 +3,7 @@ function log(message: string, type = "[___] ") {
   if (log.ignore.includes(type)) {
     return;
   }
-  console.log(type + message);
+  console.log("[" + new Date() + "]═" + type + message);
 }
 
 namespace log {

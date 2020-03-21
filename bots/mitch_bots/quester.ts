@@ -86,10 +86,10 @@ function actWrapper() {
 // set "_endBot" to true to exit the script cleanly
 
 // Silence types of logging
-log.ignore.push(log.STATE);
+// log.ignore.push(log.STATE);
 
 // Set human delays
-DELAYS.setOverride(true);
+// DELAYS.setOverride(true);
 DELAYS.setDelay("move-room", { avg: 3000, var: 2000 });
 DELAYS.setDelay("pickup-item", { avg: 300, var: 200 });
 DELAYS.setDelay("request-convo", { avg: 500, var: 200 });

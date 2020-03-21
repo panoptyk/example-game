@@ -49,6 +49,7 @@ export class QuestStrategy extends Strategy {
       } else {
         room = this.findRoomOfInterest();
       }
+      log("QuestStrategy::act picked room: " + room, log.ACT);
       this.currentBehavior = new MoveToRoomBehavior(
         room,
         QuestStrategy.createMoveToRoomTransition(this)
