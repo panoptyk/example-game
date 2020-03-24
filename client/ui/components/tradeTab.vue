@@ -29,7 +29,7 @@
               min="0"
               v-model="gold"
               controls-position="compact"
-              controls-rounded              
+              controls-rounded
             >
             </b-numberinput>
 
@@ -43,20 +43,20 @@
             </div>
           </b-field>
 
-          <b-field class="no-margin" label="Item" grouped>
+          <b-field class="no-margin" label="ItemOffer" grouped>
             <span class="trade-text" style="margin-left: auto;"> I: </span>
             <b-select
               placeholder="--ID--"
               size="is-small"
               class="trade-select"
-              v-model="item"
+              v-model="itemO"
             >
               <option disabled value>--ID--</option>
               <option
-                v-for="i in items"
+                v-for="i in poassessItems"
                 v-bind:key="i.id"
                 v-bind:value="i"
-                >{{ i.id }}</option
+                >{{ i.itemName + "#" + i.id }}</option
               >
             </b-select>
 
@@ -64,6 +64,27 @@
               <b-button class="button" size="is-small" @click="onOfferItem"
                 >Offer</b-button
               >
+            </div>
+          </b-field>
+
+          <b-field class="no-margin" label="ItemRequest" grouped>
+            <span class="trade-text" style="margin-left: auto;"> I: </span>
+            <b-select
+              placeholder="--ID--"
+              size="is-small"
+              class="trade-select"
+              v-model="itemR"
+            >
+              <option disabled value>--ID--</option>
+              <option
+                v-for="i in masterItems"
+                v-bind:key="i.id"
+                v-bind:value="i"
+                >{{ i.itemName }}</option
+              >
+            </b-select>
+
+            <div class="trade-right">
               <b-button class="button" size="is-small" @click="onReqItem"
                 >Request</b-button
               >
@@ -114,12 +135,20 @@
         </div>
       </div>
       <footer class="card-footer" v-if="!otherReady">
-        <b-switch class="card-footer-item" v-model="indicateReady" @input="sendReady">
+        <b-switch
+          class="card-footer-item"
+          v-model="indicateReady"
+          @input="sendReady"
+        >
           {{ ready(indicateReady) }}
         </b-switch>
       </footer>
       <footer class="card-footer" v-else>
-        <b-switch class="card-footer-item" v-model="indicateReady" @input="sendReady">
+        <b-switch
+          class="card-footer-item"
+          v-model="indicateReady"
+          @input="sendReady"
+        >
           Complete Trade
         </b-switch>
       </footer>
@@ -140,10 +169,17 @@
       </div>
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div> Gold: {{ myGoldOffer }} </div>
-          <div> Items: <span v-for="i in myItemOffers" v-bind:key="i.id">{{ i.itemName }}, </span></div>
-          <div> Answers </div>
-          <div v-for="a in myAnswerOffers" v-bind:key="a.qID">One answer to question({{ a.qID }}) <span v-if="a.masked"> masked.</span> <span v-else> not masked.</span> </div>
+          <div>Gold: {{ myGoldOffer }}</div>
+          <div>
+            Items:
+            <span v-for="i in myItemOffers" v-bind:key="i.id"
+              >{{ i.itemName }},
+            </span>
+          </div>
+          <div>Answers</div>
+          <div v-for="a in myAnswerOffers" v-bind:key="a.qID">
+            {{ a.quantity }} answer(s) to question#{{ a.qID }}.
+          </div>
         </div>
       </div>
     </b-collapse>
@@ -156,17 +192,72 @@
         role="button"
         aria-controls="other-offer"
       >
-        <p class="card-header-title">{{ otherAgent.agentName }}'s offer ({{ ready(otherReady) }})</p>
+        <p class="card-header-title">
+          {{ otherAgent.agentName }}'s offer ({{ ready(otherReady) }})
+        </p>
         <a class="card-header-icon">
           <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
         </a>
       </div>
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div> Gold: {{ otherGoldOffer }} </div>
-          <div> Items: <span v-for="i in otherItemOffers" v-bind:key="i.id">{{ i.itemName }}, </span></div>
-          <div> Answers </div>
-          <div v-for="a in otherAnswerOffers" v-bind:key="a.qID">One answer to question({{ a.qID }}) <span v-if="a.masked"> masked.</span> <span v-else> not masked.</span> </div>
+          <div>Gold: {{ otherGoldOffer }}</div>
+          <div>
+            Items:
+            <span v-for="i in otherItemOffers" v-bind:key="i.id"
+              >{{ i.itemName }},
+            </span>
+          </div>
+          <div>Answers</div>
+          <div v-for="a in otherAnswerOffers" v-bind:key="a.qID">
+            {{ a.quantity }} answer(s) to question#{{ a.qID }}.
+          </div>
+        </div>
+      </div>
+    </b-collapse>
+
+    <b-collapse class="card" aria-id="requests">
+      <div
+        slot="trigger"
+        slot-scope="props"
+        class="card-header"
+        role="button"
+        aria-controls="other-offer"
+      >
+        <p class="card-header-title">Requested items and answers</p>
+        <a class="card-header-icon">
+          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+        </a>
+      </div>
+      <div class="card-content">
+        <div class="content" style="max-height: 200px; overflow-y:auto;">
+          <div v-for="req in displayRequests" v-bind:key="getKey(req)">
+            <span v-if="req.model.constructor.name === 'Item'">
+              {{ aName(req.agent) }} has asked for {{ req.model.itemName }}.
+              {{ req.pass ? "Passed" : "" }}
+              <b-button
+                v-if="!req.pass && aName(req.agent) !== 'You'"
+                @click="onPass(req.model)()"
+                size="is-small"
+                type="is-danger"
+                outlined
+                class="request-button"
+                >Pass</b-button
+              >
+            </span>
+            <span v-else>
+              {{ aName(req.agent) }} has asked for answers to question#{{ req.model.id }}.
+              {{ req.pass ? "Passed" : "" }}
+              <b-button
+                v-if="!req.pass && aName(req.agent) !== 'You'"
+                @click="onPass(req.model)()"
+                size="is-small"
+                type="is-danger"
+                outlined
+                class="request-button"
+                >Pass</b-button
+              > </span>
+          </div>
         </div>
       </div>
     </b-collapse>
@@ -186,18 +277,32 @@ export default class TradeTab extends Vue {
   @Prop({ default: 0 }) trigger: number;
   @Prop({ default: [] }) items: Item[];
   @Prop({ default: [] }) knowledge: Info[];
-  // Toggle what to display depending on if in a trade
-  inTrade = false;
-  @Watch("trigger")
-  updateInTrade() {
-    this.inTrade = ClientAPI.playerAgent
-       ? ClientAPI.playerAgent.trade !== undefined
-       : false;
-  }
+
   leaveTrade() {
     ClientAPI.cancelTrade();
   }
 
+  get posessItems() {
+    return this.items.filter(i => i.agent.id === ClientAPI.playerAgent.id);
+  }
+
+  get masterItems() {
+    return this.items.filter(i => i.isMaster());
+  }
+
+  aName(agent: Agent): string {
+    if (agent.id === ClientAPI.playerAgent.id) {
+      return "You";
+    }
+    return agent.agentName;
+  }
+
+  getKey(req: any) {
+    const key = req.agent.agentName + req.model.toString() + req.pass;
+    return key;
+  }
+
+  inTrade = false;
   otherAgent: Agent;
   myReady: boolean;
   otherReady: boolean;
@@ -207,16 +312,21 @@ export default class TradeTab extends Vue {
   otherItemOffers: Item[];
   myAnswerOffers;
   otherAnswerOffers;
+  requests: Map<any, number> = new Map();
+  displayRequests: { model: any; agent: Agent; pass: boolean }[] = [];
   @Watch("trigger")
   updateTrade() {
+    this.inTrade = ClientAPI.playerAgent
+      ? ClientAPI.playerAgent.trade !== undefined
+      : false;
     if (!this.inTrade) {
+      this.requests = new Map();
+      this.displayRequests = [];
       return;
     }
     const trade = ClientAPI.playerAgent.trade;
     const player = ClientAPI.playerAgent;
-    this.otherAgent = trade.conversation.getAgents(
-      ClientAPI.playerAgent
-    )[0];
+    this.otherAgent = trade.conversation.getAgents(ClientAPI.playerAgent)[0];
     // Get ready status
     this.myReady = trade.getAgentReadyStatus(player);
     this.indicateReady = this.myReady;
@@ -230,6 +340,42 @@ export default class TradeTab extends Vue {
     // Get answer offers
     this.myAnswerOffers = trade.getAnswersOffered(player);
     this.otherAnswerOffers = trade.getAnswersOffered(this.otherAgent);
+
+    // figure out requests
+    const processReq = (agent: Agent) => {
+      return (pass, model) => {
+        let index = this.displayRequests.findIndex(val => {
+          return val.model.id === model.id && val.agent.id === agent.id;
+        });
+        const obj = {
+          model,
+          agent,
+          pass
+        };
+        if (index !== -1) {
+          this.displayRequests[index] = obj;
+        } else {
+          index = this.displayRequests.length;
+          this.displayRequests.push(obj);
+        }
+        const now = Date.now();
+        if (pass && this.requests.has(model)) {
+          if (now - this.requests.get(model) >= 5000) {
+            this.displayRequests.splice(index, 1);
+          }
+        } else if (pass) {
+          this.requests.set(model, now);
+        }
+      };
+    };
+    trade.getAgentsRequestedItems(player).forEach(processReq(player));
+    trade
+      .getAgentsRequestedItems(this.otherAgent)
+      .forEach(processReq(this.otherAgent));
+    trade.getAgentsRequestedAnswers(player).forEach(processReq(player));
+    trade
+      .getAgentsRequestedAnswers(this.otherAgent)
+      .forEach(processReq(this.otherAgent));
   }
   // Indicator for if player is ready
   indicateReady = false;
@@ -242,12 +388,16 @@ export default class TradeTab extends Vue {
 
   // trade controls tab
   questions: Info[] = [];
-  @Watch("knowledge") 
+  @Watch("knowledge")
   updateQuestions() {
-    this.questions = ClientAPI.playerAgent.getInfoByAction(Info.ACTIONS.ASK.name).filter(i => !i.isQuery()).map(i => i.getTerms().info);
+    this.questions = ClientAPI.playerAgent
+      .getInfoByAction(Info.ACTIONS.ASK.name)
+      .filter(i => !i.isQuery())
+      .map(i => i.getTerms().info);
   }
   gold: number;
-  item: Item;
+  itemO: Item;
+  itemR: Item;
   question: Info;
   answer: Info;
 
@@ -258,16 +408,27 @@ export default class TradeTab extends Vue {
     console.log("Not Implemented!");
   }
   onOfferItem() {
-    ClientAPI.offerItemsTrade([this.item]);
+    ClientAPI.offerItemsTrade([this.itemO]);
   }
   onReqItem() {
-    ClientAPI.requestItemTrade(this.item);
+    ClientAPI.requestItemTrade(this.itemR);
   }
   onOfferAnswer() {
     ClientAPI.offerAnswerTrade(this.answer, this.question);
   }
   onReqAnswer() {
-    console.log("Not Implemented!");
+    ClientAPI.requestAnswerTrade(this.question);
+  }
+  onPass(model: any) {
+    if (model instanceof Item) {
+      return function() {
+        ClientAPI.passItemRequestTrade(model);
+      };
+    } else if (model instanceof Info) {
+      return function() {
+        ClientAPI.passInfoRequestTrade(model);
+      };
+    }
   }
 }
 </script>

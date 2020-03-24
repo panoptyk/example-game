@@ -54,7 +54,7 @@ export class AgentSprite extends Phaser.Sprite {
     this.loadTexture(ToSprite(agent), 1);
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
-    const style = { font: "25px Arial", fill: "#ffffff" };
+    const style = { font: "25px Arial", fill: "#62A1C3" };
     this.hoverText = this.game.make.text(0, 0, agent.agentName, style);
     this.addChild(this.hoverText);
     this.hoverText.position.set((this.width - this.hoverText.width) / 2, -28);

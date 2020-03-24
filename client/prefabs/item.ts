@@ -46,7 +46,7 @@ export class ItemSprite extends Phaser.Sprite {
     this.loadTexture(sprite.key, sprite.frame);
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
-    const style = { font: "25px Arial", fill: "#ffffff" };
+    const style = { font: "25px Arial", fill: "#7CC890" };
     this.hoverText = this.game.make.text(0, 0, model.itemName, style);
     this.addChild(this.hoverText);
     this.hoverText.position.set((this.width - this.hoverText.width) / 2, -28);

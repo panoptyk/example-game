@@ -135,7 +135,7 @@ export default class InfoTab extends Vue {
 
   total = 0;
   curPage = 1;
-  perPage = 10;
+  perPage = 9;
   onPageChange(page) {
     this.curPage = page;
   }

@@ -418,10 +418,6 @@ export default class ConverstaionTab extends Vue {
         : this.actionSelected;
     return q;
   }
-  @Watch("questionInfo")
-  what() {
-    console.log(this.questionInfo);
-  }
 
   onAsk() {
     console.log("Asked!");
@@ -470,7 +466,11 @@ export default class ConverstaionTab extends Vue {
     }
     this.inventory = ClientAPI.playerAgent.inventory;
     this.questions = ClientAPI.playerAgent.conversation.askedQuestions;
-    this.onQuestSelect();
+    if (this.quests.length <= 0 || this.targetQuest && this.targetQuest.status !== "ACTIVE") {
+      this.targetQuest = {} as Quest;
+    } else {
+      this.onQuestSelect();
+    }
   }
 
   relevantInfo = [];
@@ -487,7 +487,7 @@ export default class ConverstaionTab extends Vue {
   // For quest turn in
   onQuestSelect() {
     // list of info that can complete quest
-    if (this.targetQuest.id) {
+    if (this.targetQuest && this.targetQuest.id) {
       if (this.targetQuest.type !== "item") {
         this.relevantInfo = [];
         this.turnedInInfo = this.targetQuest.turnedInInfo;

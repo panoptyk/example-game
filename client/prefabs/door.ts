@@ -28,7 +28,7 @@ export class DoorSprite extends Phaser.Sprite {
   }
 
   public createHoverText() {
-    const style = { font: "14px Arial", fill: "#ffffff" };
+    const style = { font: "bold 16px Consolas", fill: "#ff6f59" };
     this.hoverText = this.game.add.text(0, 0, this.model.roomName, style);
     this.hoverText.position.set(
       this.world.x + (this.width * this.worldScale.x - this.hoverText.width) / 2,
@@ -38,7 +38,7 @@ export class DoorSprite extends Phaser.Sprite {
     this.graphics = this.game.make.graphics(0, 0);
     this.addChild(this.graphics);
     this.graphics.beginFill(0x000000, 0);
-    this.graphics.lineStyle(2, 0xFFFFFF, 0.75);
+    this.graphics.lineStyle(2, 0xff6f59, 0.75);
     this.graphics.drawRect(-2, -2, this.width, this.height);
     this.graphics.endFill();
 
