@@ -101,7 +101,7 @@
     },
     "12": {
       "id": 12,
-      "_roomName": "Guild#1",
+      "_roomName": "Craftsmen Guild",
       "adjacent": [4],
       "_occupants": [],
       "itemIDs": [],
@@ -110,7 +110,7 @@
     },
     "13": {
       "id": 13,
-      "_roomName": "Guild#2",
+      "_roomName": "Informants Guild",
       "adjacent": [3, 11],
       "_occupants": [],
       "itemIDs": [],
@@ -119,7 +119,7 @@
     },
     "14": {
       "id": 14,
-      "_roomName": "***'s House",
+      "_roomName": "Vacant House",
       "adjacent": [1],
       "_occupants": [],
       "itemIDs": [],

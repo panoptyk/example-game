@@ -42,12 +42,20 @@ class QuestHelper {
   private itemBag: number[];
   private possibleQuestions: any[];
   private questionBag: any[];
+  private possibleItems2: number[];
+  private itemBag2: number[];
+  private possibleQuestions2: any[];
+  private questionBag2: any[];
 
   constructor() {
-    this.possibleItems = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5];
+    this.possibleItems = [2, 3, 4, 5, 2, 3, 4, 5];
     this.itemBag = [];
     this.possibleQuestions = [];
     this.questionBag = [];
+    this.possibleItems2 = [1, 6, 7, 8, 1, 6, 7, 8];
+    this.itemBag2 = [];
+    this.possibleQuestions2 = [];
+    this.questionBag2 = [];
 
     const dummyInfo = {
       agents: [],
@@ -61,6 +69,20 @@ class QuestHelper {
       const predicate = Info.PREDICATE.TAL.getTerms(dummyInfo as Info);
       predicate.agent = { id: agentID } as Agent;
       this.possibleQuestions.push(predicate);
+    });
+
+    // advanced questions
+    // who GAVE who item?
+    [1, 2, 3, 4, 5, 6, 7, 8].forEach(itemID => {
+      const predicate = Info.ACTIONS.GAVE.getTerms(dummyInfo as Info);
+      predicate.item = { id: itemID } as Item;
+      this.possibleQuestions2.push(predicate);
+    });
+    // who told agent what?
+    [2, 3, 4, 5, 6, 7, 8, 9].forEach(agentID => {
+      const predicate = Info.ACTIONS.TOLD.getTerms(dummyInfo as Info);
+      predicate.agent2 = { id: agentID } as Agent;
+      this.possibleQuestions2.push(predicate);
     });
   }
 
@@ -101,10 +123,20 @@ class QuestHelper {
     return Item.getByID(this.itemBag.splice(choice, 1)[0]);
   }
 
+  // Ensures psuedo random fetch quests. Makes sure all items are requested then resets
+  private getFetchItem2(): Item { // ADVANCED
+    if (this.itemBag2.length <= 0) {
+      this.itemBag2 = this.possibleItems2.slice(0);
+    }
+    const choice = Math.floor(this.itemBag2.length * Math.random());
+    return Item.getByID(this.itemBag2.splice(choice, 1)[0]);
+  }
+
   public async giveCraftsmenQuest(agent: Agent) {
-    const quantity = QuestHelper.getRandomQuantity(agent.factionStatus.lvl);
-    const rewardXP = 33 * quantity;
-    const fetchTarget: Item = this.getFetchItem();
+    const lvl = agent.factionStatus.lvl;
+    const quantity = QuestHelper.getRandomQuantity(lvl);
+    const rewardXP = 35 * quantity;
+    const fetchTarget: Item = lvl < 3 ? this.getFetchItem() : this.getFetchItem2();
     await ClientAPI.giveQuest(
       agent,
       {},
@@ -124,10 +156,20 @@ class QuestHelper {
     return this.questionBag.splice(choice, 1)[0];
   }
 
+  // Ensures psuedo random fetch quests. Makes sure all items are requested then resets
+  private getQuery2(): any { // ADVANCED
+    if (this.questionBag2.length <= 0) {
+      this.questionBag2 = this.possibleQuestions2.slice(0);
+    }
+    const choice = Math.floor(this.questionBag2.length * Math.random());
+    return this.questionBag2.splice(choice, 1)[0];
+  }
+
   public async giveInformantsQuest(agent: Agent) {
-    const quantity = QuestHelper.getRandomQuantity(agent.factionStatus.lvl);
-    const rewardXP = 33 * quantity;
-    const query = this.getQuery();
+    const lvl = agent.factionStatus.lvl;
+    const quantity = QuestHelper.getRandomQuantity(lvl);
+    const rewardXP = 35 * quantity;
+    const query = lvl < 3 ? this.getQuery() : this.getQuery2();
     await ClientAPI.giveQuest(
       agent,
       query,

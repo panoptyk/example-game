@@ -44,7 +44,34 @@
       "_itemTags": [],
       "_master": 0,
       "inTransaction": false
+    },
+    "6": {
+      "id": 6,
+      "_itemName": "Distilled Lubricant",
+      "_type": "Material",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    },
+    "7": {
+      "id": 7,
+      "_itemName": "Mythril Chef's Knife",
+      "_type": "Weapon",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    },
+    "8": {
+      "id": 8,
+      "_itemName": "Lump of Silver",
+      "_type": "Material",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
     }
   },
-  "nextID": 6
+  "nextID": 9
 }

@@ -24,9 +24,9 @@ const MapKey = {
   "Crooked Sword Tavern (back room)": Assets.TilemapJSON.TilemapsMapsCSTavernBack.getName(),
   "Crooked Sword Tavern (upper)": Assets.TilemapJSON.TilemapsMapsCSTavernUpper.getName(),
   "Crooked Sword Back Alley": Assets.TilemapJSON.TilemapsMapsBackAlley.getName(),
-  "Guild#1": Assets.TilemapJSON.TilemapsMapsGuild1.getName(),
-  "Guild#2": Assets.TilemapJSON.TilemapsMapsGuild2.getName(),
-  "***'s House": Assets.TilemapJSON.TilemapsMapsPlayerHouseA.getName()
+  "Craftsmen Guild": Assets.TilemapJSON.TilemapsMapsGuild1.getName(),
+  "Informants Guild": Assets.TilemapJSON.TilemapsMapsGuild2.getName(),
+  "Vacant House": Assets.TilemapJSON.TilemapsMapsPlayerHouseA.getName()
 };
 // map from Room.prototype.roomName to door label (if different)
 const DoorKey = {
@@ -36,9 +36,9 @@ const DoorKey = {
   "Crooked Sword Tavern (back room)": "Tavern#1:back",
   "Crooked Sword Tavern (upper)": "Tavern#1:upper",
   "Crooked Sword Back Alley": "BackAlley#1",
-  "Guild#1": "Guild#1",
-  "Guild#2": "Guild#2",
-  "***'s House": "PlayerHouse#1"
+  "Craftsmen Guild": "Guild#1",
+  "Informants Guild": "Guild#2",
+  "Vacant House": "PlayerHouse#1"
 };
 
 const ToTileMapName = function(room: Room) {

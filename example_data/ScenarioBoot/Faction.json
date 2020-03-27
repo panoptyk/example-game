@@ -5,7 +5,7 @@
       "_factionName": "Craftsmen",
       "_factionType": "Guild",
       "_members": [
-        [1, { "lvl": 1, "exp": 0 }],
+        [1, { "lvl": 3, "exp": 0 }],
         [2, { "lvl": 1, "exp": 0 }],
         [4, { "lvl": 1, "exp": 0 }],
         [6, { "lvl": 1, "exp": 0 }],
