@@ -16,13 +16,14 @@ export class TurnInQuestAction extends RetryActionState {
     super(timeout, nextState);
     this._quest = quest;
     this._turnIns = KB.get.questTurnIns(this._quest);
-    this._fail = this._quest.amount === this._turnIns.length;
+    this._fail = this._quest.amount !== this._turnIns.length;
     this._timeToWait = DELAYS.getDelay("turn-in-quest");
   }
 
   async act() {
     this._waitTime += this.deltaTime;
-    if (!this._complete && this._waitTime < this._timeToWait) {
+    this._success = this._turnIns.length === 0;
+    if (!this._complete || this._waitTime < this._timeToWait) {
       return;
     }
     if (this._quest.type === "item") {
@@ -38,7 +39,6 @@ export class TurnInQuestAction extends RetryActionState {
         this._waitTime = 0;
       });
     }
-    this._success = this._turnIns.length === 0;
   }
 
   nextState(): ActionState {

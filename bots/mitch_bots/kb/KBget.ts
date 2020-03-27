@@ -8,6 +8,7 @@ import {
   Info
 } from "panoptyk-engine/dist/client";
 import { FactionStatus } from "panoptyk-engine/dist/models/faction";
+import KBagent from "./KBagent";
 
 class KBget {
   // Singleton pattern
@@ -19,6 +20,7 @@ class KBget {
     return KBget._instance;
   }
 
+  _questionsAsked: Set<number> = new Set();
   previousRoom: Room;
 
   constructor() {}
@@ -51,6 +53,10 @@ class KBget {
     return ClientAPI.playerAgent.activeAssignedQuests;
   }
 
+  get questionsAsked(): Set<number> {
+    return this._questionsAsked;
+  }
+
   numberOwned(item: Item) {
     let tally = 0;
     this.inventory.forEach(i => {
@@ -75,14 +81,130 @@ class KBget {
     return tally;
   }
 
+  answerToQuestion(q: Info): Info {
+    for (let i = this.knowledge.length - 1; i >= 0; i++) {
+      const ans = this.knowledge[i];
+      if (ans.isAnswer(q)) {
+        return ans;
+      }
+    }
+    return undefined;
+  }
+
   otherAgentInConvo(): Agent {
     const c = ClientAPI.playerAgent.conversation;
     return c ? c.getAgents(ClientAPI.playerAgent)[0] : undefined;
   }
 
+  questionsAskedByOtherInConvo(): Info[] {
+    const info = [];
+    const c = ClientAPI.playerAgent.conversation;
+    if (c) {
+      c.askedQuestions.forEach(i => {
+        if (!this._questionsAsked.has(i.id)) {
+          info.push(i);
+        }
+      });
+    }
+    return info;
+  }
+
   otherAgentInTrade(): Agent {
     const t = ClientAPI.playerAgent.trade;
     return t ? t.getAgents(ClientAPI.playerAgent)[0] : undefined;
+  }
+
+  numberOfOffers(): number {
+    const t = ClientAPI.playerAgent.trade;
+    let offers = 0;
+    if (t) {
+      const player = this.player;
+      offers += t.getAgentsOfferedItems(player).length;
+      offers += t.getAnswersOffered(player).reduce((a, b) => {
+        return a + b.quantity;
+      }, 0);
+    }
+    return offers;
+  }
+
+  numberOfOffersByOtherAgent(): number {
+    const t = ClientAPI.playerAgent.trade;
+    let offers = 0;
+    if (t) {
+      const other = this.otherAgentInTrade();
+      offers += t.getAgentsOfferedItems(other).length;
+      offers += t.getAnswersOffered(other).reduce((a, b) => {
+        return a + b.quantity;
+      }, 0);
+    }
+    return offers;
+  }
+
+  requestsByOtherAgent(): { model: IDObject; pass: boolean }[] {
+    const t = ClientAPI.playerAgent.trade;
+    const requests: { model: IDObject; pass: boolean }[] = [];
+    if (t) {
+      const other = this.otherAgentInTrade();
+      const answers = t.getAgentsRequestedAnswers(other);
+      const items = t.getAgentsRequestedItems(other);
+      answers.forEach((pass, model) => {
+        requests.push({ model, pass });
+      });
+      items.forEach((pass, model) => {
+        requests.push({ model, pass });
+      });
+    }
+    return requests;
+  }
+
+  tradeRequests(): { model: IDObject; pass: boolean }[] {
+    const t = ClientAPI.playerAgent.trade;
+    const requests: { model: IDObject; pass: boolean }[] = [];
+    if (t) {
+      const player = this.player;
+      const answers = t.getAgentsRequestedAnswers(player);
+      const items = t.getAgentsRequestedItems(player);
+      answers.forEach((pass, model) => {
+        requests.push({ model, pass });
+      });
+      items.forEach((pass, model) => {
+        requests.push({ model, pass });
+      });
+    }
+    return requests;
+  }
+
+  questionToAsk(ignore?: Set<number>): any {
+    // const otherQs = this.questionsAskedByOtherInConvo();
+    const needs = this.questNeeds();
+    if (needs.items.length > 0) {
+      const pick = Math.floor(Math.random() * needs.items.length);
+      return {
+        action: "LOCATED_IN",
+        item: { id: needs.items[pick].item.id }
+      };
+    } else if (needs.tasks.length > 0) {
+      const pick = Math.floor(Math.random() * needs.tasks.length);
+      return needs.tasks[pick].info;
+    }
+    return undefined;
+  }
+
+  agentsOfInterest(): Agent[] {
+    let list = [];
+    const agents: Set<number> = new Set();
+    const needs = this.questNeeds();
+    needs.tasks.forEach(task => {
+      const terms = task.info.getTerms();
+      if (terms.agent) {
+        agents.add(terms.agent.id);
+      }
+    });
+    list = Agent.getByIDs([...agents]);
+    if (this.player.faction.factionName === "Informants") {
+      list = KBagent.all().filter(agent => agent.faction.factionName === "Craftsmen");
+    }
+    return ;
   }
 
   questTurnIns(quest: Quest): IDObject[] {

@@ -6,6 +6,7 @@ import {
 } from "../../lib";
 import * as KB from "../kb/KBadditions";
 import { Room, Agent } from "panoptyk-engine/dist/client";
+import { DiscussBehavior } from "../behavior/discussBState";
 
 /**
  * Handles any discussions requested or want to request
@@ -24,14 +25,14 @@ export class DiscussionStrategy extends Strategy {
   constructor(target: Agent) {
     super();
     this._target = target;
-    this.currentBehavior = SuccessBehavior.instance;
+    this.currentBehavior = new DiscussBehavior(this._target);
   }
 
   async act() {
     await super.act();
 
     this.complete =
-      this.currentBehavior === SuccessBehavior.instance &&
+      this.currentBehavior === SuccessBehavior.instance ||
       this.currentBehavior === FailureBehavior.instance;
   }
 }

@@ -19,17 +19,22 @@ export class EnterTradeAction extends RetryActionState {
 
   async act() {
     this._waitTime += this.deltaTime;
-    if (!this._requested && this._waitTime >= this._timeToWait) {
+    this._fail =
+      KB.get.otherAgentInConvo() !== this._target ||
+      !KB.is.agentInRoom(this._target) ||
+      (this._requested && !KB.is.tradeRequestedWith(this._target));
+    this._success = KB.get.otherAgentInTrade() === this._target;
+    if (
+      !this._complete &&
+      !this._requested &&
+      this._waitTime >= this._timeToWait
+    ) {
       await ClientAPI.requestTrade(this._target).then(res => {
         log("Requested trade with " + this._target, log.ACT);
         this._waitTime = 0;
         this._requested = true;
       });
-    } else {
-      this._success = KB.get.otherAgentInTrade() === this._target;
-      this._requested = KB.is.tradeRequestedWith(this._target);
     }
-    this._fail = KB.get.otherAgentInConvo() !== this._target;
   }
 
   nextState(): ActionState {

@@ -17,6 +17,8 @@ export class LeaveConvoAction extends RetryActionState {
   }
 
   async act() {
+    this._success =
+      this._success || ClientAPI.playerAgent.conversation === undefined;
     if (this._complete || Date.now() - this.startTime < this._timeToWait) {
       return;
     }

@@ -5,6 +5,7 @@ import { MoveToRoomBehavior } from "../behavior/moveToRoomBState";
 import { IdleBehavior } from "../behavior/idleBState";
 import { TurnInQuestBehavior } from "../behavior/turnInQuestBState";
 import { Room } from "panoptyk-engine/dist/client";
+import { GetQuestBehavior } from "../behavior/getQuestBState";
 
 /**
  * Handles the movement and main functions of questing
@@ -12,10 +13,11 @@ import { Room } from "panoptyk-engine/dist/client";
 export class QuestStrategy extends Strategy {
   // Transition functions
   static createMoveToRoomTransition(
-    strat: Strategy
+    strat: QuestStrategy
   ): (this: MoveToRoomBehavior) => BehaviorState {
     return function(this: MoveToRoomBehavior): BehaviorState {
       if (this._arrivedAtRoom && KB.is.factionLeaderInRoom()) {
+        strat._movingToLeader = false;
         return new TurnInQuestBehavior();
       } else if (this._arrivedAtRoom || this._fail) {
         return IdleBehavior.instance;
@@ -26,10 +28,20 @@ export class QuestStrategy extends Strategy {
   }
 
   _onlyAdjacent = false;
+  _movingToLeader = false;
 
   constructor() {
     super();
     this.currentBehavior = IdleBehavior.instance;
+  }
+
+  cannotDiscuss() {
+    const curB = this.currentBehavior;
+    return curB instanceof TurnInQuestBehavior || curB instanceof GetQuestBehavior;
+  }
+
+  movingToLeader() {
+    return this._movingToLeader;
   }
 
   async act() {
@@ -44,7 +56,9 @@ export class QuestStrategy extends Strategy {
     await super.act();
     if (this.currentBehavior === IdleBehavior.instance) {
       let room: Room;
+      this._movingToLeader = false;
       if (this.goToFactionLeader()) {
+        this._movingToLeader = true;
         room = KB.agent.lastSeen(KB.agent.factionLeader);
       } else {
         room = this.findRoomOfInterest();

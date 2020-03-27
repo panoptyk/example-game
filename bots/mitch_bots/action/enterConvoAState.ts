@@ -1,4 +1,4 @@
-import { ActionState, SuccessAction } from "../../lib";
+import { ActionState, SuccessAction, FailureAction } from "../../lib";
 import DELAYS from "../util/humanDelay";
 import { log } from "../util/log";
 import * as KB from "../kb/KBadditions";
@@ -11,7 +11,7 @@ export class EnterConvoAction extends RetryActionState {
   _waitTime = 0;
   _requested = false;
 
-  constructor(target: Agent, timeout = 1000, nextState?: () => ActionState) {
+  constructor(target: Agent, timeout = 10000, nextState?: () => ActionState) {
     super(timeout, nextState);
     this._target = target;
     this._timeToWait = DELAYS.getDelay("request-convo");
@@ -21,6 +21,10 @@ export class EnterConvoAction extends RetryActionState {
 
   async act() {
     this._waitTime += this.deltaTime;
+    this._success = KB.get.otherAgentInConvo() === this._target;
+    this._fail =
+      !KB.is.agentInRoom(this._target) ||
+      (this._requested && !KB.is.convoRequestedWith(this._target));
     if (
       !this._complete &&
       !this._requested &&
@@ -32,12 +36,12 @@ export class EnterConvoAction extends RetryActionState {
         this._requested = true;
       });
     }
-    this._success = KB.get.otherAgentInConvo() === this._target;
-    this._requested = KB.is.convoRequestedWith(this._target);
   }
 
   nextState(): ActionState {
-    if (this._success) {
+    if (this._fail) {
+      return FailureAction.instance;
+    } else if (this._success) {
       return SuccessAction.instance;
     } else {
       return this;

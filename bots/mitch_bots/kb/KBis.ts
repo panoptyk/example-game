@@ -1,7 +1,13 @@
 import KBget from "./KBget";
 import KBagent from "./KBagent";
 import { QuestHelper } from "../util/questHelper";
-import { Agent, ClientAPI } from "panoptyk-engine/dist/client";
+import {
+  Agent,
+  ClientAPI,
+  IDObject,
+  Item,
+  Info
+} from "panoptyk-engine/dist/client";
 
 class KBis {
   // Singleton pattern
@@ -27,12 +33,35 @@ class KBis {
     );
   }
 
+  agentInRoom(agent: Agent) {
+    return KBget.curRoom.hasAgent(agent);
+  }
+
   convoRequestedWith(agent: Agent): boolean {
     return ClientAPI.playerAgent.activeConversationRequestTo(agent);
   }
 
   tradeRequestedWith(agent: Agent): boolean {
     return ClientAPI.playerAgent.activeTradeRequestTo(agent);
+  }
+
+  neededForQuest(model: IDObject) {
+    const needs = KBget.questNeeds();
+    if (model instanceof Item) {
+      const tally = KBget.numberOwned(model);
+      return needs.items.reduce((a, b) => {
+        return a || (b.item.sameAs(model) && b.amount > tally);
+      }, false);
+    } else if (model instanceof Info) {
+      return false;
+    }
+    return false;
+  }
+
+  itemInInventory(master: Item) {
+    return KBget.inventory.reduce((a, b) => {
+      return a || b.sameAs(master);
+    }, false);
   }
 }
 

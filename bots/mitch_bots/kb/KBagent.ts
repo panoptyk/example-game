@@ -27,6 +27,17 @@ class KBagent {
   lastSeen(agent: Agent): Room {
     return agent ? this._agentRoomMap.get(agent.id) : undefined;
   }
+
+  all(): Agent[] {
+    const agents = [];
+    this._agentRoomMap.forEach((val, key) => {
+      const agent = Agent.getByID(key);
+      if (agent.factionStatus.lvl < 15) {
+        agents.push(agent);
+      }
+    });
+    return agents;
+  }
 }
 
 export default KBagent.instance;

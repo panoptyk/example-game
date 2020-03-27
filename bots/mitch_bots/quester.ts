@@ -27,10 +27,19 @@ const MAX_RETRY = 10;
 const RETRY_INTERVAL = 100; // ms before attempLogin() is called again to retry logging in
 const ACT_INTERVAL = 200; // ms before act() is called again(possibly)
 
+// stall out bots till all agents logged in
+let _canBegin = false;
+
 function init() {
   console.log("Logging in as: " + username + "\nTo server: " + address);
   logger.silence();
   address ? ClientAPI.init(address) : ClientAPI.init();
+  // check to begin acting after all 8 agents logged in
+  (ClientAPI as any).socket.on("all-agents-in", data => {
+    log("Recieved message that all agents have logged in.", log.ACT);
+    askForConvoTime = Date.now() + 15000;
+    _canBegin = true;
+  });
   process.on("SIGINT", () => {
     if (!_loggedIn) {
       process.exit(0);
@@ -90,15 +99,29 @@ function actWrapper() {
 
 // Set human delays
 // DELAYS.setOverride(true);
-DELAYS.setDelay("move-room", { avg: 3000, var: 2000 });
+DELAYS.setDelay("decide-to-ask-convo", { avg: 8000, var: 3000 });
+DELAYS.setDelay("move-room", { avg: 2500, var: 1500 });
 DELAYS.setDelay("pickup-item", { avg: 300, var: 200 });
 DELAYS.setDelay("request-convo", { avg: 500, var: 200 });
+DELAYS.setDelay("convo-action", { avg: 500, var: 200 });
 DELAYS.setDelay("request-trade", { avg: 500, var: 200 });
+DELAYS.setDelay("trade-action", { avg: 500, var: 200 });
 DELAYS.setDelay("leave-convo-trade", { avg: 500, var: 200 });
 DELAYS.setDelay("turn-in-quest", { avg: 300, var: 0 });
 
 // Decision probabilities
+// DECIDES.setOverride(true);
 DECIDES.set("pick-up-item", 0.1);
+DECIDES.set("accept-convo", 0.6);
+DECIDES.set("decide-convo-poi", 0.75);
+DECIDES.set("decide-convo-random", 0.3);
+DECIDES.set("accept-trade", 0.6);
+DECIDES.set("trade-again", 0.6);
+DECIDES.set("decide-trade-poi", 0.85);
+DECIDES.set("decide-trade-random", 0.3);
+DECIDES.set("pass-request", 0.45);
+DECIDES.set("answer-question", 0.4);
+DECIDES.set("ask-question", 0.7);
 
 // Set up listeners for KnowledgeBase //
 let _updatingKB = false;
@@ -145,6 +168,14 @@ ClientAPI.addOnUpdateListener(updates => {
       log("Recieved new quest!", log.KB);
     }
     questNum = quests.length;
+    // look at info
+    updates.Info.forEach(info => {
+      const terms = info.getTerms();
+      // log questions asked by agent
+      if (!info.isQuery() && terms.action === Info.ACTIONS.ASK.name) {
+        KB.get._questionsAsked.add(terms.info.id);
+      }
+    });
   } catch (err) {
     // ignore all errors
   }
@@ -182,26 +213,74 @@ function itemToPickUp(): Item {
   return undefined;
 }
 
+// for person to discuss with checks
+let askForConvoTime = Date.now() + 15000;
+const askForConvoWait = DELAYS.getDelay("decide-to-ask-convo");
+const ignoreAgents = [10, 11];
+
+function personToDiscussWith(): Agent {
+  const pplOfInterest = new Set(KB.get.agentsOfInterest());
+  for (const agent of KB.get.player.conversationRequesters) {
+    if (pplOfInterest.has(agent)) {
+      return agent;
+    } else if (DECIDES.decide("accept-convo")) {
+      return agent;
+    }
+  }
+  if (Date.now() - askForConvoTime > askForConvoWait) {
+    for (const agent of KB.get.curRoom.getAgents(KB.get.player)) {
+      if (ignoreAgents.indexOf(agent.id) !== -1) {
+        // ignore guild leaders
+        continue;
+      }
+      if (pplOfInterest.has(agent) && DECIDES.decide("decide-convo-poi")) {
+        return agent;
+      } else if (DECIDES.decide("decide-convo-random")) {
+        return agent;
+      }
+    }
+  }
+  return undefined;
+}
+
 async function act() {
-  if (_updatingKB) {
+  if (!_canBegin || _updatingKB) {
     return;
   }
-  // check to initiate new pickup of item
   const item = itemToPickUp();
+  let person = undefined;
+  // check to initiate new pickup of item
   if (!pickUpState && item) {
-    pickUpState = new PickUpItemBehavior(item, function(this: PickUpItemBehavior): BehaviorState {
+    pickUpState = new PickUpItemBehavior(item, function(
+      this: PickUpItemBehavior
+    ): BehaviorState {
       if (this._complete) {
         return SuccessBehavior.instance;
       } else {
         return this;
       }
     });
+    // check to initiate a discussion with an agent (includes trade)
+  } else if (
+    !discussStrat &&
+    !questStrat.cannotDiscuss() &&
+    (person = personToDiscussWith())
+  ) {
+    askForConvoTime = Date.now();
+    discussStrat = new DiscussionStrategy(person);
+    const pois = KB.get.agentsOfInterest().reduce((a, b) => {
+      return a + b + " ";
+    }, "");
+    log("Looked at people of interest: " + pois, log.ACT);
+    log("Entering into discussion strategy with " + person, log.ACT);
   }
 
-  // tick higher priority state
-  if (pickUpState) { // pick up an item
+  // tick highest priority state act/tick
+  if (pickUpState) {
+    // pick up an item
     pickUpState = await pickUpState.tick();
-  } else if (discussStrat) { // handle discussion
+  } else if (discussStrat) {
+    // handle discussion
     await discussStrat.act();
   } else {
     await questStrat.act();
@@ -212,6 +291,7 @@ async function act() {
     pickUpState = undefined;
   }
   if (discussStrat && discussStrat.complete) {
+    log("Leaving discussion strategy", log.ACT);
     discussStrat = undefined;
   }
 }

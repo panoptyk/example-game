@@ -8,6 +8,11 @@ class Decision {
     return Decision._instance;
   }
   _decisions: Map<string, number> = new Map();
+  _override = false;
+
+  setOverride(val: boolean) {
+    this._override = val;
+  }
 
   set(key: string, probability: number) {
     this._decisions.set(key, probability);
@@ -15,7 +20,7 @@ class Decision {
 
   decide(key: string): boolean {
     const val = this._decisions.has(key) ? this._decisions.get(key) : 1.1;
-    return Math.random() < val;
+    return this._override || Math.random() < val;
   }
 }
 
