@@ -140,8 +140,20 @@
       </div>
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div> Gold: {{ myGoldOffer }} </div>
-          <div> Items: <span v-for="i in myItemOffers" v-bind:key="i.id">{{ i.itemName }}, </span></div>
+          <div> 
+            Gold: {{ myGoldOffer }} 
+            <b-button class="button" v-if="myGoldOffer" size="is-small" @click="onRemoveAllOfferedGold()"
+              >Remove</b-button
+            >
+          </div>
+          <div> Items: 
+            <span v-for="i in myItemOffers" v-bind:key="i.id">{{ i.itemName }}
+              <b-button class="button" size="is-small" @click="onRemoveItem(i)"
+                >Remove</b-button
+              >
+              , 
+            </span>
+          </div>
           <div> Answers </div>
           <div v-for="a in myAnswerOffers" v-bind:key="a.qID">One answer to question({{ a.qID }}) <span v-if="a.masked"> masked.</span> <span v-else> not masked.</span> </div>
         </div>
@@ -163,10 +175,19 @@
       </div>
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div> Gold: {{ myGoldRequest }} </div>
+          <div> 
+            Gold: {{ myGoldRequest }}
+            <b-button class="button" v-if="myGoldRequest" size="is-small" @click="onRemoveAllRequestedGold()"
+              >Remove</b-button
+            >
+          </div>
           <div> Items: 
             <span v-for="row in myItemRequests" v-bind:key="row[0].id">{{ row[0].itemName }}
-              <span v-if="row[1]">(Refused)</span>, 
+              <span v-if="row[1]">(Refused)</span>
+              <b-button class="button" size="is-small" @click="onRemoveItemRequest(row[0])"
+                >Remove</b-button
+              >
+              , 
             </span>
           </div>
         </div>
@@ -291,7 +312,7 @@ export default class TradeTab extends Vue {
     this.otherAnswerOffers = trade.getAnswersOffered(this.otherAgent);
     // Get gold requests
     this.myGoldRequest = trade.getAgentsRequestedGold(player);
-    this.otherGoldOffer = trade.getAgentsRequestedGold(this.otherAgent);
+    this.otherGoldRequest = trade.getAgentsRequestedGold(this.otherAgent);
     // Get item requests
     this.myItemRequests = trade.getAgentsRequestedItems(player);
     this.otherItemRequests = trade.getAgentsRequestedItems(this.otherAgent);
@@ -319,6 +340,12 @@ export default class TradeTab extends Vue {
   onOfferGold() {
     ClientAPI.addGoldToTrade(this.gold - this.myGoldOffer);
   }
+  onRemoveAllOfferedGold() {
+    ClientAPI.removeGoldfromTrade(this.gold);
+  }
+  onRemoveAllRequestedGold() {
+    ClientAPI.requestGoldTrade(0);
+  }
   onReqGold() {
     ClientAPI.requestGoldTrade(this.gold);
   }
@@ -336,6 +363,12 @@ export default class TradeTab extends Vue {
   }
   onRejectItem(item: Item) {
     ClientAPI.passItemRequestTrade(item);
+  }
+  onRemoveItem(item: Item) {
+    ClientAPI.withdrawItemsTrade([item]);
+  }
+  onRemoveItemRequest(item: Item) {
+    ClientAPI.removeItemRequest(item);
   }
 }
 </script>
