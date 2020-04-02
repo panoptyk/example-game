@@ -120,7 +120,7 @@
           >
             <!--<b-input v-if="field === 'time'" type="number" size="is-small" placeholder="0,00" style= "width: 72px;"></b-input>-->
             <b-select
-              v-if="field !== 'time' && field !== 'quantity'"
+              v-if="field !== 'time' && field !== 'quantity' && field !== 'predicate'"
               v-bind:placeholder="'-- ' + field + ' --'"
               size="is-small"
               v-model="questionInfo[field]"
@@ -136,6 +136,7 @@
             </b-select>
           </b-field>
           <info-entry
+            v-bind:key="questionInfo"
             v-bind:newFoundQuery="true"
             v-bind:query="questionInfoEntry"
           ></info-entry>
@@ -301,7 +302,13 @@ export default class ConverstaionTab extends Vue {
     )[0].agentName;
   }
   leaveConvo() {
-    ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation);
+    ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
 
   // Style
@@ -373,7 +380,7 @@ export default class ConverstaionTab extends Vue {
         break;
       case "item":
         items = this.items.map(i => {
-          return { id: i.id, text: i.itemName, model: i };
+          return { id: i.id, text: i.itemName, model: i, itemTags: i.itemTags };
         });
         break;
       case "info":
