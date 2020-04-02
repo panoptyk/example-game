@@ -166,6 +166,7 @@ class GameState extends Phaser.State {
       ClientAPI.playerAgent.faction.factionType === "police" &&
       ClientAPI.playerAgent.factionRank < 10
     ) {
+      this.addErrorMessage("Your rank is too low to enter a private area!");
       return;
     }
     // add a loading image later
@@ -174,7 +175,7 @@ class GameState extends Phaser.State {
     this.movingRooms = true;
     ClientAPI.moveToRoom(target)
       .catch(err => {
-        this.addConsoleMessage("Failed to move to room!");
+        this.addErrorMessage(err.message);
         this.movingRooms = false;
       })
       .then(res => {
@@ -304,6 +305,11 @@ class GameState extends Phaser.State {
   public addConsoleMessage(messageString: string): void {
     console.log(messageString);
     this.UI.addMessage(messageString);
+  }
+
+  public addErrorMessage(message: string): void {
+    console.log(message);
+    this.UI.addError(message);
   }
 
   private enterNewRoom(): void {

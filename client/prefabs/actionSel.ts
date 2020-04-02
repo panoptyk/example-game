@@ -195,7 +195,7 @@ export class ActionSel {
               UI.instance.setLeftTab(UI.LTABS.ITEMS);
             },
             err => {
-              GS.instance.addConsoleMessage(err.message);
+              GS.instance.addErrorMessage(err.message);
             }
           );
         });
@@ -228,7 +228,7 @@ export class ActionSel {
               GS.instance.logTradeRequest(agent.model);
             },
             err => {
-              GS.instance.addConsoleMessage(err.message);
+              GS.instance.addErrorMessage(err.message);
             }
           );
         });
@@ -262,7 +262,7 @@ export class ActionSel {
               UI.instance.setLeftTab(UI.LTABS.INFO);
             },
             err => {
-              GS.instance.addConsoleMessage(err.message);
+              GS.instance.addErrorMessage(err.message);
             }
           );
         });
@@ -299,7 +299,7 @@ export class ActionSel {
               this.nextLoc--;
             },
             err => {
-              GS.instance.addConsoleMessage(err.message);
+              GS.instance.addErrorMessage(err.message);
             }
           );
         });
@@ -331,7 +331,7 @@ export class ActionSel {
               GS.instance.logConvoRequest(agent.model);
             },
             err => {
-              GS.instance.addConsoleMessage(err.message);
+              GS.instance.addErrorMessage(err.message);
             }
           );
         } else {
@@ -343,7 +343,7 @@ export class ActionSel {
               UI.instance.setRightTab(UI.RTABS.CONVERSATION);
             },
             err => {
-              GS.instance.addConsoleMessage(err.message);
+              GS.instance.addErrorMessage(err.message);
             }
           );
         }

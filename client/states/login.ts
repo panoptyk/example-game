@@ -28,15 +28,18 @@ export class Login extends Phaser.State {
     });
 
     const login = () => {ClientAPI.login(userField.value, passwordField.value)
-      .then(res => {
+      .then(
+        res => {
           console.log("Success! " + ClientAPI.playerAgent);
           userField.destroy();
           passwordField.destroy();
           button.destroy();
           UI.instance.main.$data.activeQuests = ClientAPI.playerAgent.activeAssignedQuests.length;
           this.ready = true;
-      })
-      .catch(err => console.log("fail!"));
+        },
+        err => {
+          UI.instance.addError(err.message);
+      });
     };
 
     const button = this.game.add.button(this.game.world.centerX - 95, this.game.world.height / 4 + 52, Assets.Spritesheets.SpritesheetsButtonSpriteSheet193713.getName(), login, this, 2, 1, 0);

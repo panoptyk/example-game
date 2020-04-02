@@ -116,4 +116,12 @@ export class UI {
   public goBackRightTab() {
     this.setRightTab(this.lastRightTab);
   }
+
+  public addError(message: string) {
+    this.main.$buefy.toast.open({
+      message,
+      type: "is-danger",
+      queue: false
+    });
+  }
 }

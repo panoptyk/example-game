@@ -37,6 +37,7 @@ import {
 } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import ItemEntry from "./itemEntry.vue";
+import { UI } from "../ui";
 
 @Component({
   components: {
@@ -58,7 +59,13 @@ export default class ItemTab extends Vue {
   }
 
   onDropItem(item: Item) {
-    ClientAPI.dropItems([item]);
+    ClientAPI.dropItems([item]).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
 
   @Watch("trigger")

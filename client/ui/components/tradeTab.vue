@@ -255,6 +255,7 @@
 <script lang="ts">
 import { ClientAPI, Agent, Item, Info } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import { UI } from "../ui";
 
 @Component({})
 export default class TradeTab extends Vue {
@@ -338,37 +339,97 @@ export default class TradeTab extends Vue {
   answer: Info;
 
   onOfferGold() {
-    ClientAPI.addGoldToTrade(this.gold - this.myGoldOffer);
+    ClientAPI.addGoldToTrade(this.gold - this.myGoldOffer).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onRemoveAllOfferedGold() {
-    ClientAPI.removeGoldfromTrade(this.gold);
+    ClientAPI.removeGoldfromTrade(this.gold).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onRemoveAllRequestedGold() {
-    ClientAPI.requestGoldTrade(0);
+    ClientAPI.requestGoldTrade(0).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onReqGold() {
-    ClientAPI.requestGoldTrade(this.gold);
+    ClientAPI.requestGoldTrade(this.gold).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onOfferItem() {
-    ClientAPI.offerItemsTrade([this.item]);
+    ClientAPI.offerItemsTrade([this.item]).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onReqItem() {
-    ClientAPI.requestItemTrade(this.item);
+    ClientAPI.requestItemTrade(this.item).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onOfferAnswer() {
-    ClientAPI.offerAnswerTrade(this.answer, this.question);
+    ClientAPI.offerAnswerTrade(this.answer, this.question).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onReqAnswer() {
     console.log("Not Implemented!");
   }
   onRejectItem(item: Item) {
-    ClientAPI.passItemRequestTrade(item);
+    ClientAPI.passItemRequestTrade(item).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onRemoveItem(item: Item) {
-    ClientAPI.withdrawItemsTrade([item]);
+    ClientAPI.withdrawItemsTrade([item]).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onRemoveItemRequest(item: Item) {
-    ClientAPI.removeItemRequest(item);
+    ClientAPI.removeItemRequest(item).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
 }
 </script>

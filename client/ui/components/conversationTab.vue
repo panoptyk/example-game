@@ -6,169 +6,6 @@
       >.
       <b-button size="is-small" @click="leaveConvo">Leave</b-button>
     </div>
-    <b-collapse class="card" aria-id="ask-question">
-      <div
-        slot="trigger"
-        slot-scope="props"
-        class="card-header"
-        role="button"
-        aria-controls="ask-question"
-      >
-        <p class="card-header-title">Ask a question</p>
-        <a class="card-header-icon">
-          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
-        </a>
-      </div>
-      <div class="card-content">
-        <div class="content">
-          <b-field type="is-action">
-            <b-select
-              placeholder="-- action --"
-              size="is-small"
-              v-model="actionSelected"
-            >
-              <option disabled value>-- action --</option>
-              <option
-                v-for="act in defaultActions"
-                v-bind:key="act"
-                v-bind:value="act"
-                >{{ act }}</option
-              >
-            </b-select>
-          </b-field>
-          <b-field
-            v-for="field in questionFields"
-            v-bind:key="field + actionSelected"
-          >
-            <!--<b-input v-if="field === 'time'" type="number" size="is-small" placeholder="0,00" style= "width: 72px;"></b-input>-->
-            <b-select
-              v-if="field !== 'time' && field !== 'quantity'"
-              v-bind:placeholder="'-- ' + field + ' --'"
-              size="is-small"
-              v-model="questionInfo[field]"
-            >
-              <option disabled value>-- {{ field }} --</option>
-              <option v-bind:value="undefined">???</option>
-              <option
-                v-for="item in getFieldItems(field)"
-                v-bind:key="item.id"
-                v-bind:value="item.model"
-                >{{ item.text }}</option
-              >
-            </b-select>
-          </b-field>
-          <info-entry
-            v-bind:newFoundQuery="true"
-            v-bind:query="questionInfoEntry"
-          ></info-entry>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a class="card-footer-item" @click="onAsk">Ask</a>
-      </footer>
-    </b-collapse>
-    <b-collapse class="card" aria-id="tell-info">
-      <div
-        slot="trigger"
-        slot-scope="props"
-        class="card-header"
-        role="button"
-        aria-controls="tell-info"
-      >
-        <p class="card-header-title">Tell some information</p>
-        <a class="card-header-icon">
-          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
-        </a>
-      </div>
-      <div class="card-content">
-        <div class="content">
-          <b-field>
-            <b-select
-              placeholder="-- info --"
-              size="is-small"
-              v-model="tellInfo"
-              @input="onTellSelect"
-            >
-              <option disabled value>-- info --</option>
-              <option
-                v-for="info in knowledge"
-                v-bind:key="info.id"
-                v-bind:value="info"
-                >{{ getType(info) }}#{{ info.id }}</option
-              >
-            </b-select>
-          </b-field>
-          <info-entry
-            v-bind:key="tellInfo.id"
-            v-bind:info="tellInfo"
-          ></info-entry>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a class="card-footer-item" @click="onTell">Tell</a>
-      </footer>
-    </b-collapse>
-    <b-collapse class="card" aria-id="asked-questions">
-      <div
-        slot="trigger"
-        slot-scope="props"
-        class="card-header"
-        role="button"
-        aria-controls="asked-questions"
-      >
-        <p class="card-header-title">Previous questions asked</p>
-        <a class="card-header-icon">
-          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
-        </a>
-      </div>
-      <div class="card-content">
-        <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div v-for="q in questions" v-bind:key="q.id">
-            <info-entry v-bind:info="q"></info-entry>
-          </div>
-        </div>
-      </div>
-    </b-collapse>
-    <b-collapse class="card" aria-id="tell-item-ownership">
-      <div
-        slot="trigger"
-        slot-scope="props"
-        class="card-header"
-        role="button"
-        aria-controls="tell-item-ownership"
-      >
-        <p class="card-header-title">Tell item ownership</p>
-        <a class="card-header-icon">
-          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
-        </a>
-      </div>
-      <div class="card-content">
-        <div class="content">
-          <b-field>
-            <b-select
-              placeholder="-- item --"
-              size="is-small"
-              v-model="tellItem"
-            >
-              <option disabled value>-- item --</option>
-              <option
-                v-for="item in inventory"
-                v-bind:key="item.id"
-                v-bind:value="item"
-                >{{ item.itemName }}</option
-              >
-            </b-select>
-          </b-field>
-          <item-entry
-            v-bind:key="tellItem.id"
-            v-bind:item="tellItem"
-          ></item-entry>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a class="card-footer-item" @click="onTellItem">Tell</a>
-      </footer>
-    </b-collapse>
     <b-collapse class="card" aria-id="complete-quest">
       <div
         slot="trigger"
@@ -247,6 +84,169 @@
         </div>
       </footer>
     </b-collapse>
+    <b-collapse class="card" aria-id="ask-question">
+      <div
+        slot="trigger"
+        slot-scope="props"
+        class="card-header"
+        role="button"
+        aria-controls="ask-question"
+      >
+        <p class="card-header-title">Ask a question</p>
+        <a class="card-header-icon">
+          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+        </a>
+      </div>
+      <div class="card-content">
+        <div class="content">
+          <b-field type="is-action">
+            <b-select
+              placeholder="-- action --"
+              size="is-small"
+              v-model="actionSelected"
+            >
+              <option disabled value>-- action --</option>
+              <option
+                v-for="act in defaultActions"
+                v-bind:key="act"
+                v-bind:value="act"
+                >{{ act }}</option
+              >
+            </b-select>
+          </b-field>
+          <b-field
+            v-for="field in questionFields"
+            v-bind:key="field + actionSelected"
+          >
+            <!--<b-input v-if="field === 'time'" type="number" size="is-small" placeholder="0,00" style= "width: 72px;"></b-input>-->
+            <b-select
+              v-if="field !== 'time' && field !== 'quantity'"
+              v-bind:placeholder="'-- ' + field + ' --'"
+              size="is-small"
+              v-model="questionInfo[field]"
+            >
+              <option disabled value>-- {{ field }} --</option>
+              <option v-bind:value="undefined">???</option>
+              <option
+                v-for="item in getFieldItems(field)"
+                v-bind:key="item.id"
+                v-bind:value="item.model"
+                >{{ item.text }}</option
+              >
+            </b-select>
+          </b-field>
+          <info-entry
+            v-bind:newFoundQuery="true"
+            v-bind:query="questionInfoEntry"
+          ></info-entry>
+        </div>
+      </div>
+      <footer class="card-footer">
+        <a class="card-footer-item" @click="onAsk">Ask</a>
+      </footer>
+    </b-collapse>
+    <b-collapse class="card" aria-id="asked-questions">
+      <div
+        slot="trigger"
+        slot-scope="props"
+        class="card-header"
+        role="button"
+        aria-controls="asked-questions"
+      >
+        <p class="card-header-title">Previous questions asked</p>
+        <a class="card-header-icon">
+          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+        </a>
+      </div>
+      <div class="card-content">
+        <div class="content" style="max-height: 200px; overflow-y:auto;">
+          <div v-for="q in questions" v-bind:key="q.id">
+            <info-entry v-bind:info="q"></info-entry>
+          </div>
+        </div>
+      </div>
+    </b-collapse>
+    <b-collapse class="card" aria-id="tell-info">
+      <div
+        slot="trigger"
+        slot-scope="props"
+        class="card-header"
+        role="button"
+        aria-controls="tell-info"
+      >
+        <p class="card-header-title">Tell some information</p>
+        <a class="card-header-icon">
+          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+        </a>
+      </div>
+      <div class="card-content">
+        <div class="content">
+          <b-field>
+            <b-select
+              placeholder="-- info --"
+              size="is-small"
+              v-model="tellInfo"
+              @input="onTellSelect"
+            >
+              <option disabled value>-- info --</option>
+              <option
+                v-for="info in knowledge"
+                v-bind:key="info.id"
+                v-bind:value="info"
+                >{{ getType(info) }}#{{ info.id }}</option
+              >
+            </b-select>
+          </b-field>
+          <info-entry
+            v-bind:key="tellInfo.id"
+            v-bind:info="tellInfo"
+          ></info-entry>
+        </div>
+      </div>
+      <footer class="card-footer">
+        <a class="card-footer-item" @click="onTell">Tell</a>
+      </footer>
+    </b-collapse>
+    <b-collapse class="card" aria-id="tell-item-ownership">
+      <div
+        slot="trigger"
+        slot-scope="props"
+        class="card-header"
+        role="button"
+        aria-controls="tell-item-ownership"
+      >
+        <p class="card-header-title">Tell item ownership</p>
+        <a class="card-header-icon">
+          <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
+        </a>
+      </div>
+      <div class="card-content">
+        <div class="content">
+          <b-field>
+            <b-select
+              placeholder="-- item --"
+              size="is-small"
+              v-model="tellItem"
+            >
+              <option disabled value>-- item --</option>
+              <option
+                v-for="item in inventory"
+                v-bind:key="item.id"
+                v-bind:value="item"
+                >{{ item.itemName }}</option
+              >
+            </b-select>
+          </b-field>
+          <item-entry
+            v-bind:key="tellItem.id"
+            v-bind:item="tellItem"
+          ></item-entry>
+        </div>
+      </div>
+      <footer class="card-footer">
+        <a class="card-footer-item" @click="onTellItem">Tell</a>
+      </footer>
+    </b-collapse>
   </div>
   <!-- Below is for if agent is not in a conversation -->
   <div
@@ -272,6 +272,7 @@ import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import infoEntry from "./infoEntry.vue";
 import questEntry from "./questEntry.vue";
 import ItemEntry from "./itemEntry.vue";
+import { UI } from "../ui";
 
 @Component({
   components: {
@@ -404,7 +405,13 @@ export default class ConverstaionTab extends Vue {
       this.actionSelected === this.defaultActions[0]
         ? undefined
         : this.actionSelected;
-    ClientAPI.askQuestion(q);
+    ClientAPI.askQuestion(q).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
 
   // For telling info
@@ -415,9 +422,14 @@ export default class ConverstaionTab extends Vue {
   }
   onTell() {
     if (!this.told) {
-      ClientAPI.tellInfo(this.tellInfo).finally(() => {
-        this.told = true;
-      });
+      ClientAPI.tellInfo(this.tellInfo).then(
+        res => {
+          this.told = true;
+        },
+        err => {
+          UI.instance.addError(err.message);
+        }
+      );
     }
   }
 
@@ -507,20 +519,44 @@ export default class ConverstaionTab extends Vue {
       ClientAPI.turnInQuestItem(
         this.targetQuest,
         this.targetQuest.task.getTerms().item
+      ).then(
+        res => {
+        },
+        err => {
+          UI.instance.addError(err.message);
+        }
       );
     } else {
-      ClientAPI.turnInQuestInfo(this.targetQuest, this.questInfo);
+      ClientAPI.turnInQuestInfo(this.targetQuest, this.questInfo).then(
+        res => {
+        },
+        err => {
+          UI.instance.addError(err.message);
+        }
+      );
     }
   }
 
   onCompleteQuest() {
-    ClientAPI.completeQuest(this.targetQuest);
+    ClientAPI.completeQuest(this.targetQuest).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
 
   tellItem: Item = {} as any;
   onTellItem() {
     if (this.tellItem) {
-      ClientAPI.tellItemOwnership([this.tellItem]);
+      ClientAPI.tellItemOwnership([this.tellItem]).then(
+      res => {
+      },
+      err => {
+        UI.instance.addError(err.message);
+      }
+    );
     }
   }
 }
