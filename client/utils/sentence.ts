@@ -302,7 +302,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.NONE,
-          text: "to "
+          text: "from "
         });
         arr.push({
           type: Sentence.BlockType.ROOM,
@@ -310,7 +310,7 @@ class Sentence {
         });
         arr.push({
           type: Sentence.BlockType.NONE,
-          text: "from "
+          text: "to "
         });
         arr.push({
           type: Sentence.BlockType.ROOM,
