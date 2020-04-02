@@ -66,10 +66,10 @@ export class GetQuestBehavior extends BehaviorState {
     state: GetQuestBehavior
   ): (this: EnterConvoAction) => ActionState {
     return function(this: EnterConvoAction) {
-      if (this._fail) {
-        return FailureAction.instance;
-      } else if (this._success) {
+      if (this._success) {
         return SuccessAction.instance;
+      } else if (this._fail) {
+        return FailureAction.instance;
       }
       return this;
     };

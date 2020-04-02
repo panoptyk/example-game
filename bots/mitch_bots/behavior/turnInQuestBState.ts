@@ -66,10 +66,10 @@ export class TurnInQuestBehavior extends BehaviorState {
       if (this._success && quest) {
         state._quests.shift();
         return new TurnInQuestAction(quest, 3000, TurnInQuestBehavior.createTurnInQuestTransition(state));
-      } else if (this._fail) {
-        return FailureAction.instance;
       } else if (this._success) {
         return SuccessAction.instance;
+      } else if (this._fail) {
+        return FailureAction.instance;
       }
       return this;
     };
@@ -83,10 +83,10 @@ export class TurnInQuestBehavior extends BehaviorState {
       if (this._complete && quest) {
         state._quests.shift();
         return new TurnInQuestAction(quest, 3000, TurnInQuestBehavior.createTurnInQuestTransition(state));
-      } else if (this._fail) {
-        return FailureAction.instance;
       } else if (this._success) {
         return SuccessAction.instance;
+      } else if (this._fail) {
+        return FailureAction.instance;
       }
       return this;
     };

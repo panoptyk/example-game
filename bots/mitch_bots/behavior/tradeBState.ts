@@ -37,7 +37,7 @@ export class TradeBehavior extends BehaviorState {
   _timedOut = false;
 
   _lastAction: ActionState = undefined;
-  _timeout = 15000;
+  _timeout = 45000;
   _lastActionTime = Date.now();
 
   _actionChoice = 0;
@@ -51,7 +51,7 @@ export class TradeBehavior extends BehaviorState {
     } else {
       this.currentActionState = new EnterTradeAction(
         this._target,
-        4000,
+        10000,
         TradeBehavior.createEnterTradeTransition(this)
       );
     }

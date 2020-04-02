@@ -204,7 +204,7 @@ class KBget {
     if (this.player.faction.factionName === "Informants") {
       list = KBagent.all().filter(agent => agent.faction.factionName === "Craftsmen");
     }
-    return ;
+    return list;
   }
 
   questTurnIns(quest: Quest): IDObject[] {

@@ -17,13 +17,14 @@ export class TurnInQuestAction extends RetryActionState {
     this._quest = quest;
     this._turnIns = KB.get.questTurnIns(this._quest);
     this._fail = this._quest.amount !== this._turnIns.length;
+    log("Fail status: " + this._fail, log.ACT);
     this._timeToWait = DELAYS.getDelay("turn-in-quest");
   }
 
   async act() {
     this._waitTime += this.deltaTime;
     this._success = this._turnIns.length === 0;
-    if (!this._complete || this._waitTime < this._timeToWait) {
+    if (this._complete || this._waitTime < this._timeToWait) {
       return;
     }
     if (this._quest.type === "item") {

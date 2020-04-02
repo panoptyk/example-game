@@ -1,5 +1,6 @@
 import { Strategy, BehaviorState } from "../../lib";
 import { log } from "../util/log";
+import DECIDES from "../util/decision";
 import * as KB from "../kb/KBadditions";
 import { MoveToRoomBehavior } from "../behavior/moveToRoomBState";
 import { IdleBehavior } from "../behavior/idleBState";
@@ -18,8 +19,35 @@ export class QuestStrategy extends Strategy {
     return function(this: MoveToRoomBehavior): BehaviorState {
       if (this._arrivedAtRoom && KB.is.factionLeaderInRoom()) {
         strat._movingToLeader = false;
-        return new TurnInQuestBehavior();
+        return new TurnInQuestBehavior(QuestStrategy.createTurnInQuestTransition(strat));
       } else if (this._arrivedAtRoom || this._fail) {
+        return IdleBehavior.instance;
+      } else {
+        return this;
+      }
+    };
+  }
+
+  static createTurnInQuestTransition(
+    strat: QuestStrategy
+  ): (this: TurnInQuestBehavior) => BehaviorState {
+    return function(this: TurnInQuestBehavior): BehaviorState {
+      if (this._success) {
+        return new GetQuestBehavior(QuestStrategy.createGetQuestTransition(strat));
+      } else if (this._fail) {
+        strat._questingFail = true;
+        return IdleBehavior.instance;
+      }
+      return this;
+    };
+  }
+
+  static createGetQuestTransition(
+    strat: QuestStrategy
+  ): (this: GetQuestBehavior) => BehaviorState {
+    return function(this: GetQuestBehavior): BehaviorState {
+      strat._questingFail = this._fail;
+      if (this._complete) {
         return IdleBehavior.instance;
       } else {
         return this;
@@ -29,6 +57,7 @@ export class QuestStrategy extends Strategy {
 
   _onlyAdjacent = false;
   _movingToLeader = false;
+  _questingFail = false;
 
   constructor() {
     super();
@@ -57,10 +86,12 @@ export class QuestStrategy extends Strategy {
     if (this.currentBehavior === IdleBehavior.instance) {
       let room: Room;
       this._movingToLeader = false;
-      if (this.goToFactionLeader()) {
+      if (!this._questingFail && this.goToFactionLeader()) {
+        this._questingFail = false;
         this._movingToLeader = true;
         room = KB.agent.lastSeen(KB.agent.factionLeader);
       } else {
+        this._questingFail = false;
         room = this.findRoomOfInterest();
       }
       log("QuestStrategy::act picked room: " + room, log.ACT);
@@ -96,7 +127,7 @@ export class QuestStrategy extends Strategy {
         rooms.push(r);
       }
     });
-    if (rooms.length > 0) {
+    if (rooms.length > 0 && !DECIDES.decide("move-random")) {
       const pick = Math.floor(Math.random() * rooms.length);
       return rooms[pick];
     } else {

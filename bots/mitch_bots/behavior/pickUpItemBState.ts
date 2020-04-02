@@ -9,7 +9,7 @@ export class PickUpItemBehavior extends BehaviorState {
   constructor(item: Item, nextState?: () => BehaviorState) {
     super(nextState);
     this._item = item;
-    this.currentActionState = new PickupItemAction(this._item, 750);
+    this.currentActionState = new PickupItemAction(this._item, 3000);
   }
 
   async act() {

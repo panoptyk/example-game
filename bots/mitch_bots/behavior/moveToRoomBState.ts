@@ -29,7 +29,7 @@ export class MoveToRoomBehavior extends BehaviorState {
       log("Planning to move to room: " + this._destination, log.ACT);
       this.currentActionState = new MoveRoomAction(
         this._path[this._pathPos],
-        5000,
+        12000,
         MoveToRoomBehavior.createMoveActionTransition(this)
       );
     } else {
@@ -63,7 +63,7 @@ export class MoveToRoomBehavior extends BehaviorState {
         state._pathPos++;
         return new MoveRoomAction(
           state._path[state._pathPos],
-          5000,
+          15000,
           MoveToRoomBehavior.createMoveActionTransition(state)
         );
       } else {

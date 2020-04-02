@@ -15,6 +15,7 @@ import { Agent } from "panoptyk-engine/dist/client";
 import { TradeBehavior } from "./tradeBState";
 import { TellInfoAction } from "../action/tellInfoAState";
 import { AskQuestionAction } from "../action/askQuestionAState";
+import { RequestTradeAction } from "../action/requestTradeAState";
 
 export class DiscussBehavior extends BehaviorState {
   static createLeaveConvoTransition(
@@ -26,7 +27,7 @@ export class DiscussBehavior extends BehaviorState {
       } else if (this._success) {
         return new EnterConvoAction(
           state._target,
-          5000,
+          20000,
           DiscussBehavior.createEnterConvoTransition(state)
         );
       }
@@ -38,12 +39,12 @@ export class DiscussBehavior extends BehaviorState {
     state: DiscussBehavior
   ): (this: EnterConvoAction) => ActionState {
     return function(this: EnterConvoAction) {
-      if (this._fail) {
-        return FailureAction.instance;
-      } else if (this._success) {
+      if (this._success) {
         log("Conversing with " + state._target, log.ACT);
         state._enteredConvo = true;
         return SuccessAction.instance;
+      } else if (this._fail) {
+        return FailureAction.instance;
       }
       return this;
     };
@@ -55,11 +56,11 @@ export class DiscussBehavior extends BehaviorState {
   _startTrade = false;
   _timedOut = false;
 
-  _tradeWait = 750;
+  _tradeWait = 3000;
   _tradeTime = 0;
 
   _lastAction: ActionState = undefined;
-  _timeout = 15000;
+  _timeout = 55000;
   _lastActionTime = Date.now();
 
   _questionsAnswered = new Set<number>();
@@ -75,7 +76,7 @@ export class DiscussBehavior extends BehaviorState {
     } else {
       this.currentActionState = new LeaveConvoAction(
         this._target,
-        1500,
+        5000,
         DiscussBehavior.createLeaveConvoTransition(this)
       );
     }
@@ -90,6 +91,10 @@ export class DiscussBehavior extends BehaviorState {
     this._startTrade = this._startTrade
       ? this._startTrade
       : this.shouldEnterTrade();
+    if (this._startTrade) {
+      this.currentActionState = new RequestTradeAction(this._target);
+      this._startTrade = false;
+    }
     if (
       !this._fail &&
       !this._startTrade &&
@@ -102,6 +107,10 @@ export class DiscussBehavior extends BehaviorState {
 
   shouldEnterTrade(): boolean {
     const now = Date.now();
+    if (KB.get.player.trade !== undefined || KB.get.player.tradeRequested.indexOf(this._target) !== -1) {
+      this._tradeTime = now;
+      return false;
+    }
     if (KB.get.player.tradeRequesters.indexOf(this._target) !== -1) {
       return DECIDES.decide("accept-trade");
     } else if (now - this._tradeTime > this._tradeWait) {
@@ -133,7 +142,10 @@ export class DiscussBehavior extends BehaviorState {
     }
 
     // ask question
-    if (this._questionsAsked < this._askLimit && DECIDES.decide("ask-question")) {
+    if (
+      this._questionsAsked < this._askLimit &&
+      DECIDES.decide("ask-question")
+    ) {
       this._questionsAsked++;
       const question = KB.get.questionToAsk();
       if (question) {
@@ -145,7 +157,7 @@ export class DiscussBehavior extends BehaviorState {
   nextState(): BehaviorState {
     if (this._fail || this._timedOut) {
       return FailureBehavior.instance;
-    } else if (this._enteredConvo && this._startTrade) {
+    } else if (this._enteredConvo && KB.get.player.trade !== undefined) {
       return new TradeBehavior(this._target);
     } else {
       return this;

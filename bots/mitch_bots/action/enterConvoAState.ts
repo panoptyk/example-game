@@ -15,7 +15,7 @@ export class EnterConvoAction extends RetryActionState {
     super(timeout, nextState);
     this._target = target;
     this._timeToWait = DELAYS.getDelay("request-convo");
-    this._fail = !this._target;
+    this._fail = !this._target || this._target.conversation !== undefined;
     this._success = KB.get.otherAgentInConvo() === this._target;
   }
 
@@ -23,7 +23,9 @@ export class EnterConvoAction extends RetryActionState {
     this._waitTime += this.deltaTime;
     this._success = KB.get.otherAgentInConvo() === this._target;
     this._fail =
+      this._fail ||
       !KB.is.agentInRoom(this._target) ||
+      this._target.conversation !== undefined ||
       (this._requested && !KB.is.convoRequestedWith(this._target));
     if (
       !this._complete &&
@@ -39,10 +41,10 @@ export class EnterConvoAction extends RetryActionState {
   }
 
   nextState(): ActionState {
-    if (this._fail) {
-      return FailureAction.instance;
-    } else if (this._success) {
+    if (this._success) {
       return SuccessAction.instance;
+    } else if (this._fail) {
+      return FailureAction.instance;
     } else {
       return this;
     }

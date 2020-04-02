@@ -100,18 +100,19 @@ function actWrapper() {
 // Set human delays
 // DELAYS.setOverride(true);
 DELAYS.setDelay("decide-to-ask-convo", { avg: 8000, var: 3000 });
-DELAYS.setDelay("move-room", { avg: 2500, var: 1500 });
-DELAYS.setDelay("pickup-item", { avg: 300, var: 200 });
-DELAYS.setDelay("request-convo", { avg: 500, var: 200 });
-DELAYS.setDelay("convo-action", { avg: 500, var: 200 });
-DELAYS.setDelay("request-trade", { avg: 500, var: 200 });
-DELAYS.setDelay("trade-action", { avg: 500, var: 200 });
-DELAYS.setDelay("leave-convo-trade", { avg: 500, var: 200 });
-DELAYS.setDelay("turn-in-quest", { avg: 300, var: 0 });
+DELAYS.setDelay("move-room", { avg: 10000, var: 2500 });
+DELAYS.setDelay("pickup-item", { avg: 1200, var: 200 });
+DELAYS.setDelay("request-convo", { avg: 1000, var: 200 });
+DELAYS.setDelay("convo-action", { avg: 1200, var: 500 });
+DELAYS.setDelay("request-trade", { avg: 1000, var: 200 });
+DELAYS.setDelay("trade-action", { avg: 1200, var: 500 });
+DELAYS.setDelay("leave-convo-trade", { avg: 500, var: 0 });
+DELAYS.setDelay("turn-in-quest", { avg: 500, var: 0 });
 
 // Decision probabilities
 // DECIDES.setOverride(true);
-DECIDES.set("pick-up-item", 0.1);
+DECIDES.set("pick-up-item", 0.25);
+DECIDES.set("move-random", 0.75);
 DECIDES.set("accept-convo", 0.6);
 DECIDES.set("decide-convo-poi", 0.75);
 DECIDES.set("decide-convo-random", 0.3);

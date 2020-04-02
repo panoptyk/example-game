@@ -4,6 +4,7 @@ import {
   SuccessBehavior,
   FailureBehavior
 } from "../../lib";
+import { log } from "../util/log";
 import * as KB from "../kb/KBadditions";
 import { Room, Agent } from "panoptyk-engine/dist/client";
 import { DiscussBehavior } from "../behavior/discussBState";
@@ -29,6 +30,14 @@ export class DiscussionStrategy extends Strategy {
   }
 
   async act() {
+    log(
+      this.currentBehavior.constructor.name +
+        " > " +
+        (this.currentBehavior.currentActionState
+          ? this.currentBehavior.currentActionState.constructor.name
+          : "NONE"),
+      log.STATE
+    );
     await super.act();
 
     this.complete =
