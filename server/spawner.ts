@@ -23,16 +23,18 @@ class Spawner {
 
   public checkSpawns(deltaT: number) {
     this._spawns.forEach(data => {
-      data.elapsedTime += deltaT;
-      if (data.elapsedTime > data.msToNextCheck) {
+      const quantity = data.room.getItems().filter(i => {
+        return i.sameAs(data.master);
+      }).length;
+      if (quantity !== data.maxQuantity) {
+        data.elapsedTime += deltaT;
+      }
+      if (
+        quantity < data.maxQuantity &&
+        data.elapsedTime > data.msToNextCheck
+      ) {
         data.elapsedTime -= data.msToNextCheck;
-        if (
-          data.room.getItems().filter(i => {
-            return i.sameAs(data.master);
-          }).length < data.maxQuantity
-        ) {
-          this.spawn(data);
-        }
+        this.spawn(data);
       }
     });
   }

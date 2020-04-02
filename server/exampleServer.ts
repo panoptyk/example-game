@@ -1,7 +1,6 @@
 import app from "./app";
 import { Server, Agent, Room, Item, Controller } from "panoptyk-engine";
 import { Spawner } from "./spawner";
-import { Socket } from "socket.io";
 
 const PanoptykServer = new Server(app);
 
@@ -102,5 +101,5 @@ const checkForAllAgents = function() {
   }
 };
 
-// checkForAllAgents();
-spawnItems();
+checkForAllAgents();
+// spawnItems();
