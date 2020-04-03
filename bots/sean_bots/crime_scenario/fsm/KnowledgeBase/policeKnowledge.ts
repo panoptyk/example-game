@@ -188,6 +188,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
               this.registerCrime(terms.agent2, info);
             }
             break;
+          case "DROP":
           case "PICKUP":
             if (item.itemTags.has("illegal")) {
               this.registerCrime(terms.agent, info);
