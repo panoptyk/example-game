@@ -124,4 +124,11 @@ export class UI {
       queue: false
     });
   }
+
+  public addImportantMessage(message: string, confirmText = "OK") {
+    this.main.$buefy.dialog.alert({
+      message: "<font color='black'>" + message + "</font>",
+      confirmText
+    });
+  }
 }

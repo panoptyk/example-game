@@ -21,6 +21,8 @@ import { EnterEvent } from "../components/events/enterEvent";
 import { LeaveEvent } from "../components/events/leaveEvent";
 import { LogOffEvent } from "../components/events/logOffEvent";
 import { LogInEvent } from "../components/events/logInEvent";
+import { RemoveAgentEvent } from "../components/events/removeAgentEvent";
+import Sentence from "../utils/sentence";
 
 const offset = Date.UTC(2019, 9, 28); // Current server beginning of time
 
@@ -43,6 +45,8 @@ class GameState extends Phaser.State {
   tradeRequests = new Set<Agent>();
   arrestableAgents = new Map<Agent, Info>();
   stealItems = new Set<Item>();
+
+  lastInfoID = 0;
 
   lastActiveTrade: Trade = undefined;
 
@@ -105,9 +109,12 @@ class GameState extends Phaser.State {
     this.loadAgents();
 
     ClientAPI.addOnUpdateListener(models => {
+      let newLastInfoID = this.lastInfoID;
       models.Info.forEach(i => {
         this.scheduleEventsFromInfo(i);
+        if (i.id > newLastInfoID) newLastInfoID = i.id;
       });
+      this.lastInfoID = newLastInfoID;
       this.updateItems();
       this.UI.refresh();
     });
@@ -460,18 +467,112 @@ class GameState extends Phaser.State {
 
   private scheduleEventsFromInfo(info: Info) {
     const playerID = ClientAPI.playerAgent.id;
-    if (!info.owner || info.isQuery() || info.owner.id !== playerID) {
+    if (
+      !info.owner ||
+      info.isQuery() ||
+      info.isCommand() ||
+      info.owner.id !== playerID ||
+      info.id <= this.lastInfoID
+    ) {
       return;
     }
     const curRoomID = ClientAPI.playerAgent.room.id;
     const terms = info.getTerms();
-    // MOVE Events
-    if (info.action === "MOVE" && terms.agent.id !== playerID) {
-      if (curRoomID === terms.loc1.id) {
-        this.events.push(new LeaveEvent(this, terms.agent, terms.loc2));
-      } else if (curRoomID === terms.loc2.id) {
-        this.events.push(new EnterEvent(this, terms.agent, terms.loc1));
-      }
+    switch (info.action) {
+      case "MOVE":
+        if (terms.agent.id !== playerID) {
+          if (curRoomID === terms.loc1.id) {
+            this.events.push(new LeaveEvent(this, terms.agent, terms.loc2));
+          } else if (curRoomID === terms.loc2.id) {
+            this.events.push(new EnterEvent(this, terms.agent, terms.loc1));
+          }
+        }
+        break;
+      case "ARRESTED":
+        if (terms.agent2.id === playerID) {
+          // add a loading image later
+          this.UI.setLeftTab(UI.LTABS.INSPECT);
+          this.UI.addImportantMessage(
+            "You have been arrested by " +
+              terms.agent1.agentName +
+              ". All of your valuables are ripped away from you by the corrupt town watch. " +
+              "You languish in a dark cell until your faction sends a bribe to have you released. " +
+              "This incident has surely lowered your faction rank significantly",
+            "This is an outrage!"
+          );
+          this.groups.doorObjects.inputEnableChildren = false;
+          this.movingRooms = true;
+          this.convoRequests = new Set();
+          this.tradeRequests = new Set();
+          this.enterNewRoom();
+          this.updateItems();
+          this.movingRooms = false;
+        } else if (terms.agent2.id !== playerID && terms.loc.id === curRoomID) {
+          this.UI.addMessage(
+            terms.agent1.agentName + " arrested " + terms.agent2.agentName + "!"
+          );
+          if (curRoomID !== terms.agent2.room) {
+            this.events.push(new RemoveAgentEvent(this, terms.agent2));
+          }
+        }
+        break;
+      case "QUEST":
+        if (terms.agent2.id === playerID) {
+          this.UI.addMessage("You were assigned a quest!");
+          this.UI.setLeftTab(UI.LTABS.QUEST);
+        }
+        break;
+      case "QUEST_COMPLETE":
+        if (terms.agent2.id === playerID) {
+          this.UI.addMessage("You completed a quest!");
+          this.UI.setLeftTab(UI.LTABS.QUEST);
+        }
+        break;
+      case "QUEST_FAILED":
+        if (terms.agent2.id === playerID) {
+          this.UI.addMessage("You failed a quest!");
+        }
+        break;
+      case "GAVE":
+        if (terms.agent2.id === playerID) {
+          this.UI.addMessage(
+            terms.agent1.agentName + " gave you " + terms.item.itemName + "."
+          );
+        }
+        break;
+      case "PAID":
+        if (terms.agent2.id === playerID) {
+          this.UI.addMessage(
+            terms.agent1.agentName + " paid you " + terms.quantity + "."
+          );
+        }
+        break;
+      case "TOLD":
+        if (terms.agent2.id === playerID) {
+          let message = terms.agent1.agentName + ": ";
+          let toldInfo = terms.info;
+          while (toldInfo) {
+            const toldTerms = toldInfo.getTerms();
+            if (toldInfo.action === "TOLD") {
+              if (toldTerms.agent2 === terms.agent2) {
+                message += terms.agent1.agentName + " told me ";
+              } else {
+                message +=
+                  terms.agent1.agentName +
+                  " told " +
+                  terms.agent2.agentName +
+                  " ";
+              }
+              message += "that ";
+              toldInfo = toldTerms.info;
+            } else {
+              message += Sentence.formInfoString(toldInfo);
+              break;
+            }
+          }
+          this.UI.addMessage(message);
+        }
+        break;
     }
   }
 

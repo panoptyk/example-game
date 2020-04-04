@@ -18,6 +18,14 @@ class Sentence {
     };
     return Sentence.blockToArray(block);
   }
+  public static formInfoString(info: Info): string {
+    const blocks = Sentence.fromInfo(info);
+    let rawString  = "";
+    for (const block of blocks) {
+      rawString += block.text;
+    }
+    return rawString;
+  }
   public static fromInfo(info: Info): Sentence.Block[] {
     let blocks: Sentence.Block[] = undefined;
     if (info.isQuery()) {
