@@ -76,8 +76,14 @@ export default class QuestEntry extends Vue {
           });
           reasonTxt.push({
             type: Sentence.BlockType.ACTION,
-            text: "traded an illegal "
+            text: "traded a "
           });
+          if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
+            reasonTxt.push({
+              type: Sentence.BlockType.ILLEGAL,
+              text: "illegal "
+            });
+          }
           reasonTxt.push({
             type: Sentence.BlockType.ITEM,
             text: terms.item.itemName + " "
@@ -100,6 +106,12 @@ export default class QuestEntry extends Vue {
             type: Sentence.BlockType.ACTION,
             text: "stole "
           });
+          if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
+            reasonTxt.push({
+              type: Sentence.BlockType.ILLEGAL,
+              text: "illegal "
+            });
+          }
           reasonTxt.push({
             type: Sentence.BlockType.ITEM,
             text: terms.item.itemName + " "
@@ -120,8 +132,14 @@ export default class QuestEntry extends Vue {
           });
           reasonTxt.push({
             type: Sentence.BlockType.ACTION,
-            text: "dropped an illegal "
+            text: "dropped a "
           });
+          if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
+            reasonTxt.push({
+              type: Sentence.BlockType.ILLEGAL,
+              text: "illegal "
+            });
+          }
           reasonTxt.push({
             type: Sentence.BlockType.ITEM,
             text: terms.item.itemName + " "
@@ -142,8 +160,14 @@ export default class QuestEntry extends Vue {
           });
           reasonTxt.push({
             type: Sentence.BlockType.ACTION,
-            text: "grabbed an illegal "
+            text: "grabbed a "
           });
+          if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
+            reasonTxt.push({
+              type: Sentence.BlockType.ILLEGAL,
+              text: "illegal "
+            });
+          }
           reasonTxt.push({
             type: Sentence.BlockType.ITEM,
             text: terms.item.itemName + " "

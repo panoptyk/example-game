@@ -236,7 +236,7 @@
                 v-for="item in inventory"
                 v-bind:key="item.id"
                 v-bind:value="item"
-                >{{ item.itemName }}</option
+                >{{ getItemName(item) }}</option
               >
             </b-select>
           </b-field>
@@ -574,6 +574,15 @@ export default class ConverstaionTab extends Vue {
       }
     );
     }
+  }
+
+  getItemName(i: Item) {
+    let txt = "";
+    if (i.itemTags && i.itemTags.has("illegal")) {
+      txt += "illegal ";
+    }
+    txt += i.itemName;
+    return txt;
   }
 }
 </script>

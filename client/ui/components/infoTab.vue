@@ -76,7 +76,7 @@
           <option disabled value>-- item --</option>
           <option v-bind:value="undefined">none</option>
           <option v-for="val in items" v-bind:key="val.id" v-bind:value="val">{{
-            val.itemName
+            getItemName(val)
           }}</option>
         </b-select>
       </b-field>
@@ -253,6 +253,15 @@ export default class InfoTab extends Vue {
     }
 
     this.info = filterInfo ? filterInfo : [];
+  }
+
+  getItemName(i: Item) {
+    let txt = "";
+    if (i.itemTags && i.itemTags.has("illegal")) {
+      txt += "illegal ";
+    }
+    txt += i.itemName;
+    return txt;
   }
 }
 </script>

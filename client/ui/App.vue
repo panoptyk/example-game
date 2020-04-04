@@ -342,6 +342,10 @@ span.faction {
   color: $faction;
   font-weight: bold;
 }
+span.illegal {
+  color: red;
+  font-weight: bold;
+}
 
 body {
   width: 100%;

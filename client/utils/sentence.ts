@@ -180,7 +180,7 @@ class Sentence {
         });
         if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
           arr.push({
-            type: Sentence.BlockType.ITEM,
+            type: Sentence.BlockType.ILLEGAL,
             text: "illegal "
           });
         }
@@ -204,7 +204,7 @@ class Sentence {
         });
         if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
           arr.push({
-            type: Sentence.BlockType.ITEM,
+            type: Sentence.BlockType.ILLEGAL,
             text: "illegal "
           });
         }
@@ -286,7 +286,7 @@ class Sentence {
         });
         if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
           arr.push({
-            type: Sentence.BlockType.ITEM,
+            type: Sentence.BlockType.ILLEGAL,
             text: "illegal "
           });
         }
@@ -424,6 +424,12 @@ class Sentence {
           type: Sentence.BlockType.ACTION,
           text: "claimed to have possession of "
         });
+        if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
+          arr.push({
+            type: Sentence.BlockType.ILLEGAL,
+            text: "illegal "
+          });
+        }
         arr.push({
           type: Sentence.BlockType.ITEM,
           text: terms.item.itemName + " "
@@ -440,7 +446,7 @@ class Sentence {
       case Info.ACTIONS.LOCATED_IN.name:
         if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
           arr.push({
-            type: Sentence.BlockType.ITEM,
+            type: Sentence.BlockType.ILLEGAL,
             text: "illegal "
           });
         }
@@ -462,6 +468,12 @@ class Sentence {
           type: Sentence.BlockType.ACTION,
           text: "stole "
         });
+        if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
+          arr.push({
+            type: Sentence.BlockType.ILLEGAL,
+            text: "illegal "
+          });
+        }
         arr.push({
           type: Sentence.BlockType.ITEM,
           text: terms.item.itemName + " "
@@ -506,6 +518,12 @@ class Sentence {
           type: Sentence.BlockType.ACTION,
           text: "confiscated "
         });
+        if (terms.item.itemTags && terms.item.itemTags.has("illegal")) {
+          arr.push({
+            type: Sentence.BlockType.ILLEGAL,
+            text: "illegal "
+          });
+        }
         arr.push({
           type: Sentence.BlockType.ITEM,
           text: terms.item.itemName + " "
@@ -650,7 +668,8 @@ namespace Sentence {
     ROOM = "room",
     INFO = "info",
     QUEST = "quest",
-    FACTION = "faction"
+    FACTION = "faction",
+    ILLEGAL = "illegal"
   }
   export interface Block {
     prev?: Block;

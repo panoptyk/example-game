@@ -56,7 +56,7 @@
                 v-for="i in items"
                 v-bind:key="i.id"
                 v-bind:value="i"
-                >{{ i.itemName }}</option
+                >{{ getItemName(i) }}</option
               >
             </b-select>
 
@@ -106,9 +106,9 @@
               <b-button class="button" size="is-small" @click="onOfferAnswer"
                 >Offer</b-button
               >
-              <b-button class="button" size="is-small" @click="onReqAnswer"
+              <!-- <b-button class="button" size="is-small" @click="onReqAnswer"
                 >Request</b-button
-              >
+              > -->
             </div>
           </b-field>
         </div>
@@ -147,7 +147,7 @@
             >
           </div>
           <div> Items: 
-            <span v-for="i in myItemOffers" v-bind:key="i.id">{{ i.itemName }}
+            <span v-for="i in myItemOffers" v-bind:key="i.id">{{ getItemName(i) }}
               <b-button class="button" size="is-small" @click="onRemoveItem(i)"
                 >Remove</b-button
               >
@@ -182,7 +182,7 @@
             >
           </div>
           <div> Items: 
-            <span v-for="row in myItemRequests" v-bind:key="row[0].id">{{ row[0].itemName }}
+            <span v-for="row in myItemRequests" v-bind:key="row[0].id">{{ getItemName(row[0]) }}
               <span v-if="row[1]">(Refused)</span>
               <b-button class="button" size="is-small" @click="onRemoveItemRequest(row[0])"
                 >Remove</b-button
@@ -210,7 +210,7 @@
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
           <div> Gold: {{ otherGoldOffer }} </div>
-          <div> Items: <span v-for="i in otherItemOffers" v-bind:key="i.id">{{ i.itemName }}, </span></div>
+          <div> Items: <span v-for="i in otherItemOffers" v-bind:key="i.id">{{ getItemName(i) }}, </span></div>
           <div> Answers </div>
           <div v-for="a in otherAnswerOffers" v-bind:key="a.qID">One answer to question({{ a.qID }}) <span v-if="a.masked"> masked.</span> <span v-else> not masked.</span> </div>
         </div>
@@ -234,7 +234,7 @@
         <div class="content" style="max-height: 200px; overflow-y:auto;">
           <div> Gold: {{ otherGoldRequest }} </div>
           <div> Items: 
-            <span v-for="row in otherItemRequests" v-bind:key="row[0].id">{{ row[0].itemName }}
+            <span v-for="row in otherItemRequests" v-bind:key="row[0].id">{{ getItemName(row[0]) }}
               <b-button class="button" v-if="!row[1]" size="is-small" @click="onRejectItem(row[0])"
                 >Reject</b-button
               >
@@ -430,6 +430,15 @@ export default class TradeTab extends Vue {
         UI.instance.addError(err.message);
       }
     );
+  }
+
+  getItemName(i: Item) {
+    let txt = "";
+    if (i.itemTags && i.itemTags.has("illegal")) {
+      txt += "illegal ";
+    }
+    txt += i.itemName;
+    return txt;
   }
 }
 </script>
