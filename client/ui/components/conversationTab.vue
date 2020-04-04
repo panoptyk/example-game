@@ -37,52 +37,54 @@
               >
             </b-select>
           </b-field>
-          <quest-entry
-            v-bind:key="targetQuest.id"
-            v-bind:quest="targetQuest"
-          ></quest-entry>
-          <template v-for="i of turnedInInfo">
-            <div class="info-box" v-bind:key="i.id">
-              <div class="info-id">#{{ i.id }}</div>
-              <div class="info-text">
-                <info-entry v-bind:info="i"></info-entry>
+          <div class="quest-container" v-if="targetQuest">
+            <quest-entry
+              v-bind:key="targetQuest.id"
+              v-bind:quest="targetQuest"
+            ></quest-entry>
+            <template v-for="i of turnedInInfo">
+              <div class="info-box" v-bind:key="i.id">
+                <div class="info-id">#{{ i.id }}</div>
+                <div class="info-text">
+                  <info-entry v-bind:info="i"></info-entry>
+                </div>
+              </div>
+            </template>
+            <b-field v-if="questType === 'info'">
+              <b-select
+                placeholder="-- info --"
+                size="is-small"
+                v-model="questInfo"
+              >
+                <option disabled value>-- info --</option>
+                <option
+                  v-for="info in relevantInfo"
+                  v-bind:key="info.id"
+                  v-bind:value="info"
+                  >{{ getType(info) }}#{{ info.id }}</option
+                >
+              </b-select>
+            </b-field>
+            <div class="container" v-if="questType === 'item'">
+              <div class="notification">
+                {{ itemQuestText }}
               </div>
             </div>
-          </template>
-          <b-field v-if="questType === 'info'">
-            <b-select
-              placeholder="-- info --"
-              size="is-small"
-              v-model="questInfo"
-            >
-              <option disabled value>-- info --</option>
-              <option
-                v-for="info in relevantInfo"
-                v-bind:key="info.id"
-                v-bind:value="info"
-                >{{ getType(info) }}#{{ info.id }}</option
-              >
-            </b-select>
-          </b-field>
-          <div class="container" v-if="questType === 'item'">
-            <div class="notification">
-              {{ itemQuestText }}
-            </div>
+            <info-entry
+              v-bind:key="questInfo.id"
+              v-bind:info="questInfo"
+            ></info-entry>
           </div>
-          <info-entry
-            v-bind:key="questInfo.id"
-            v-bind:info="questInfo"
-          ></info-entry>
         </div>
+        <footer class="card-footer">
+          <a class="card-footer-item" @click="onQuestTurnIn">Turn in Info</a>
+          <div v-if="isQuestGiver">
+            <a class="card-footer-item" @click="onCompleteQuest"
+              >Mark as Complete</a
+            >
+          </div>
+        </footer>
       </div>
-      <footer class="card-footer">
-        <a class="card-footer-item" @click="onQuestTurnIn">Turn in Info</a>
-        <div v-if="isQuestGiver">
-          <a class="card-footer-item" @click="onCompleteQuest"
-            >Mark as Complete</a
-          >
-        </div>
-      </footer>
     </b-collapse>
     <b-collapse class="card" aria-id="ask-question">
       <div
@@ -468,6 +470,9 @@ export default class ConverstaionTab extends Vue {
   questInfo: Info = {} as any;
 
   get isQuestGiver(): boolean {
+    if (!this.targetQuest) {
+      return false;
+    }
     return ClientAPI.playerAgent === this.targetQuest.giver;
   }
 
@@ -509,6 +514,10 @@ export default class ConverstaionTab extends Vue {
     // list of info that can complete quest
     this.relevantInfo = [];
     if (this.targetQuest && this.targetQuest instanceof Quest) {
+      if (this.targetQuest.status === "COMPLETE") {
+        this.targetQuest = undefined;
+        return;
+      }
       this.turnedInInfo = this.targetQuest.turnedInInfo;
       for (const info of ClientAPI.playerAgent.knowledge) {
         if (
