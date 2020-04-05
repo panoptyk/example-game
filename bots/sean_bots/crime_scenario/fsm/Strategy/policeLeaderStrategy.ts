@@ -5,7 +5,7 @@ import {
   FailureAction,
   SuccessBehavior,
   FailureBehavior,
-  Strategy
+  Strategy,
 } from "../../../../lib";
 import { ClientAPI, Agent, Info, Item, Quest } from "panoptyk-engine/dist/";
 import * as Helper from "../../../../utils/helper";
@@ -16,7 +16,7 @@ import {
   GiveQuestBehavior,
   IdleAndConverseBehavior,
   CloseQuestBehavior,
-  TradeBehavior
+  TradeBehavior,
 } from "../../../../utils";
 import { PoliceQuestKnowledgeBase as KB } from "../KnowledgeBase/policeQuestKnowledgebase";
 
@@ -91,7 +91,7 @@ export class PoliceLeader extends Strategy {
       agent2: target,
       time: undefined,
       loc: undefined,
-      info: reason
+      info: reason,
     });
     const relatedInfo = ClientAPI.playerAgent.getInfoByAgent(target);
     return new GiveQuestBehavior(
@@ -168,8 +168,31 @@ export class PoliceLeader extends Strategy {
   public getQuestToClose(other: Agent) {
     if (KB.instance.questingAgents.has(other)) {
       for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
+        // TODO: should be improved
         if (quest.receiver === other && quest.turnedInInfo[0]) {
-          return quest;
+          // check turn in for explore quest
+          if (
+            !quest.task.action &&
+            quest.task.predicate === "TILQ" &&
+            quest.type === "command"
+          ) {
+            for (const info of quest.turnedInInfo) {
+              const terms = info.getTerms();
+              if (
+                (terms.item &&
+                  !ClientAPI.playerAgent.hasItem(terms.item) &&
+                  terms.item.itemTags.has("illegal")) ||
+                (KB.instance.allCrimes.has(info) &&
+                  !KB.instance.punishedCrimes.has(info))
+              ) {
+                return quest;
+              }
+            }
+          }
+          // check turn in for other quests
+          else if (quest.turnedInInfo[0]) {
+            return quest;
+          }
         }
       }
     }

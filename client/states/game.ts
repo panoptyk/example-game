@@ -497,7 +497,7 @@ class GameState extends Phaser.State {
               terms.agent1.agentName +
               ". All of your valuables are ripped away from you by the corrupt town watch. " +
               "You languish in a dark cell until your faction sends a bribe to have you released. " +
-              "This incident has surely lowered your faction rank significantly",
+              "This incident has surely lowered your faction rank significantly.",
             "This is an outrage!"
           );
           this.groups.doorObjects.inputEnableChildren = false;
@@ -571,6 +571,14 @@ class GameState extends Phaser.State {
             }
           }
           this.UI.addMessage(message);
+        }
+        break;
+      case "INTERROGATED":
+        if (terms.agent2.id === playerID) {
+          this.UI.addMessage(
+            terms.agent1.agentName + " has stopped you for questioning!"
+          );
+          this.UI.setRightTab(UI.RTABS.CONVERSATION);
         }
         break;
     }

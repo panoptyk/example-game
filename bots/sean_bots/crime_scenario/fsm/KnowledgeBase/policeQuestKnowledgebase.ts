@@ -12,7 +12,7 @@ export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
     CONFISCATED: -2,
     ARRESTED: -10,
     QUEST_COMPLETE: 10,
-    QUEST_FAILED: -2
+    QUEST_FAILED: -2,
   };
 
   private _assignedItemQuest = new Set<Item>();
@@ -43,10 +43,13 @@ export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
           quest.task.action === Info.ACTIONS.DROP.name
         ) {
           this._assignedItemQuest.add(terms.item);
-        } else if (quest.task.action === Info.ACTIONS.ARRESTED.name) {
+        }
+        // open arrest quest
+        else if (quest.task.action === Info.ACTIONS.ARRESTED.name) {
           const agent: Agent = quest.task.getTerms().agent2;
           this.crimeDatabase.set(agent, new Set());
           this.activeWarrants.add(agent);
+          this.punishedCrimes.add(quest.reasonForQuest);
         }
       }
     } else {
@@ -56,12 +59,15 @@ export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
       }
       this._previousQuests.get(quest.receiver).push(quest);
       if (quest.type === "command") {
+        // give quest close
         if (
           quest.task.action === Info.ACTIONS.GAVE.name ||
           quest.task.action === Info.ACTIONS.DROP.name
         ) {
           this._assignedItemQuest.delete(terms.item);
-        } else if (quest.task.action === Info.ACTIONS.ARRESTED.name) {
+        }
+        // arrest quest close
+        else if (quest.task.action === Info.ACTIONS.ARRESTED.name) {
           const terms = quest.task.getTerms();
           const crimes = this.crimeDatabase.has(terms.agent2)
             ? this.crimeDatabase.get(terms.agent2)
@@ -117,17 +123,18 @@ export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
   }
 
   public getReasonForItemQuest(agent: Agent, item: Item) {
-    if (this._previousQuests.has(agent)) {
-      for (const quest of this._previousQuests.get(agent)) {
-        for (const turnIn of quest.turnedInInfo) {
-          const terms = turnIn.getTerms();
-          if (terms.item === item) {
-            return turnIn;
-          }
-        }
-      }
-    }
-    return undefined;
+    // if (this._previousQuests.has(agent)) {
+    //   for (const quest of this._previousQuests.get(agent)) {
+    //     for (const turnIn of quest.turnedInInfo) {
+    //       const terms = turnIn.getTerms();
+    //       if (terms.item === item) {
+    //         return turnIn;
+    //       }
+    //     }
+    //   }
+    // }
+    // return undefined;
+    return ClientAPI.playerAgent.getInfoByItem(item).pop();
   }
 
   public get validQuestItems(): { key: Item; val: number }[] {

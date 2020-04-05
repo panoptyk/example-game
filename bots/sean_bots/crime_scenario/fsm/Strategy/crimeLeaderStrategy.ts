@@ -3,7 +3,7 @@ import {
   Strategy,
   SuccessAction,
   FailureAction,
-  BehaviorState
+  BehaviorState,
 } from "../../../../lib";
 import {
   IdleState,
@@ -12,7 +12,7 @@ import {
   GiveQuestBehavior,
   TradeBehavior,
   IdleAndConverseBehavior,
-  CloseQuestBehavior
+  CloseQuestBehavior,
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
 import { CrimeQuestKnowledgeBase as KB } from "../KnowledgeBase/crimeQuestKnowledgebase";
@@ -137,8 +137,25 @@ export class CrimeLeader extends Strategy {
   public getQuestToClose(other: Agent) {
     if (KB.instance.questingAgents.has(other)) {
       for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
+        // TODO: should be improved
         if (quest.receiver === other && quest.turnedInInfo[0]) {
-          return quest;
+          // check turn in for explore quest
+          if (
+            !quest.task.action &&
+            quest.task.predicate === "TILQ" &&
+            quest.type === "command"
+          ) {
+            for (const info of quest.turnedInInfo) {
+              const terms = info.getTerms();
+              if (!ClientAPI.playerAgent.hasItem(terms.item)) {
+                return quest;
+              }
+            }
+          }
+          // check turn in for other quests
+          else if (quest.turnedInInfo[0]) {
+            return quest;
+          }
         }
       }
     }

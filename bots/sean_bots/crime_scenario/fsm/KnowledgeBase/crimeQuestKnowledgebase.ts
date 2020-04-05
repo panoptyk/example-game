@@ -195,17 +195,18 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   }
 
   public getReasonForItemQuest(agent: Agent, item: Item) {
-    if (this._previousQuests.has(agent)) {
-      for (const quest of this._previousQuests.get(agent)) {
-        for (const turnIn of quest.turnedInInfo) {
-          const terms = turnIn.getTerms();
-          if (terms.item === item) {
-            return turnIn;
-          }
-        }
-      }
-    }
-    return undefined;
+    // if (this._previousQuests.has(agent)) {
+    //   for (const quest of this._previousQuests.get(agent)) {
+    //     for (const turnIn of quest.turnedInInfo) {
+    //       const terms = turnIn.getTerms();
+    //       if (terms.item === item) {
+    //         return turnIn;
+    //       }
+    //     }
+    //   }
+    // }
+    // return undefined;
+    return ClientAPI.playerAgent.getInfoByItem(item).pop();
   }
 
   public get validQuestItems(): { key: Item; val: number }[] {

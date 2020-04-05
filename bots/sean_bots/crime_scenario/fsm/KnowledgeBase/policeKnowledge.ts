@@ -10,13 +10,14 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
     CONFISCATED: -2,
     ARRESTED: -10,
     QUEST_COMPLETE: 10,
-    QUEST_FAILED: -2
+    QUEST_FAILED: -2,
   };
 
   protected _agentScores = new Map<Agent, AgentReputation>();
   protected _unownedItems = new Set<Item>();
 
   crimeDatabase: Map<Agent, Set<Info>> = new Map<Agent, Set<Info>>();
+  punishedCrimes = new Set<Info>();
   activeWarrants: Set<Agent> = new Set<Agent>();
   allCrimes: Set<Info> = new Set<Info>();
   infoIdx = 0;
@@ -45,7 +46,10 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
         const agent: Agent = quest.task.getTerms().agent2;
         this.crimeDatabase.set(agent, new Set());
         this.activeWarrants.add(agent);
-      } else if (
+        this.punishedCrimes.add(quest.reasonForQuest);
+      }
+      // arrest quest close
+      else if (
         quest.task.action === Info.ACTIONS.ARRESTED.name &&
         quest.turnedInInfo[0]
       ) {
@@ -102,7 +106,8 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
     if (
       criminal &&
       !criminal.agentStatus.has("dead") &&
-      !this.activeWarrants.has(criminal)
+      !this.activeWarrants.has(criminal) &&
+      !this.punishedCrimes.has(crime)
     ) {
       if (!this.crimeDatabase.has(criminal)) {
         this.crimeDatabase.set(criminal, new Set([crime]));
@@ -136,7 +141,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
               ? -1
               : 0,
           memorableBad: [],
-          memorableGood: []
+          memorableGood: [],
         });
       }
       score *= this._agentScores.get(agent2).score;
@@ -150,7 +155,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
             ? -1
             : 0,
         memorableBad: [],
-        memorableGood: []
+        memorableGood: [],
       });
     }
     const agentData = this._agentScores.get(agent1);
