@@ -256,7 +256,7 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   public getValidRewardTarget(agent: Agent): { target: Agent; reason: Info } {
     for (const [target, history] of this._agentScores) {
       if (
-        agent !== ClientAPI.playerAgent &&
+        target !== ClientAPI.playerAgent &&
         agent !== target &&
         history.score >= 10
       ) {
