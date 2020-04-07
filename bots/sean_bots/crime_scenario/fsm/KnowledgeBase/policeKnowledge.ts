@@ -101,7 +101,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
   }
 
   protected registerCrime(criminal: Agent, crime: Info) {
-    if (ClientAPI.playerAgent.faction === criminal.faction) {
+    if (criminal && ClientAPI.playerAgent.faction === criminal.faction) {
       return;
     }
     if (
