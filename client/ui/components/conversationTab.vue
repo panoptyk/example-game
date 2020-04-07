@@ -42,14 +42,6 @@
               v-bind:key="targetQuest.id"
               v-bind:quest="targetQuest"
             ></quest-entry>
-            <template v-for="i of turnedInInfo">
-              <div class="info-box" v-bind:key="i.id">
-                <div class="info-id">#{{ i.id }}</div>
-                <div class="info-text">
-                  <info-entry v-bind:info="i"></info-entry>
-                </div>
-              </div>
-            </template>
             <b-field v-if="questType === 'info'">
               <b-select
                 placeholder="-- info --"

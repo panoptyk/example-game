@@ -7,10 +7,11 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
     MOVE: 0,
     DROP: -1,
     PICKUP: 1,
-    CONFISCATED: -2,
+    CONFISCATED: -4,
     ARRESTED: -10,
-    QUEST_COMPLETE: 10,
-    QUEST_FAILED: -2,
+    ASSAULTED: -10,
+    STOLE: -6,
+    PAID: 1
   };
 
   protected _agentScores = new Map<Agent, AgentReputation>();
@@ -165,6 +166,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
     } else if (score <= -10) {
       agentData.memorableBad.push(action);
     }
+    if (agentData.score > 100) agentData.score = 100;
     this._agentScores.set(agent1, agentData);
   }
 
@@ -184,6 +186,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
         const terms = info.getTerms();
         const item: Item = terms.item;
         switch (info.action) {
+          case "ASSAULTED":
           case "STOLE":
             this.registerCrime(terms.agent1, info);
             break;

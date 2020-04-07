@@ -82,9 +82,63 @@ export class CrimeLeader extends Strategy {
     );
   }
 
+  getRevengeQuest(agent: Agent, target: Agent, reason: Info) {
+    console.log(
+      ClientAPI.playerAgent + " is assigning revenge quest to " + agent
+    );
+    const command = Info.ACTIONS.ASSAULTED.question({
+      agent1: agent,
+      agent2: target,
+      time: undefined,
+      loc: undefined,
+      info: reason,
+    });
+    return new GiveQuestBehavior(
+      agent,
+      command,
+      false,
+      [],
+      reason,
+      KB.instance.getSuitableReward(agent, command),
+      CrimeLeader.defaultTransition
+    );
+  }
+
+  getGiftQuest(agent: Agent, target: Agent, quantity: number, reason: Info) {
+    console.log(ClientAPI.playerAgent + " is assigning gift quest to " + agent);
+    const command = Info.ACTIONS.THANKED.question({
+      agent1: agent,
+      agent2: target,
+      time: undefined,
+      loc: undefined,
+      info: reason
+    });
+    return new GiveQuestBehavior(
+      agent,
+      command,
+      false,
+      [],
+      reason,
+      KB.instance.getSuitableReward(agent, command),
+      CrimeLeader.defaultTransition
+    );
+  }
+
   assignQuestToIdleAgent(agent: Agent) {
-    const itemsToQuest = KB.instance.validQuestItems;
     // attempt to make followup quest
+    const revengeData = KB.instance.getValidRevengeTarget(agent);
+    if (revengeData) {
+      return this.getRevengeQuest(
+        agent,
+        revengeData.target,
+        revengeData.reason
+      );
+    }
+    const rewardData = KB.instance.getValidRewardTarget(agent);
+    if (rewardData) {
+      return this.getGiftQuest(agent, rewardData.target, 5, rewardData.reason);
+    }
+    const itemsToQuest = KB.instance.validQuestItems;
     for (const { key, val } of itemsToQuest) {
       const reason = KB.instance.getReasonForItemQuest(agent, key);
       if (reason) {

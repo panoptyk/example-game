@@ -512,6 +512,15 @@ class Sentence {
           type: Sentence.BlockType.ROOM,
           text: terms.loc.roomName + " "
         });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "because "
+        });
+        arr.push(...Sentence.fromInfo(terms.info));
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "The arrest happened "
+        });
         break;
       case Info.ACTIONS.CONFISCATED.name:
         arr.push({
@@ -605,6 +614,60 @@ class Sentence {
         arr.push({
           type: Sentence.BlockType.ROOM,
           text: terms.loc.roomName + " "
+        });
+        break;
+      case Info.ACTIONS.THANKED.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "thanked "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "because "
+        });
+        arr.push(...Sentence.fromInfo(terms.info));
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "The thanking happened "
+        });
+        break;
+      case Info.ACTIONS.ASSAULTED.name:
+        arr.push({
+          type: Sentence.BlockType.ACTION,
+          text: "assaulted "
+        });
+        arr.push({
+          type: Sentence.BlockType.AGENT,
+          text: terms.agent2.agentName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "at "
+        });
+        arr.push({
+          type: Sentence.BlockType.ROOM,
+          text: terms.loc.roomName + " "
+        });
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "because "
+        });
+        arr.push(...Sentence.fromInfo(terms.info));
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: "The assault happened "
         });
         break;
       case "???":

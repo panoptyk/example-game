@@ -4,17 +4,6 @@ import * as Helper from "../../../../utils/helper";
 import { PoliceKnowledgeBase } from "./policeKnowledge";
 
 export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
-  public readonly ACTION_RATINGS = {
-    GAVE: 2,
-    MOVE: 0,
-    DROP: -1,
-    PICKUP: 1,
-    CONFISCATED: -2,
-    ARRESTED: -10,
-    QUEST_COMPLETE: 10,
-    QUEST_FAILED: -2,
-  };
-
   private _assignedItemQuest = new Set<Item>();
   private _questingAgents = new Set<Agent>();
   public get questingAgents() {
@@ -123,18 +112,17 @@ export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
   }
 
   public getReasonForItemQuest(agent: Agent, item: Item) {
-    // if (this._previousQuests.has(agent)) {
-    //   for (const quest of this._previousQuests.get(agent)) {
-    //     for (const turnIn of quest.turnedInInfo) {
-    //       const terms = turnIn.getTerms();
-    //       if (terms.item === item) {
-    //         return turnIn;
-    //       }
-    //     }
-    //   }
-    // }
-    // return undefined;
-    return ClientAPI.playerAgent.getInfoByItem(item).pop();
+    if (this._previousQuests.has(agent)) {
+      for (const quest of this._previousQuests.get(agent)) {
+        for (const turnIn of quest.turnedInInfo) {
+          const terms = turnIn.getTerms();
+          if (terms.item === item) {
+            return turnIn;
+          }
+        }
+      }
+    }
+    return undefined;
   }
 
   public get validQuestItems(): { key: Item; val: number }[] {

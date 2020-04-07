@@ -71,6 +71,20 @@ export class ActionSel {
       );
     }
 
+    if (GS.instance.attackableAgents.has(agent.model)) {
+      this.createAttackIcon(
+        agent,
+        GS.instance.attackableAgents.get(agent.model)
+      );
+    }
+
+    if (GS.instance.thankableAgents.has(agent.model)) {
+      this.createThankkIcon(
+        agent,
+        GS.instance.thankableAgents.get(agent.model)
+      );
+    }
+
     for (const item of GS.instance.stealItems) {
       if (agent.model.hasItem(item)) {
         this.createStealIcon(agent, item);
@@ -130,6 +144,40 @@ export class ActionSel {
       this.createArrestIcon(
         agent,
         GS.instance.arrestableAgents.get(agent.model)
+      );
+    }
+
+    if (
+      this.icons.has("attack") &&
+      !GS.instance.attackableAgents.has(agent.model)
+    ) {
+      this.icons.get("attack").destroy();
+      this.icons.delete("attack");
+      this.nextLoc--;
+    } else if (
+      !this.icons.has("attack") &&
+      GS.instance.attackableAgents.has(agent.model)
+    ) {
+      this.createAttackIcon(
+        agent,
+        GS.instance.attackableAgents.get(agent.model)
+      );
+    }
+
+    if (
+      this.icons.has("thank") &&
+      !GS.instance.thankableAgents.has(agent.model)
+    ) {
+      this.icons.get("thank").destroy();
+      this.icons.delete("thank");
+      this.nextLoc--;
+    } else if (
+      !this.icons.has("thank") &&
+      GS.instance.thankableAgents.has(agent.model)
+    ) {
+      this.createAttackIcon(
+        agent,
+        GS.instance.thankableAgents.get(agent.model)
       );
     }
 
@@ -297,6 +345,74 @@ export class ActionSel {
               this.icons.get("steal").destroy();
               this.icons.delete("steal");
               this.nextLoc--;
+            },
+            err => {
+              GS.instance.addErrorMessage(err.message);
+            }
+          );
+        });
+      }
+    );
+  }
+
+  private createAttackIcon(agent: AgentSprite, reason: Info) {
+    const relativePos = this.createRelativeCoord();
+    const attackIcon = this.sprite.game.make.sprite(
+      0,
+      0,
+      Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+      iconSel(0, 3)
+    );
+    this.group.addChild(attackIcon);
+    this.icons.set("attack", attackIcon);
+    this.animateIcon(
+      this.getCenterPos(attackIcon),
+      relativePos,
+      attackIcon,
+      () => {
+        attackIcon.inputEnabled = true;
+        attackIcon.events.onInputDown.add(() => {
+          console.log("attack: " + agent.model.agentName);
+          ClientAPI.attackAgent(agent.model, reason).then(
+            res => {
+              GS.instance.addConsoleMessage(
+                "Successfully attacked " + agent.model.agentName
+              );
+              UI.instance.setLeftTab(UI.LTABS.INFO);
+            },
+            err => {
+              GS.instance.addErrorMessage(err.message);
+            }
+          );
+        });
+      }
+    );
+  }
+
+  private createThankkIcon(agent: AgentSprite, reason: Info) {
+    const relativePos = this.createRelativeCoord();
+    const thankIcon = this.sprite.game.make.sprite(
+      0,
+      0,
+      Assets.Spritesheets.SpritesheetsIcons3232320.getName(),
+      iconSel(6, 0)
+    );
+    this.group.addChild(thankIcon);
+    this.icons.set("thank", thankIcon);
+    this.animateIcon(
+      this.getCenterPos(thankIcon),
+      relativePos,
+      thankIcon,
+      () => {
+        thankIcon.inputEnabled = true;
+        thankIcon.events.onInputDown.add(() => {
+          console.log("thank: " + agent.model.agentName);
+          ClientAPI.thankAgent(agent.model, reason).then(
+            res => {
+              GS.instance.addConsoleMessage(
+                "Successfully thanked " + agent.model.agentName
+              );
+              UI.instance.setLeftTab(UI.LTABS.INFO);
             },
             err => {
               GS.instance.addErrorMessage(err.message);

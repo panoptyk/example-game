@@ -6,12 +6,13 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   public readonly ACTION_RATINGS = {
     GAVE: 2,
     MOVE: 0,
-    DROP: -1,
-    PICKUP: 1,
-    CONFISCATED: -2,
+    DROP: 1,
+    PICKUP: -1,
+    CONFISCATED: -4,
     ARRESTED: -10,
-    QUEST_COMPLETE: 10,
-    QUEST_FAILED: -2
+    ASSAULTED: -10,
+    STOLE: -4,
+    PAID: 1,
   };
 
   private _lastIdx = 0;
@@ -21,6 +22,8 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   private _assignedInfoQuest = new Set<Info>();
   private _assignedItemQuest = new Set<Item>();
   private _questingAgents = new Set<Agent>();
+  private _avengedActions = new Set<Info>();
+  private _thankedActions = new Set<Info>();
   public get questingAgents() {
     return this._questingAgents;
   }
@@ -43,7 +46,17 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
     if (quest.status === "ACTIVE") {
       this._questingAgents.add(quest.receiver);
       if (quest.type === "command") {
-        this._assignedItemQuest.add(terms.item);
+        switch (quest.task.action) {
+          case Info.ACTIONS.GAVE.name:
+            this._assignedItemQuest.add(terms.item);
+            break;
+          case Info.ACTIONS.ASSAULTED.name:
+            this._avengedActions.add(quest.reasonForQuest);
+            break;
+          case Info.ACTIONS.THANKED.name:
+            this._thankedActions.add(quest.reasonForQuest);
+            break;
+        }
       }
     } else {
       this._questingAgents.delete(quest.receiver);
@@ -52,7 +65,11 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
       }
       this._previousQuests.get(quest.receiver).push(quest);
       if (quest.type === "command") {
-        this._assignedItemQuest.delete(terms.item);
+        switch (quest.task.action) {
+          case Info.ACTIONS.GAVE.name:
+            this._assignedItemQuest.delete(terms.item);
+            break;
+        }
       }
     }
   }
@@ -105,7 +122,7 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
               ? -1
               : 0,
           memorableBad: [],
-          memorableGood: []
+          memorableGood: [],
         });
       }
       score *= this._agentScores.get(agent2).score;
@@ -119,16 +136,17 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
             ? -1
             : 0,
         memorableBad: [],
-        memorableGood: []
+        memorableGood: [],
       });
     }
     const agentData = this._agentScores.get(agent1);
     agentData.score += score;
-    if (score >= 10) {
+    if (score >= 2) {
       agentData.memorableGood.push(action);
-    } else if (score <= -10) {
+    } else if (score <= -2) {
       agentData.memorableBad.push(action);
     }
+    if (agentData.score > 100) agentData.score = 100;
     this._agentScores.set(agent1, agentData);
   }
 
@@ -187,26 +205,29 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
         );
         rewards.push(Helper.makeQuestPromotionReward(agent, 10));
         break;
-    }
-    if (!task.action) {
-      rewards.push(Helper.makeQuestPromotionReward(agent, 5));
+      case Info.ACTIONS.ASSAULTED.name:
+        rewards.push(Helper.makeQuestGoldReward(agent, 10));
+        rewards.push(Helper.makeQuestPromotionReward(agent, 10));
+        break;
+      default:
+        rewards.push(Helper.makeQuestPromotionReward(agent, 5));
+        break;
     }
     return rewards;
   }
 
   public getReasonForItemQuest(agent: Agent, item: Item) {
-    // if (this._previousQuests.has(agent)) {
-    //   for (const quest of this._previousQuests.get(agent)) {
-    //     for (const turnIn of quest.turnedInInfo) {
-    //       const terms = turnIn.getTerms();
-    //       if (terms.item === item) {
-    //         return turnIn;
-    //       }
-    //     }
-    //   }
-    // }
-    // return undefined;
-    return ClientAPI.playerAgent.getInfoByItem(item).pop();
+    if (this._previousQuests.has(agent)) {
+      for (const quest of this._previousQuests.get(agent)) {
+        for (const turnIn of quest.turnedInInfo) {
+          const terms = turnIn.getTerms();
+          if (terms.item === item) {
+            return turnIn;
+          }
+        }
+      }
+    }
+    return undefined;
   }
 
   public get validQuestItems(): { key: Item; val: number }[] {
@@ -217,5 +238,35 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
       }
     }
     return items.sort((a, b) => b.val - a.val);
+  }
+
+  public getValidRevengeTarget(agent: Agent): { target: Agent; reason: Info } {
+    // take revenge on arrests
+    for (const info of ClientAPI.playerAgent.getInfoByAction(
+      Info.ACTIONS.ARRESTED.name
+    )) {
+      const terms = info.getTerms();
+      if (!this._avengedActions.has(info) && terms.agent2 === agent) {
+        return { target: terms.agent1, reason: info };
+      }
+    }
+    return undefined;
+  }
+
+  public getValidRewardTarget(agent: Agent): { target: Agent; reason: Info } {
+    for (const [target, history] of this._agentScores) {
+      if (
+        agent !== ClientAPI.playerAgent &&
+        agent !== target &&
+        history.score >= 10
+      ) {
+        for (const event of history.memorableGood) {
+          if (!this._thankedActions.has(event)) {
+            return { target, reason: event };
+          }
+        }
+      }
+    }
+    return undefined;
   }
 }

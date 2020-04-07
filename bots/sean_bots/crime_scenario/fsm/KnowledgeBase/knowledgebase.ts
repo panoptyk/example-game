@@ -18,7 +18,7 @@ export class KnowledgeBase {
   static get factionLeader() {
     if (ClientAPI.playerAgent.faction) {
       for (const agent of ClientAPI.playerAgent.faction.members) {
-        if (agent.factionRank === Infinity) {
+        if (agent.factionRank >= 1000) {
           return agent;
         }
       }

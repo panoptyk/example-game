@@ -111,7 +111,7 @@ async function leaderConversation() {
 async function waitHandler() {
     // accept conversations from approaching agents if they are a high ranking member in same faction
     for (const requester of ClientAPI.playerAgent.conversationRequesters) {
-        if (Helper.getPlayerRank(requester) === Infinity && requester.faction === ClientAPI.playerAgent.faction) {
+        if (Helper.getPlayerRank(requester) >= 1000 && requester.faction === ClientAPI.playerAgent.faction) {
             prepForConversation();
             await ClientAPI.acceptConversation(requester);
             state = "check";

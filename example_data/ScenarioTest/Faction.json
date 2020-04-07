@@ -5,7 +5,7 @@
       "_factionName": "Friendly Police",
       "_factionType": "police",
       "_members": [
-        [2, "Infinity"],
+        [2, 1000],
         [15, 0],
         [16, 0],
         [17, 0]
@@ -16,7 +16,7 @@
       "_factionName": "Friendly Mafia",
       "_factionType": "criminal",
       "_members": [
-        [3, "Infinity"],
+        [3, 1000],
         [4, 100],
         [8, 100],
         [9, 0],

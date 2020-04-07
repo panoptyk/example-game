@@ -181,6 +181,44 @@ export default class QuestEntry extends Vue {
             text: terms.loc
           });
           return reasonTxt;
+        case Info.ACTIONS.ARRESTED.name:
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: terms.agent1.agentName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ACTION,
+            text: "arrested "
+          });
+          const name = ClientAPI.playerAgent === terms.agent2 ? "you" : terms.agent2.name;
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: name + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.NONE,
+            text: "! "
+          });
+          break;
+        case Info.ACTIONS.ASSAULTED.name:
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: terms.agent1.agentName + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.ACTION,
+            text: "assaulted "
+          });
+          const agent2 = ClientAPI.playerAgent === terms.agent2 ? "you" : terms.agent2.name;
+          reasonTxt.push({
+            type: Sentence.BlockType.AGENT,
+            text: agent2 + " "
+          });
+          reasonTxt.push({
+            type: Sentence.BlockType.NONE,
+            text: "! "
+          });
+          break;
       }
     }
     return Sentence.fromInfo(this.quest.reasonForQuest);
@@ -329,6 +367,30 @@ export default class QuestEntry extends Vue {
               type: Sentence.BlockType.AGENT,
               text: terms.agent2 + " "
             });
+            return taskTxt;
+          case Info.ACTIONS.ASSAULTED.name:
+            taskTxt.push({
+              type: Sentence.BlockType.ACTION,
+              text: "Rough up "
+            });
+            taskTxt.push({
+              type: Sentence.BlockType.AGENT,
+              text: terms.agent2 + " "
+            });
+            return taskTxt;
+          case Info.ACTIONS.THANKED.name:
+            taskTxt.push({
+              type: Sentence.BlockType.ACTION,
+              text: "Thank "
+            });
+            taskTxt.push({
+              type: Sentence.BlockType.AGENT,
+              text: terms.agent2 + " "
+            });
+            taskTxt.push({
+              type: Sentence.BlockType.NONE,
+              text: "for aiding our cause."
+            })
             return taskTxt;
         }
         // generic info gathering quests

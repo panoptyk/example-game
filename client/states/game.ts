@@ -44,6 +44,8 @@ class GameState extends Phaser.State {
   convoRequests = new Set<Agent>();
   tradeRequests = new Set<Agent>();
   arrestableAgents = new Map<Agent, Info>();
+  attackableAgents = new Map<Agent, Info>();
+  thankableAgents = new Map<Agent, Info>();
   stealItems = new Set<Item>();
 
   lastInfoID = 0;
@@ -289,10 +291,17 @@ class GameState extends Phaser.State {
       ClientAPI.playerAgent.faction.factionType === "criminal"
     ) {
       this.stealItems.clear();
+      this.attackableAgents.clear();
       player.activeAssignedQuests.forEach(quest => {
         const terms = quest.task.getTerms();
         if (quest.type === "command" && terms.item) {
           this.stealItems.add(terms.item);
+        }
+        else if (quest.type === "command" && quest.task.action === Info.ACTIONS.ASSAULTED.name) {
+          this.attackableAgents.set(terms.agent2, terms.info);
+        }
+        else if (quest.type === "command" && quest.task.action === Info.ACTIONS.THANKED.name) {
+          this.thankableAgents.set(terms.agent2, terms.info);
         }
       });
     }
@@ -516,6 +525,34 @@ class GameState extends Phaser.State {
           }
         }
         break;
+      case "ASSAULTED":
+        const agent1 = terms.agent1 ? terms.agent1.agentName : "Someone";
+        if (terms.agent2.id === playerID) {
+          // add a loading image later
+          this.UI.setLeftTab(UI.LTABS.INSPECT);
+          this.UI.addImportantMessage(
+            "You have been viciously assaulted by " +
+              agent1 +
+              ". You unconscious body is found and taken back to your headquarters, " +
+              "but all of the items you had are now missing. ",
+            "They will not get away with this!"
+          );
+          this.groups.doorObjects.inputEnableChildren = false;
+          this.movingRooms = true;
+          this.convoRequests = new Set();
+          this.tradeRequests = new Set();
+          this.enterNewRoom();
+          this.updateItems();
+          this.movingRooms = false;
+        } else if (terms.agent2.id !== playerID && terms.loc.id === curRoomID) {
+          this.UI.addMessage(
+            agent1 + " assaulted " + terms.agent2.agentName + "!"
+          );
+          if (curRoomID !== terms.agent2.room) {
+            this.events.push(new RemoveAgentEvent(this, terms.agent2));
+          }
+        }
+        break;
       case "QUEST":
         if (terms.agent2.id === playerID) {
           this.UI.addMessage("You were assigned a quest!");
@@ -538,6 +575,7 @@ class GameState extends Phaser.State {
           this.UI.addMessage(
             terms.agent1.agentName + " gave you " + terms.item.itemName + "."
           );
+          this.UI.setLeftTab(UI.LTABS.ITEMS);
         }
         break;
       case "PAID":
@@ -545,6 +583,7 @@ class GameState extends Phaser.State {
           this.UI.addMessage(
             terms.agent1.agentName + " paid you " + terms.quantity + "."
           );
+          this.UI.setLeftTab(UI.LTABS.INSPECT);
         }
         break;
       case "TOLD":
@@ -579,6 +618,12 @@ class GameState extends Phaser.State {
             terms.agent1.agentName + " has stopped you for questioning!"
           );
           this.UI.setRightTab(UI.RTABS.CONVERSATION);
+        }
+        break;
+      case "THANKED":
+        if (terms.agent2.id === playerID) {
+          this.UI.addMessage(Sentence.formInfoString(info));
+          this.UI.setLeftTab(UI.LTABS.INFO);
         }
         break;
     }

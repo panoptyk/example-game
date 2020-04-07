@@ -24,7 +24,7 @@ async function startScenario() {
     { execArgv: childExecArgv }
   );
   // await spawnPolice();
-  await spawnNeutral();
+  // await spawnNeutral();
   // await spawnCrime();
 }
 
