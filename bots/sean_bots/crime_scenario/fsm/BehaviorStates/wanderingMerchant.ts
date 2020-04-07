@@ -4,7 +4,7 @@ import {
   FailureAction,
   SuccessBehavior,
   FailureBehavior,
-  ActionState
+  ActionState,
 } from "../../../../lib";
 import { ClientAPI, Agent, Room } from "panoptyk-engine/dist/";
 import {
@@ -14,7 +14,7 @@ import {
   LeaveConersationState,
   RequestTradeState,
   TellItemOwnershipState,
-  PickupItemsState
+  PickupItemsState,
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
 import { ListenToOther } from "../../../../utils/ActionStates/listenAState";
@@ -41,7 +41,10 @@ export class WanderingMerchantBehavior extends BehaviorState {
   }
 
   static idleTransition(this: IdleState) {
-    if (ClientAPI.playerAgent.room.getItems()[0]) {
+    if (
+      ClientAPI.playerAgent.room.getItems()[0] &&
+      ClientAPI.playerAgent.inventory.length < 1
+    ) {
       // const itemsToTake = [];
       // for (const item of ClientAPI.playerAgent.room.getItems()) {
       //   if (!item.itemTags.has("illegal")) {
