@@ -6,7 +6,7 @@ import { DoorSprite } from "./door";
 import GS from "./../states/game";
 import { ItemSprite } from "./item";
 
-const iconSel = function(x, y) {
+const iconSel = function (x, y) {
   return y * 16 + x;
 };
 
@@ -31,6 +31,7 @@ export class ActionSel {
   private icons: Map<string, Phaser.Sprite>;
   private lines: Phaser.Graphics[];
   private nextLoc: number;
+  private stealItem: Item;
 
   constructor(sprite: Phaser.Sprite) {
     this.sprite = sprite;
@@ -63,6 +64,12 @@ export class ActionSel {
       agent.model.conversation.contains_agent(ClientAPI.playerAgent)
     ) {
       this.createTradeIcon(agent);
+      if (GS.instance.thankableAgents.has(agent.model)) {
+        this.createThankIcon(
+          agent,
+          GS.instance.thankableAgents.get(agent.model)
+        );
+      }
     }
     if (GS.instance.arrestableAgents.has(agent.model)) {
       this.createArrestIcon(
@@ -75,13 +82,6 @@ export class ActionSel {
       this.createAttackIcon(
         agent,
         GS.instance.attackableAgents.get(agent.model)
-      );
-    }
-
-    if (GS.instance.thankableAgents.has(agent.model)) {
-      this.createThankkIcon(
-        agent,
-        GS.instance.thankableAgents.get(agent.model)
       );
     }
 
@@ -175,17 +175,25 @@ export class ActionSel {
       !this.icons.has("thank") &&
       GS.instance.thankableAgents.has(agent.model)
     ) {
-      this.createAttackIcon(
-        agent,
-        GS.instance.thankableAgents.get(agent.model)
-      );
+      this.createThankIcon(agent, GS.instance.thankableAgents.get(agent.model));
     }
 
-    for (const item of GS.instance.stealItems) {
-      if (!this.icons.has("steal") && agent.model.hasItem(item)) {
-        this.createStealIcon(agent, item);
-        break;
+    if (!this.icons.has("steal")) {
+      for (const item of GS.instance.stealItems) {
+        if (agent.model.hasItem(item)) {
+          this.createStealIcon(agent, item);
+          break;
+        }
       }
+    } else if (
+      this.icons.has("steal") &&
+      (!agent.model.hasItem(this.stealItem) ||
+        !GS.instance.stealItems.has(this.stealItem))
+    ) {
+      this.stealItem = undefined;
+      this.icons.get("steal").destroy();
+      this.icons.delete("steal");
+      this.nextLoc--;
     }
   }
 
@@ -239,10 +247,10 @@ export class ActionSel {
         pickupIcon.inputEnabled = true;
         pickupIcon.events.onInputDown.add(() => {
           ClientAPI.takeItems([item.model]).then(
-            res => {
+            (res) => {
               UI.instance.setLeftTab(UI.LTABS.ITEMS);
             },
-            err => {
+            (err) => {
               GS.instance.addErrorMessage(err.message);
             }
           );
@@ -272,10 +280,10 @@ export class ActionSel {
         tradeIcon.inputEnabled = true;
         tradeIcon.events.onInputDown.add(() => {
           ClientAPI.requestTrade(agent.model).then(
-            res => {
+            (res) => {
               GS.instance.logTradeRequest(agent.model);
             },
-            err => {
+            (err) => {
               GS.instance.addErrorMessage(err.message);
             }
           );
@@ -303,13 +311,13 @@ export class ActionSel {
         arrestIcon.events.onInputDown.add(() => {
           console.log("arrest: " + agent.model.agentName);
           ClientAPI.arrestAgent(agent.model, warrant).then(
-            res => {
+            (res) => {
               GS.instance.addConsoleMessage(
                 "Successfully arrested " + agent.model.agentName
               );
               UI.instance.setLeftTab(UI.LTABS.INFO);
             },
-            err => {
+            (err) => {
               GS.instance.addErrorMessage(err.message);
             }
           );
@@ -319,6 +327,7 @@ export class ActionSel {
   }
 
   private createStealIcon(agent: AgentSprite, item: Item) {
+    this.stealItem = item;
     const relativePos = this.createRelativeCoord();
     const stealIcon = this.sprite.game.make.sprite(
       0,
@@ -337,7 +346,7 @@ export class ActionSel {
         stealIcon.events.onInputDown.add(() => {
           console.log("steal: " + agent.model.agentName);
           ClientAPI.stealItem(agent.model, item).then(
-            res => {
+            (res) => {
               GS.instance.addConsoleMessage(
                 "Successfully stole " + item.itemName
               );
@@ -346,7 +355,7 @@ export class ActionSel {
               this.icons.delete("steal");
               this.nextLoc--;
             },
-            err => {
+            (err) => {
               GS.instance.addErrorMessage(err.message);
             }
           );
@@ -374,13 +383,13 @@ export class ActionSel {
         attackIcon.events.onInputDown.add(() => {
           console.log("attack: " + agent.model.agentName);
           ClientAPI.attackAgent(agent.model, reason).then(
-            res => {
+            (res) => {
               GS.instance.addConsoleMessage(
                 "Successfully attacked " + agent.model.agentName
               );
               UI.instance.setLeftTab(UI.LTABS.INFO);
             },
-            err => {
+            (err) => {
               GS.instance.addErrorMessage(err.message);
             }
           );
@@ -389,7 +398,7 @@ export class ActionSel {
     );
   }
 
-  private createThankkIcon(agent: AgentSprite, reason: Info) {
+  private createThankIcon(agent: AgentSprite, reason: Info) {
     const relativePos = this.createRelativeCoord();
     const thankIcon = this.sprite.game.make.sprite(
       0,
@@ -408,13 +417,13 @@ export class ActionSel {
         thankIcon.events.onInputDown.add(() => {
           console.log("thank: " + agent.model.agentName);
           ClientAPI.thankAgent(agent.model, reason).then(
-            res => {
+            (res) => {
               GS.instance.addConsoleMessage(
                 "Successfully thanked " + agent.model.agentName
               );
               UI.instance.setLeftTab(UI.LTABS.INFO);
             },
-            err => {
+            (err) => {
               GS.instance.addErrorMessage(err.message);
             }
           );
@@ -443,22 +452,22 @@ export class ActionSel {
           ClientAPI.playerAgent.faction === agent.model.faction
         ) {
           ClientAPI.requestConversation(agent.model).then(
-            res => {
+            (res) => {
               GS.instance.logConvoRequest(agent.model);
             },
-            err => {
+            (err) => {
               GS.instance.addErrorMessage(err.message);
             }
           );
         } else {
           ClientAPI.interrogateAgent(agent.model).then(
-            res => {
+            (res) => {
               GS.instance.addConsoleMessage(
                 "Interrogating " + agent.model.agentName
               );
               UI.instance.setRightTab(UI.RTABS.CONVERSATION);
             },
-            err => {
+            (err) => {
               GS.instance.addErrorMessage(err.message);
             }
           );
@@ -478,7 +487,7 @@ export class ActionSel {
     const tween = this.sprite.game.add.tween(sprite).to(
       {
         x: end.x,
-        y: end.y
+        y: end.y,
       },
       150,
       Phaser.Easing.Quadratic.Out,
@@ -516,10 +525,10 @@ export class ActionSel {
   }
 
   public destroy() {
-    this.lines.forEach(g => {
+    this.lines.forEach((g) => {
       g.clear();
     });
-    this.group.getAll().forEach(child => {
+    this.group.getAll().forEach((child) => {
       child.destroy();
     });
     this.lines = [];

@@ -292,6 +292,7 @@ class GameState extends Phaser.State {
     ) {
       this.stealItems.clear();
       this.attackableAgents.clear();
+      this.thankableAgents.clear();
       player.activeAssignedQuests.forEach(quest => {
         const terms = quest.task.getTerms();
         if (quest.type === "command" && terms.item) {
