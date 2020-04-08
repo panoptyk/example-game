@@ -19,7 +19,7 @@
           <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
         </a>
       </div>
-      <div class="card-content">
+      <div class="card-content" v-if="quests[0]">
         <div class="content">
           <b-field>
             <b-select
@@ -58,12 +58,12 @@
               </b-select>
             </b-field>
             <div class="container" v-if="questType === 'item'">
-              <div class="notification">
+              <span class="action">
                 {{ itemQuestText }}
-              </div>
+              </span>
             </div>
             <info-entry
-              v-bind:key="questInfo.id"
+              v-bind:key="questInfo"
               v-bind:info="questInfo"
             ></info-entry>
           </div>
@@ -326,6 +326,8 @@ export default class ConverstaionTab extends Vue {
   @Prop({ default: [] }) inventory;
   @Prop({ default: [] }) relevantInfo;
   @Prop({ default: [] }) turnedInInfo;
+  @Prop({ default: undefined }) targetQuest: Quest;
+  @Prop({ default: undefined }) questInfo: Info;
 
   actionSelected = "";
   questionFields = [];
@@ -448,6 +450,9 @@ export default class ConverstaionTab extends Vue {
         this.quests.push(quest);
       }
     }
+    if (!this.targetQuest && this.quests[0]) {
+      this.targetQuest = this.quests[0];
+    }
     for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
       if (ClientAPI.playerAgent.conversation.contains_agent(quest.giver)) {
         this.quests.push(quest);
@@ -458,8 +463,6 @@ export default class ConverstaionTab extends Vue {
     this.onQuestSelect();
   }
 
-  targetQuest: Quest = {} as any;
-  questInfo: Info = {} as any;
 
   get isQuestGiver(): boolean {
     if (!this.targetQuest) {
@@ -474,8 +477,7 @@ export default class ConverstaionTab extends Vue {
       if (
         this.targetQuest.type !== "question" &&
         terms.action === "GAVE" &&
-        terms.agent2 ===
-          ClientAPI.playerAgent.conversation.getAgents(ClientAPI.playerAgent)[0]
+        ClientAPI.playerAgent.conversation.contains_agent(terms.agent2)
       ) {
         return "item";
       } else {
@@ -505,7 +507,7 @@ export default class ConverstaionTab extends Vue {
   onQuestSelect() {
     // list of info that can complete quest
     this.relevantInfo = [];
-    if (this.targetQuest && this.targetQuest instanceof Quest) {
+    if (this.targetQuest) {
       if (this.targetQuest.status === "COMPLETE") {
         this.targetQuest = undefined;
         return;
@@ -518,6 +520,13 @@ export default class ConverstaionTab extends Vue {
         ) {
           this.relevantInfo.push(info);
         }
+      }
+      if (
+        !this.questInfo ||
+        !this.targetQuest.checkSatisfiability(this.questInfo) ||
+        this.targetQuest.hasTurnedIn(this.questInfo)
+      ) {
+        this.questInfo = this.relevantInfo[0];
       }
     }
   }

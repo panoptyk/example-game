@@ -22,7 +22,7 @@
         </div>
       </div>
     </template>
-    <h2 v-if="turnedInInfo[0]">Turned-in Info:</h2>
+    <h2>Turned-in Info:</h2>
     <template v-for="i of turnedInInfo">
       <div class="info-box" v-bind:key="i.id">
         <div class="info-id">#{{ i.id }}</div>
@@ -398,11 +398,11 @@ export default class QuestEntry extends Vue {
           if (ClientAPI.playerAgent.faction.factionType === "police") {
             taskTxt.push({
               type: Sentence.BlockType.ACTION,
-              text: "Report any illegal activity "
+              text: "Report information about "
             });
             taskTxt.push({
-              type: Sentence.BlockType.NONE,
-              text: "or "
+              type: Sentence.BlockType.ILLEGAL,
+              text: "illegal "
             });
             taskTxt.push({
               type: Sentence.BlockType.ITEM,
@@ -410,21 +410,21 @@ export default class QuestEntry extends Vue {
             });
             taskTxt.push({
               type: Sentence.BlockType.NONE,
-              text: "! "
+              text: "or any illegal activity (such as stealing). "
             });
             return taskTxt;
           } else if (ClientAPI.playerAgent.faction.factionType === "criminal") {
             taskTxt.push({
               type: Sentence.BlockType.ACTION,
-              text: "Discover new "
+              text: "Gather information about 1 new "
             });
             taskTxt.push({
               type: Sentence.BlockType.ITEM,
-              text: "items "
+              text: "item "
             });
             taskTxt.push({
               type: Sentence.BlockType.NONE,
-              text: "for taking! "
+              text: "that may be worth acquiring. "
             });
             return taskTxt;
           }
