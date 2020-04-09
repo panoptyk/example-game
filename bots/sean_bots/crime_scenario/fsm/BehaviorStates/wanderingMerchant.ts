@@ -6,7 +6,12 @@ import {
   FailureBehavior,
   ActionState,
 } from "../../../../lib";
-import { ClientAPI, Agent, Room } from "panoptyk-engine/dist/";
+import {
+  ClientAPI,
+  Agent,
+  Room,
+  getPanoptykDatetime,
+} from "panoptyk-engine/dist/";
 import {
   MoveState,
   IdleState,
@@ -18,10 +23,14 @@ import {
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
 import { ListenToOther } from "../../../../utils/ActionStates/listenAState";
+import { KnowledgeBase as KB } from "../KnowledgeBase/knowledgebase";
 
 export class WanderingMerchantBehavior extends BehaviorState {
   idleTimeRoom: number;
   conversedAgents = new Set<Agent>();
+  _path: Room[];
+  _pathPos = 0;
+  _destination: Room;
   private static _activeInstance: WanderingMerchantBehavior;
   public static get activeInstance(): WanderingMerchantBehavior {
     return this._activeInstance;
@@ -40,7 +49,7 @@ export class WanderingMerchantBehavior extends BehaviorState {
     this.currentActionState = await this.currentActionState.tick();
   }
 
-  static idleTransition(this: IdleState) {
+  static getGenericActions() {
     if (
       ClientAPI.playerAgent.room.getItems()[0] &&
       ClientAPI.playerAgent.inventory.length < 1
@@ -73,17 +82,80 @@ export class WanderingMerchantBehavior extends BehaviorState {
         ClientAPI.playerAgent.conversationRequesters[0],
         WanderingMerchantBehavior.acceptConversationTransition
       );
+    }
+  }
+
+  static idleTransition(this: IdleState) {
+    const otherActions = WanderingMerchantBehavior.getGenericActions();
+    if (otherActions) return otherActions;
+
+    // location change depends on time of day
+    const timeOfDay = new Date(getPanoptykDatetime()).getHours();
+    const curRoom = ClientAPI.playerAgent.room;
+    if (timeOfDay <= 7 && curRoom.roomName !== "Straw Roof Inn") {
+      return WanderingMerchantBehavior.activeInstance.getNextMove(
+        "Straw Roof Inn"
+      );
     } else if (
-      Date.now() - this.startTime >
-      WanderingMerchantBehavior.activeInstance.idleTimeRoom
+      timeOfDay > 7 &&
+      timeOfDay <= 12 &&
+      curRoom.roomName !== "Redbrick Cafe"
     ) {
-      const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
-      return new MoveState(
-        potentialRooms[Helper.randomInt(0, potentialRooms.length)],
-        WanderingMerchantBehavior.moveTransition
+      return WanderingMerchantBehavior.activeInstance.getNextMove(
+        "Redbrick Cafe"
+      );
+    } else if (timeOfDay > 12 && timeOfDay <= 17) {
+      if (
+        Date.now() - this.startTime >
+        WanderingMerchantBehavior.activeInstance.idleTimeRoom
+      ) {
+        const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
+        return new MoveState(
+          potentialRooms[Helper.randomInt(0, potentialRooms.length)],
+          WanderingMerchantBehavior.moveTransition
+        );
+      }
+    } else if (
+      timeOfDay > 17 &&
+      timeOfDay <= 23 &&
+      curRoom.roomName !== "Crooked Sword Tavern (main)"
+    ) {
+      return WanderingMerchantBehavior.activeInstance.getNextMove(
+        "Crooked Sword Tavern (main)"
       );
     }
     return this;
+  }
+
+  getNextMove(roomName: string) {
+    const dest = Helper.getRoomByName(roomName);
+    if (dest) {
+      if (dest !== this._destination) {
+        this._destination = dest;
+        this._pathPos = 0;
+        this._path = KB.instance.roomMap.findPath(
+          ClientAPI.playerAgent.room,
+          dest
+        );
+      }
+      if (this._path) {
+        return new MoveState(
+          this._path[this._pathPos],
+          WanderingMerchantBehavior.moveTransition
+        );
+      }
+    }
+    const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
+    if (potentialRooms.includes(dest)) {
+      return new MoveState(
+        dest,
+        WanderingMerchantBehavior.moveTransition
+      );
+    }
+    return new MoveState(
+      potentialRooms[Helper.randomInt(0, potentialRooms.length)],
+      WanderingMerchantBehavior.moveTransition
+    );
   }
 
   static pickupItemsTransition(this: PickupItemsState) {
@@ -152,9 +224,20 @@ export class WanderingMerchantBehavior extends BehaviorState {
     if (this.doneActing) {
       if (this.completed) {
         WanderingMerchantBehavior.activeInstance.conversedAgents.clear();
-        return new IdleState(WanderingMerchantBehavior.idleTransition);
+        if (WanderingMerchantBehavior.activeInstance._destination) {
+          if (
+            WanderingMerchantBehavior.activeInstance._destination ===
+            ClientAPI.playerAgent.room
+          ) {
+            WanderingMerchantBehavior.activeInstance._destination = undefined;
+            WanderingMerchantBehavior.activeInstance._path = undefined;
+            WanderingMerchantBehavior.activeInstance._pathPos = 0;
+          } else if (WanderingMerchantBehavior.activeInstance._path) {
+            WanderingMerchantBehavior.activeInstance._pathPos++;
+          }
+        }
       }
-      return FailureAction.instance;
+      return new IdleState(WanderingMerchantBehavior.idleTransition);
     }
     return this;
   }

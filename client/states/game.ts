@@ -24,7 +24,7 @@ import { LogInEvent } from "../components/events/logInEvent";
 import { RemoveAgentEvent } from "../components/events/removeAgentEvent";
 import Sentence from "../utils/sentence";
 
-const offset = Date.UTC(2019, 9, 28); // Current server beginning of time
+const offset = Date.UTC(2019, 9, 28, 12); // Current server beginning of time
 
 class GameState extends Phaser.State {
   // idk how good this code is...

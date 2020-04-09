@@ -232,3 +232,7 @@ export function exploreItemsCommand(agent: Agent) {
     quantity: 1
   };
 }
+
+export function getRoomByName(name: string): Room {
+  return ClientAPI.seenRooms.find(room => room.roomName === name);
+}

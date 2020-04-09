@@ -10,6 +10,7 @@ import {
   logger
 } from "panoptyk-engine/dist/";
 import { Merchant } from "./fsm/Strategy/merchantStrategy";
+import { KnowledgeBase  as KB } from "./fsm/KnowledgeBase/knowledgebase";
 
 // Boilerplate agent code ================================================== START
 const username = process.argv[2] ? process.argv[2] : "idle";
@@ -66,6 +67,9 @@ function actWrapper() {
 }
 
 async function act() {
+  if (KB.instance.updatingKB) {
+    return;
+  }
   await Merchant.instance.act();
 }
 
