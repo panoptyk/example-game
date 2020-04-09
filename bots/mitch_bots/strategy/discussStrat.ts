@@ -30,6 +30,7 @@ export class DiscussionStrategy extends Strategy {
   }
 
   async act() {
+    await super.act();
     log(
       this.currentBehavior.constructor.name +
         " > " +
@@ -38,7 +39,6 @@ export class DiscussionStrategy extends Strategy {
           : "NONE"),
       log.STATE
     );
-    await super.act();
 
     this.complete =
       this.currentBehavior === SuccessBehavior.instance ||

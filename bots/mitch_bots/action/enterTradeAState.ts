@@ -14,6 +14,7 @@ export class EnterTradeAction extends RetryActionState {
   constructor(target: Agent, timeout = 1000, nextState?: () => ActionState) {
     super(timeout, nextState);
     this._target = target;
+    this._success = KB.get.otherAgentInTrade() === this._target;
     this._timeToWait = DELAYS.getDelay("request-trade");
   }
 

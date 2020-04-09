@@ -58,14 +58,15 @@ export class DiscussBehavior extends BehaviorState {
 
   _tradeWait = 3000;
   _tradeTime = 0;
+  _tradesRequested = 0;
 
   _lastAction: ActionState = undefined;
-  _timeout = 55000;
+  _timeout = 45000;
   _lastActionTime = Date.now();
 
   _questionsAnswered = new Set<number>();
   _questionsAsked = 0;
-  _askLimit = 1;
+  _askLimit = 3;
 
   constructor(target: Agent, nextState?: () => BehaviorState) {
     super(nextState);
@@ -88,26 +89,30 @@ export class DiscussBehavior extends BehaviorState {
     this._fail =
       this.currentActionState === FailureAction.instance ||
       (this._enteredConvo && !KB.get.otherAgentInConvo()); // left convo
-    this._startTrade = this._startTrade
-      ? this._startTrade
-      : this.shouldEnterTrade();
-    if (this._startTrade) {
-      this.currentActionState = new RequestTradeAction(this._target);
-      this._startTrade = false;
-    }
     if (
       !this._fail &&
-      !this._startTrade &&
       this._enteredConvo &&
       this.currentActionState === SuccessAction.instance
     ) {
-      this.decideNextConvoAction();
+      this._startTrade = this._startTrade
+        ? this._startTrade
+        : this.shouldEnterTrade();
+      if (this._startTrade && this._tradesRequested < 2) {
+        this.currentActionState = new RequestTradeAction(this._target);
+        this._tradesRequested++;
+        this._startTrade = false;
+      } else {
+        this.decideNextConvoAction();
+      }
     }
   }
 
   shouldEnterTrade(): boolean {
     const now = Date.now();
-    if (KB.get.player.trade !== undefined || KB.get.player.tradeRequested.indexOf(this._target) !== -1) {
+    if (
+      KB.get.player.trade !== undefined ||
+      KB.get.player.tradeRequested.indexOf(this._target) !== -1
+    ) {
       this._tradeTime = now;
       return false;
     }
@@ -125,6 +130,8 @@ export class DiscussBehavior extends BehaviorState {
       this._lastActionTime = Date.now();
     }
     this._lastAction = this.currentActionState;
+    const time = Math.round((Date.now() - this._lastActionTime) / 1000);
+    log("Discuss timer: " + time + "/" + Math.round(this._timeout / 1000), log.ACT);
     this._timedOut = Date.now() - this._lastActionTime > this._timeout;
   }
 
@@ -146,9 +153,9 @@ export class DiscussBehavior extends BehaviorState {
       this._questionsAsked < this._askLimit &&
       DECIDES.decide("ask-question")
     ) {
-      this._questionsAsked++;
       const question = KB.get.questionToAsk();
       if (question) {
+        this._questionsAsked++;
         this.currentActionState = new AskQuestionAction(question);
       }
     }

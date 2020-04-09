@@ -99,8 +99,8 @@ function actWrapper() {
 
 // Set human delays
 // DELAYS.setOverride(true);
-DELAYS.setDelay("decide-to-ask-convo", { avg: 8000, var: 3000 });
-DELAYS.setDelay("move-room", { avg: 10000, var: 2500 });
+DELAYS.setDelay("decide-to-ask-convo", { avg: 25000, var: 3000 });
+DELAYS.setDelay("move-room", { avg: 9000, var: 2500 });
 DELAYS.setDelay("pickup-item", { avg: 1200, var: 200 });
 DELAYS.setDelay("request-convo", { avg: 1000, var: 200 });
 DELAYS.setDelay("convo-action", { avg: 1200, var: 500 });
@@ -113,13 +113,13 @@ DELAYS.setDelay("turn-in-quest", { avg: 500, var: 0 });
 // DECIDES.setOverride(true);
 DECIDES.set("pick-up-item", 0.25);
 DECIDES.set("move-random", 0.75);
-DECIDES.set("accept-convo", 0.6);
-DECIDES.set("decide-convo-poi", 0.75);
-DECIDES.set("decide-convo-random", 0.3);
-DECIDES.set("accept-trade", 0.6);
+DECIDES.set("accept-convo", 0.75);
+DECIDES.set("decide-convo-poi", 0.5);
+DECIDES.set("decide-convo-random", 0.25);
+DECIDES.set("accept-trade", 0.85);
 DECIDES.set("trade-again", 0.6);
-DECIDES.set("decide-trade-poi", 0.85);
-DECIDES.set("decide-trade-random", 0.3);
+DECIDES.set("decide-trade-poi", 0.7);
+DECIDES.set("decide-trade-random", 0.35);
 DECIDES.set("pass-request", 0.45);
 DECIDES.set("answer-question", 0.4);
 DECIDES.set("ask-question", 0.7);
@@ -267,7 +267,6 @@ async function act() {
     !questStrat.cannotDiscuss() &&
     (person = personToDiscussWith())
   ) {
-    askForConvoTime = Date.now();
     discussStrat = new DiscussionStrategy(person);
     const pois = KB.get.agentsOfInterest().reduce((a, b) => {
       return a + b + " ";
@@ -293,6 +292,7 @@ async function act() {
   }
   if (discussStrat && discussStrat.complete) {
     log("Leaving discussion strategy", log.ACT);
+    askForConvoTime = Date.now();
     discussStrat = undefined;
   }
 }

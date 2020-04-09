@@ -21,12 +21,12 @@ export class TradeBehavior extends BehaviorState {
     state: TradeBehavior
   ): (this: EnterTradeAction) => ActionState {
     return function(this: EnterTradeAction) {
-      if (this._fail) {
-        return FailureAction.instance;
-      } else if (this._success) {
+      if (this._success) {
         log("Trading with " + state._target, log.ACT);
         state._enteredTrade = true;
         return SuccessAction.instance;
+      } else if (this._fail) {
+        return FailureAction.instance;
       }
       return this;
     };
@@ -46,7 +46,8 @@ export class TradeBehavior extends BehaviorState {
     super(nextState);
     this._target = target;
     this._fail = !this._target || KB.get.otherAgentInConvo() !== this._target;
-    if (this._complete) {
+    this._enteredTrade = KB.get.otherAgentInTrade() === this._target;
+    if (this._complete || this._enteredTrade) {
       this.currentActionState = SuccessAction.instance;
     } else {
       this.currentActionState = new EnterTradeAction(
