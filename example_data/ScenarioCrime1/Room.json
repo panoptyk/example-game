@@ -53,7 +53,7 @@
       "itemIDs": [],
       "conversationIDs": [],
       "_maxOccupants": 20,
-      "_roomTags": ["private"]
+      "_roomTags": []
     },
     "7": {
       "id": 7,
@@ -63,7 +63,7 @@
       "itemIDs": [],
       "conversationIDs": [],
       "_maxOccupants": 20,
-      "_roomTags": ["private"]
+      "_roomTags": []
     },
     "8": {
       "id": 8,
@@ -73,7 +73,7 @@
       "itemIDs": [],
       "conversationIDs": [],
       "_maxOccupants": 20,
-      "_roomTags": ["private"]
+      "_roomTags": []
     },
     "9": {
       "id": 9,
@@ -103,7 +103,7 @@
       "itemIDs": [],
       "conversationIDs": [],
       "_maxOccupants": 20,
-      "_roomTags": ["private"]
+      "_roomTags": []
     },
     "12": {
       "id": 12,
