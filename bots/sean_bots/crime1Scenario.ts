@@ -1,10 +1,11 @@
 import { fork, ChildProcess } from "child_process";
 const merchantNames = ["Lyla", "Shannon", "Leopold", "Maxwell"];
+const policeNames = ["Jason", "Jack", "Charleane", "Kelly"];
 let policeLeader: ChildProcess;
 let crimeLeader: ChildProcess;
 const numCrime = 8;
 let crimeIdx = 1;
-const numPolice = 3;
+const numPolice = 4;
 const numNeutral = 4;
 const policeMembers = [];
 const crimeMembers = [];
@@ -23,9 +24,9 @@ async function startScenario() {
     ["Elizabeth Alexandra Mary Windsor", "password"],
     { execArgv: childExecArgv }
   );
-  // await spawnPolice();
-  await spawnNeutral();
+  await spawnPolice();
   // await spawnCrime();
+  await spawnNeutral();
 }
 
 function spawnNewCrimeGoon() {
@@ -53,8 +54,8 @@ async function spawnPolice() {
   for (let i = 1; i <= numPolice; i++) {
     policeMembers.push(
       fork(
-        "./bots/sean_bots/crime_scenario/policeAgent.ts",
-        ["Police " + i, "password"],
+        "./bots/sean_bots/crime_scenario/policeInformant.ts",
+        [policeNames[i - 1], "password"],
         { execArgv: childExecArgv }
       )
     );

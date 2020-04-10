@@ -9,7 +9,7 @@ import {
   getPanoptykDatetime,
   logger
 } from "panoptyk-engine/dist/";
-import { Merchant } from "./fsm/Strategy/merchantStrategy";
+import { PoliceInformant } from "./fsm/Strategy/policeInformantStrategy";
 import { PoliceKnowledgeBase as KB } from "./fsm/KnowledgeBase/policeKnowledge";
 
 // Boilerplate agent code ================================================== START
@@ -30,8 +30,9 @@ function init() {
 
 let _retries = 1;
 function attemptLogin() {
-  ClientAPI.login(username, password)
+  ClientAPI.login(username, password, true, 1)
     .catch(res => {
+      console.log(res);
       console.log("Failed(%d)....retrying...", _retries);
       if (_retries <= MAX_RETRY) {
         _retries++;
@@ -70,7 +71,7 @@ async function act() {
   if (KB.instance.updatingKB) {
     return;
   }
-  await Merchant.instance.act();
+  await PoliceInformant.instance.act();
 }
 
 // =======Start Bot========== //
