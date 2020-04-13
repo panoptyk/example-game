@@ -8,7 +8,10 @@
           position="is-centered"
         >
           <b-tab-item label="Inspect">
-            <inspect-tab v-bind:trigger="trigger" v-bind:target="inspectTarget"></inspect-tab>
+            <inspect-tab
+              v-bind:trigger="trigger"
+              v-bind:target="inspectTarget"
+            ></inspect-tab>
           </b-tab-item>
 
           <b-tab-item label="Items">
@@ -33,9 +36,24 @@
       </div>
       <div id="game-outline">
         <div id="game-top-bar">
-          <div v-if="showTopBar"><span class="room">{{ room }}</span> | <span class="time">{{ dateString }}</span></div>
+          <div v-if="showTopBar">
+            <span class="room">{{ room }}</span> |
+            <span class="time">{{ dateString }}</span>
+            <button
+              id="help-button"
+              class="button is-primary is-medium"
+              @click="showHelp = true"
+            >
+              HELP
+            </button>
+          </div>
         </div>
-        <div id="phaser-game"></div>
+        <div id="phaser-game">
+          <help-window
+            v-bind:trigger="trigger"
+            v-bind:showHelp.sync="showHelp"
+          ></help-window>
+        </div>
         <console
           id="console"
           v-bind:messages="messages"
@@ -79,7 +97,13 @@
 
 <script lang="ts">
 import "buefy/dist/buefy.css";
-import { ClientAPI, Agent, Room, Item, Faction } from "panoptyk-engine/dist/client";
+import {
+  ClientAPI,
+  Agent,
+  Room,
+  Item,
+  Faction,
+} from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import requestTab from "./components/requestTab.vue";
 import infoTab from "./components/infoTab.vue";
@@ -88,6 +112,7 @@ import conversationTab from "./components/conversationTab.vue";
 import tradeTab from "./components/tradeTab.vue";
 import questTab from "./components/questTab.vue";
 import inspectTab from "./components/inspectTab.vue";
+import helpWindow from "./components/help.vue";
 import Console from "./components/console.vue";
 
 @Component({
@@ -99,8 +124,9 @@ import Console from "./components/console.vue";
     "trade-tab": tradeTab,
     "quest-tab": questTab,
     "inspect-tab": inspectTab,
-    console: Console
-  }
+    "help-window": helpWindow,
+    console: Console,
+  },
 })
 export default class App extends Vue {
   trigger = 0;
@@ -127,8 +153,8 @@ export default class App extends Vue {
   activeQuests = 0;
   requestsTally = 0;
 
-
   // Top Bar logic
+  showHelp = false;
   showTopBar = false;
   room = "";
   time = 0;
@@ -164,116 +190,116 @@ export default class App extends Vue {
 <style lang="scss">
 // Overall bulma edits
 $text: rgb(243, 227, 193);
-$scheme-main: #83796F;
-$border-light: #DFD2B5;
+$scheme-main: #83796f;
+$border-light: #dfd2b5;
 
 // Import Bulma's core
 @import "~bulma/sass/utilities/_all";
 
 // Set your colors
-$primary: #82232B;
+$primary: #82232b;
 $primary-invert: findColorInvert($primary);
 $twitter: #4099ff;
 $twitter-invert: findColorInvert($twitter);
-$success: #DFD2B5;
+$success: #dfd2b5;
 $success-invert: findColorInvert($primary);
-$danger: #82232B;
+$danger: #82232b;
 $danger-invert: findColorInvert($primary);
 
 // Notification color edits
-$notification-background-color: #83796F;
+$notification-background-color: #83796f;
 
 // Dropdown color edits
-$dropdown-content-background-color: #83796F;
+$dropdown-content-background-color: #83796f;
 $dropdown-item-color: $text;
 
 // Card color edits
 $card-color: rgb(243, 227, 193);
-$card-header-color: #25050E;
+$card-header-color: #25050e;
 $card-background-color: $scheme-main;
 
 // Panoptyk Colors
-$action: #E1AD5B;
+$action: #e1ad5b;
 $action-invert: findColorInvert($action);
-$agent: #62A1C3;
+$agent: #62a1c3;
 $agent-invert: findColorInvert($agent);
-$room: #C79386;
+$room: #c79386;
 $room-invert: findColorInvert($room);
-$item: #7CC890;
+$item: #7cc890;
 $item-invert: findColorInvert($item);
-$info: #64C87E;
+$info: #64c87e;
 $info-invert: findColorInvert($info);
-$time: #F3EED9;
+$time: #f3eed9;
 $time-invert: findColorInvert($time);
-$faction: #CBB96D;
+$faction: #cbb96d;
 $faction-invert: findColorInvert($faction);
 
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 $colors: (
   "action": (
     $action,
-    $action-invert
+    $action-invert,
   ),
   "agent": (
     $agent,
-    $agent-invert
+    $agent-invert,
   ),
   "room": (
     $room,
-    $room-invert
+    $room-invert,
   ),
   "item": (
     $item,
-    $item-invert
+    $item-invert,
   ),
   "info": (
     $info,
-    $info-invert
+    $info-invert,
   ),
   "time": (
     $time,
-    $time-invert
+    $time-invert,
   ),
   "faction": (
     $faction,
-    $faction-invert
+    $faction-invert,
   ),
   "white": (
     $white,
-    $black
+    $black,
   ),
   "black": (
     $black,
-    $white
+    $white,
   ),
   "light": (
     $light,
-    $light-invert
+    $light-invert,
   ),
   "dark": (
     $dark,
-    $dark-invert
+    $dark-invert,
   ),
   "primary": (
     $primary,
-    $primary-invert
+    $primary-invert,
   ),
   "success": (
     $success,
-    $success-invert
+    $success-invert,
   ),
   "warning": (
     $warning,
-    $warning-invert
+    $warning-invert,
   ),
   "danger": (
     $danger,
-    $danger-invert
+    $danger-invert,
   ),
   "twitter": (
     $twitter,
-    $twitter-invert
-  )
+    $twitter-invert,
+  ),
 );
 
 // Links
@@ -306,10 +332,10 @@ input.is-small.input {
 
 // Panoptyk UI variables
 :root {
-  --borders: #DFD2B5;
+  --borders: #dfd2b5;
   --background: rgb(12, 8, 9);
-  --item-border: #DFD2B5;
-  --item-background: #83796F;
+  --item-border: #dfd2b5;
+  --item-background: #83796f;
   --text-color-primary: rgb(243, 227, 193);
   --text-color-secondary: antiquewhite;
 }
@@ -373,6 +399,7 @@ body {
   border-color: var(--borders);
   border-style: solid;
   color: var(--text-color-primary);
+  position: relative;
 }
 #game-outline {
   margin-right: 5px;
@@ -389,6 +416,10 @@ body {
 }
 #game-rightbar {
   margin-left: 5px;
+}
+#help-button {
+  position: absolute;
+  right: 0px;
 }
 .game-sidebar {
   width: 100%;

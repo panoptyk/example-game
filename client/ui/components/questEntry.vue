@@ -389,7 +389,7 @@ export default class QuestEntry extends Vue {
             });
             taskTxt.push({
               type: Sentence.BlockType.NONE,
-              text: "for aiding our cause."
+              text: "for aiding our cause. "
             })
             return taskTxt;
         }
@@ -429,6 +429,7 @@ export default class QuestEntry extends Vue {
             return taskTxt;
           }
         }
+        break;
     }
     return Sentence.fromInfo(this.quest.task);
   }
