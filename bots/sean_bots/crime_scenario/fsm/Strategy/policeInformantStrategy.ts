@@ -4,7 +4,7 @@ import {
   SuccessAction,
   FailureAction,
   BehaviorState,
-  ActionState
+  ActionState,
 } from "../../../../lib";
 import {
   IdleState,
@@ -14,7 +14,7 @@ import {
   OfferItemTradeState,
   PassItemReqTradeState,
   SetTradeState,
-  AnswerAllBehavior
+  AnswerAllBehavior,
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
 import { PoliceKnowledgeBase as KB } from "../KnowledgeBase/policeKnowledge";
@@ -69,7 +69,7 @@ export class PoliceInformant extends Strategy {
           PoliceInformant.tradeRequestedItems
         );
       }
-      if (this.crimesToReport[0]) {
+      if (this.crimesToReport[0] && !other.agentStatus.has("bot")) {
         return new TellInfo(
           other,
           this.crimesToReport,
@@ -79,7 +79,10 @@ export class PoliceInformant extends Strategy {
     }
     if (this.crimesToReport[0]) {
       for (const other of Helper.getOthersInRoom()) {
-        if (other.faction === ClientAPI.playerAgent.faction) {
+        if (
+          other.faction === ClientAPI.playerAgent.faction &&
+          !other.agentStatus.has("bot")
+        ) {
           return new TellInfo(
             other,
             this.crimesToReport,
@@ -98,8 +101,11 @@ export class PoliceInformant extends Strategy {
   }
 
   public static navigateToAgentTransition(this: BehaviorState): BehaviorState {
-    for (const other of ClientAPI.playerAgent.room.occupants) {
-      if (other.faction === ClientAPI.playerAgent.faction) {
+    for (const other of Helper.getOthersInRoom()) {
+      if (
+        other.faction === ClientAPI.playerAgent.faction &&
+        !other.agentStatus.has("bot")
+      ) {
         return new TellInfo(
           other,
           PoliceInformant.instance.crimesToReport,
@@ -128,7 +134,10 @@ export class PoliceInformant extends Strategy {
     }
     // try other members of faction if target is not accepting conversation
     for (const agent of ClientAPI.playerAgent.conversationRequesters) {
-      if (agent.faction === ClientAPI.playerAgent.faction) {
+      if (
+        agent.faction === ClientAPI.playerAgent.faction &&
+        !agent.agentStatus.has("bot")
+      ) {
         return new TellInfo(
           agent,
           PoliceInformant.instance.crimesToReport,
