@@ -104,7 +104,7 @@ DELAYS.setDelay("move-room", { avg: 9000, var: 2500 });
 DELAYS.setDelay("pickup-item", { avg: 1200, var: 200 });
 DELAYS.setDelay("request-convo", { avg: 1000, var: 200 });
 DELAYS.setDelay("convo-action", { avg: 1200, var: 500 });
-DELAYS.setDelay("request-trade", { avg: 1000, var: 200 });
+DELAYS.setDelay("request-trade", { avg: 700, var: 200 });
 DELAYS.setDelay("trade-action", { avg: 1200, var: 500 });
 DELAYS.setDelay("leave-convo-trade", { avg: 500, var: 0 });
 DELAYS.setDelay("turn-in-quest", { avg: 500, var: 0 });

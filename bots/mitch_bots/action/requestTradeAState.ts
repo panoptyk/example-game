@@ -11,7 +11,7 @@ export class RequestTradeAction extends RetryActionState {
   _target: Agent;
   _timeToWait: number;
 
-  constructor(target: Agent, timeout = 1000, nextState?: () => ActionState) {
+  constructor(target: Agent, timeout = 2000, nextState?: () => ActionState) {
     super(timeout, nextState);
     this._target = target;
     this._timeToWait = DELAYS.getDelay("request-trade");

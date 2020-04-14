@@ -1,6 +1,6 @@
 import { log } from "../util/log";
 import DELAYS from "../util/humanDelay";
-import { ActionState, SuccessAction } from "../../lib";
+import { ActionState, SuccessAction, FailureAction } from "../../lib";
 import { RetryActionState } from "./retryActionState";
 import { ClientAPI } from "panoptyk-engine/dist/client";
 
@@ -8,7 +8,7 @@ export class ReadyInTradeAction extends RetryActionState {
   _timeToWait;
   _waitTime = 0;
 
-  constructor(timeout = 500, nextState?: () => ActionState) {
+  constructor(timeout = 5000, nextState?: () => ActionState) {
     super(timeout, nextState);
     this._timeToWait = DELAYS.getDelay("trade-action");
   }
@@ -29,5 +29,11 @@ export class ReadyInTradeAction extends RetryActionState {
     } else {
       return this;
     }
+  }
+
+  async tick() {
+    const state = await super.tick();
+    // need it only to pass success
+    return state === FailureAction.instance ? SuccessAction.instance : state;
   }
 }
