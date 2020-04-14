@@ -42,7 +42,8 @@ export class CrimeLeader extends Strategy {
   static isValidQuestingAgent(agent: Agent): boolean {
     if (
       ClientAPI.playerAgent.faction === agent.faction &&
-      !KB.instance.questingAgents.has(agent)
+      !KB.instance.questingAgents.has(agent) &&
+      !agent.agentStatus.has("bot")
     ) {
       return true;
     }
