@@ -372,6 +372,9 @@ span.illegal {
   color: red;
   font-weight: bold;
 }
+span.because {
+  font-weight: bold;
+}
 
 body {
   width: 100%;

@@ -513,10 +513,13 @@ class Sentence {
           text: terms.loc.roomName + " "
         });
         arr.push({
-          type: Sentence.BlockType.NONE,
+          type: Sentence.BlockType.BECAUSE,
           text: "because "
         });
-        arr.push(...Sentence.fromInfo(terms.info));
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: Sentence.formInfoString(terms.info) + " "
+        });
         arr.push({
           type: Sentence.BlockType.NONE,
           text: "The arrest happened "
@@ -634,10 +637,13 @@ class Sentence {
           text: terms.loc.roomName + " "
         });
         arr.push({
-          type: Sentence.BlockType.NONE,
+          type: Sentence.BlockType.BECAUSE,
           text: "because "
         });
-        arr.push(...Sentence.fromInfo(terms.info));
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: Sentence.formInfoString(terms.info) + " "
+        });
         arr.push({
           type: Sentence.BlockType.NONE,
           text: "The thanking happened "
@@ -661,10 +667,13 @@ class Sentence {
           text: terms.loc.roomName + " "
         });
         arr.push({
-          type: Sentence.BlockType.NONE,
+          type: Sentence.BlockType.BECAUSE,
           text: "because "
         });
-        arr.push(...Sentence.fromInfo(terms.info));
+        arr.push({
+          type: Sentence.BlockType.NONE,
+          text: Sentence.formInfoString(terms.info) + " "
+        });
         arr.push({
           type: Sentence.BlockType.NONE,
           text: "The assault happened "
@@ -732,7 +741,8 @@ namespace Sentence {
     INFO = "info",
     QUEST = "quest",
     FACTION = "faction",
-    ILLEGAL = "illegal"
+    ILLEGAL = "illegal",
+    BECAUSE = "because"
   }
   export interface Block {
     prev?: Block;

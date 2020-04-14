@@ -69,7 +69,7 @@
           </div>
         </div>
         <footer class="card-footer">
-          <a class="card-footer-item" @click="onQuestTurnIn">Turn in Info</a>
+          <a class="card-footer-item" @click="onQuestTurnIn">Turn in Quest Info</a>
           <div v-if="isQuestGiver">
             <a class="card-footer-item" @click="onCompleteQuest"
               >Mark as Complete</a
@@ -298,6 +298,7 @@ export default class ConverstaionTab extends Vue {
   leaveConvo() {
     ClientAPI.leaveConversation(ClientAPI.playerAgent.conversation).then(
       res => {
+        UI.instance.setRightTab(UI.RTABS.REQUESTS);
       },
       err => {
         UI.instance.addError(err.message);

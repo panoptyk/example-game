@@ -501,11 +501,26 @@ class GameState extends Phaser.State {
       case "ARRESTED":
         if (terms.agent2.id === playerID) {
           // add a loading image later
+          let reason = "";
+          const reasonTerms = terms.info.getTerms();
+          switch (terms.info.action) {
+            case "STOLE":
+              reason = "stealing " + reasonTerms.item + " from " + reasonTerms.agent2 + ". ";
+              break;
+            case "ASSAULTED":
+              reason = "the barbaric assault of " + reasonTerms.agent2 + ". ";
+              break;
+            default:
+              if (reasonTerms.item) {
+                reason = "handling illegal " + reasonTerms.item.itemName + ". ";
+              }
+              break;
+          }
           this.UI.setLeftTab(UI.LTABS.INSPECT);
           this.UI.addImportantMessage(
             "You have been arrested by " +
-              terms.agent1.agentName +
-              ". All of your valuables are ripped away from you by the corrupt town watch. " +
+              terms.agent1.agentName + " for " + reason +
+              "All of your valuables are ripped away from you by the corrupt town watch. " +
               "You languish in a dark cell until your faction sends a bribe to have you released. " +
               "This incident has surely lowered your faction rank significantly.",
             "This is an outrage!"
@@ -533,8 +548,9 @@ class GameState extends Phaser.State {
           this.UI.setLeftTab(UI.LTABS.INSPECT);
           this.UI.addImportantMessage(
             "You have been viciously assaulted by " +
-              agent1 +
-              ". You unconscious body is found and taken back to your headquarters, " +
+              agent1 + ". Your assailant claims you brought this upon yourself by interfering " +
+              "with Thieves Guild business and arresting one of its members. " +
+              "You unconscious body is found and taken back to your headquarters, " +
               "but all of the items you had are now missing. ",
             "They will not get away with this!"
           );

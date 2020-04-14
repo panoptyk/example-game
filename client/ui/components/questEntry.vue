@@ -23,6 +23,7 @@
       </div>
     </template>
     <h2>Turned-in Info:</h2>
+    <span v-if="!turnedInInfo[0]">Nothing turned-in yet</span>
     <template v-for="i of turnedInInfo">
       <div class="info-box" v-bind:key="i.id">
         <div class="info-id">#{{ i.id }}</div>
