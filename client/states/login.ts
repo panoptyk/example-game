@@ -11,38 +11,49 @@ export class Login extends Phaser.State {
 
     this.game.add.plugin(new PhaserInput.Plugin(this.game, this.game.plugins));
 
-    const userField = this.game.add.inputField(this.game.world.centerX - 100, this.game.world.height / 4 - 16, {
-      type: PhaserInput.InputType.text,
-      placeHolder: "username",
-      font: "18px Space Mono",
-      width: inputFieldWidth,
-      height: inputFieldHeight
-    });
-
-    const passwordField = this.game.add.inputField(this.game.world.centerX - 100, this.game.world.height / 4 + 16, {
-        type: PhaserInput.InputType.password,
-        placeHolder: "password",
+    const userField = this.game.add.inputField(
+      this.game.world.centerX - 100,
+      this.game.world.height / 4 - 16,
+      {
+        type: PhaserInput.InputType.text,
+        placeHolder: "username",
         font: "18px Space Mono",
         width: inputFieldWidth,
-        height: inputFieldHeight
-    });
+        height: inputFieldHeight,
+      }
+    );
+    userField.focusOutOnEnter = false;
+    userField.blockInput = false;
+    const enterKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
 
-    const login = () => {ClientAPI.login(userField.value, passwordField.value)
-      .then(
-        res => {
+    const login = () => {
+      ClientAPI.login(userField.value, "").then(
+        (res) => {
           console.log("Success! " + ClientAPI.playerAgent);
           userField.destroy();
-          passwordField.destroy();
           button.destroy();
-          UI.instance.main.$data.activeQuests = ClientAPI.playerAgent.activeAssignedQuests.length;
+          enterKey.onDown.removeAll();
+          UI.instance.main.$data.activeQuests =
+            ClientAPI.playerAgent.activeAssignedQuests.length;
           this.ready = true;
         },
-        err => {
+        (err) => {
           UI.instance.addError(err.message);
-      });
+        }
+      );
     };
 
-    const button = this.game.add.button(this.game.world.centerX - 95, this.game.world.height / 4 + 52, Assets.Spritesheets.SpritesheetsButtonSpriteSheet193713.getName(), login, this, 2, 1, 0);
+    const button = this.game.add.button(
+      this.game.world.centerX - 95,
+      this.game.world.height / 4 + 52,
+      Assets.Spritesheets.SpritesheetsButtonSpriteSheet193713.getName(),
+      login,
+      this,
+      2,
+      1,
+      0
+    );
+    enterKey.onDown.add(login);
   }
 
   public update(): void {
