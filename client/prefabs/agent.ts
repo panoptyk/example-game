@@ -50,18 +50,18 @@ export class AgentSprite extends Phaser.Sprite {
     this.hoverText = this.game.make.text(0, 0, agent.agentName, style);
     this.addChild(this.hoverText);
     this.hoverText.position.set((this.width - this.hoverText.width) / 2, -28);
-    this.hoverText.visible = false;
+    this.hoverText.visible = true;
 
     this.createChatBubble();
 
     this.inputEnabled = enableInput;
     this.events.onInputDown.add(this.onDown);
-    this.events.onInputOver.add(() => {
-      this.hoverText.visible = !this.inConvo;
-    });
-    this.events.onInputOut.add(() => {
-      this.hoverText.visible = false;
-    });
+    // this.events.onInputOver.add(() => {
+    //   this.hoverText.visible = !this.inConvo;
+    // });
+    // this.events.onInputOut.add(() => {
+    //   this.hoverText.visible = false;
+    // });
   }
 
   private onDown(sprite) {
