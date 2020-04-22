@@ -29,7 +29,7 @@
               min="0"
               v-model="gold"
               controls-position="compact"
-              controls-rounded              
+              controls-rounded
             >
             </b-numberinput>
 
@@ -43,17 +43,17 @@
             </div>
           </b-field>
 
-          <b-field class="no-margin" label="Item" grouped>
+          <b-field class="no-margin" label="Your Items" grouped>
             <span class="trade-text" style="margin-left: auto;"> I: </span>
             <b-select
               placeholder="--Item Name--"
               size="is-small"
               class="trade-select"
-              v-model="item"
+              v-model="offItem"
             >
               <option disabled value>--Item Name--</option>
               <option
-                v-for="i in items"
+                v-for="i in inventory"
                 v-bind:key="i.id"
                 v-bind:value="i"
                 >{{ getItemName(i) }}</option
@@ -64,19 +64,38 @@
               <b-button class="button" size="is-small" @click="onOfferItem"
                 >Offer</b-button
               >
+            </div>
+          </b-field>
+
+          <b-field class="no-margin" label="All Items" grouped>
+            <span class="trade-text" style="margin-left: auto;"> I: </span>
+            <b-select
+              placeholder="--Item Name--"
+              size="is-small"
+              class="trade-select"
+              v-model="reqItem"
+            >
+              <option disabled value>--Item Name--</option>
+              <option v-for="i in items" v-bind:key="i.id" v-bind:value="i">{{
+                getItemName(i)
+              }}</option>
+            </b-select>
+
+            <div class="trade-right">
               <b-button class="button" size="is-small" @click="onReqItem"
                 >Request</b-button
               >
             </div>
           </b-field>
 
-          <b-field class="no-margin" label="Answer" grouped>
+          <b-field class="no-margin" label="Offer an Answer" grouped>
             <span class="trade-text" style="margin-left: .5rem;"> Q: </span>
             <b-select
               placeholder="--ID--"
               size="is-small"
               class="trade-select"
               v-model="question"
+              @input="onQuestionSelect"
             >
               <option disabled value>--ID--</option>
               <option
@@ -95,31 +114,57 @@
             >
               <option disabled value>--ID--</option>
               <option
-                v-for="i in knowledge"
+                v-for="i in validAnswers"
                 v-bind:key="i.id"
                 v-bind:value="i"
                 >{{ i.id }}</option
               >
             </b-select>
-
             <div class="trade-right">
               <b-button class="button" size="is-small" @click="onOfferAnswer"
                 >Offer</b-button
               >
-              <!-- <b-button class="button" size="is-small" @click="onReqAnswer"
+            </div>
+          </b-field>
+          <b-field class="no-margin" label="Request an Answer" grouped>
+            <span class="trade-text" style="margin-left: .5rem;"> Q: </span>
+            <b-select
+              placeholder="--ID--"
+              size="is-small"
+              class="trade-select"
+              v-model="toAsk"
+            >
+              <option disabled value>--ID--</option>
+              <option
+                v-for="q in questions"
+                v-bind:key="q.id"
+                v-bind:value="q"
+                >{{ q.id }}</option
+              >
+            </b-select>
+            <div class="trade-right">
+              <b-button class="button" size="is-small" @click="onReqAnswer"
                 >Request</b-button
-              > -->
+              >
             </div>
           </b-field>
         </div>
       </div>
       <footer class="card-footer" v-if="!otherReady">
-        <b-switch class="card-footer-item" v-model="indicateReady" @input="sendReady">
+        <b-switch
+          class="card-footer-item"
+          v-model="indicateReady"
+          @input="sendReady"
+        >
           {{ ready(indicateReady) }}
         </b-switch>
       </footer>
       <footer class="card-footer" v-else>
-        <b-switch class="card-footer-item" v-model="indicateReady" @input="sendReady">
+        <b-switch
+          class="card-footer-item"
+          v-model="indicateReady"
+          @input="sendReady"
+        >
           Complete Trade
         </b-switch>
       </footer>
@@ -140,22 +185,40 @@
       </div>
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div> 
-            Gold: {{ myGoldOffer }} 
-            <b-button class="button" v-if="myGoldOffer" size="is-small" @click="onRemoveAllOfferedGold()"
+          <div>
+            Gold: {{ myGoldOffer }}
+            <b-button
+              class="button"
+              v-if="myGoldOffer"
+              size="is-small"
+              @click="onRemoveAllOfferedGold()"
               >Remove</b-button
             >
           </div>
-          <div> Items: 
-            <span v-for="i in myItemOffers" v-bind:key="i.id">{{ getItemName(i) }}
+          <div>
+            Items:
+            <span v-for="i in myItemOffers" v-bind:key="i.id"
+              >{{ getItemName(i) }}
               <b-button class="button" size="is-small" @click="onRemoveItem(i)"
                 >Remove</b-button
-              >
-              , 
+              >,
             </span>
           </div>
-          <div> Answers </div>
-          <div v-for="a in myAnswerOffers" v-bind:key="a.qID">One answer to question({{ a.qID }}) <span v-if="a.masked"> masked.</span> <span v-else> not masked.</span> </div>
+          <div>
+            Answers:
+            <div
+              v-for="answerObj in myAnswerOffers"
+              v-bind:key="answerObj.answerID"
+            >
+              Info#{{ answerObj.answerID }}
+              <b-button
+                class="button"
+                size="is-small"
+                @click="onRemoveAnswer(answerObj.answerID)"
+                >Remove</b-button
+              >
+            </div>
+          </div>
         </div>
       </div>
     </b-collapse>
@@ -175,20 +238,41 @@
       </div>
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div> 
+          <div>
             Gold: {{ myGoldRequest }}
-            <b-button class="button" v-if="myGoldRequest" size="is-small" @click="onRemoveAllRequestedGold()"
+            <b-button
+              class="button"
+              v-if="myGoldRequest"
+              size="is-small"
+              @click="onRemoveAllRequestedGold()"
               >Remove</b-button
             >
           </div>
-          <div> Items: 
-            <span v-for="row in myItemRequests" v-bind:key="row[0].id">{{ getItemName(row[0]) }}
+          <div>
+            Items:
+            <span v-for="row in myItemRequests" v-bind:key="row[0].id"
+              >{{ getItemName(row[0]) }}
               <span v-if="row[1]">(Refused)</span>
-              <b-button class="button" size="is-small" @click="onRemoveItemRequest(row[0])"
+              <b-button
+                class="button"
+                size="is-small"
+                @click="onRemoveItemRequest(row[0])"
+                >Remove</b-button
+              >,
+            </span>
+          </div>
+          <div>
+            Answers:
+            <div v-for="row in myAnswerRequests" v-bind:key="row[0].id">
+              Answer(s) to Question#{{ row[0].id }}
+              <span v-if="row[1]">(Refused)</span>
+              <b-button
+                class="button"
+                size="is-small"
+                @click="onRemoveAnswerRequest(row[0])"
                 >Remove</b-button
               >
-              , 
-            </span>
+            </div>
           </div>
         </div>
       </div>
@@ -202,17 +286,30 @@
         role="button"
         aria-controls="other-offer"
       >
-        <p class="card-header-title">{{ otherAgent.agentName }}'s offer ({{ ready(otherReady) }})</p>
+        <p class="card-header-title">
+          {{ otherAgent.agentName }}'s offer ({{ ready(otherReady) }})
+        </p>
         <a class="card-header-icon">
           <b-icon :icon="props.open ? 'menu-down' : 'menu-up'"></b-icon>
         </a>
       </div>
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div> Gold: {{ otherGoldOffer }} </div>
-          <div> Items: <span v-for="i in otherItemOffers" v-bind:key="i.id">{{ getItemName(i) }}, </span></div>
-          <div> Answers </div>
-          <div v-for="a in otherAnswerOffers" v-bind:key="a.qID">One answer to question({{ a.qID }}) <span v-if="a.masked"> masked.</span> <span v-else> not masked.</span> </div>
+          <div>Gold: {{ otherGoldOffer }}</div>
+          <div>
+            Items:
+            <span v-for="i in otherItemOffers" v-bind:key="i.id"
+              >{{ getItemName(i) }},
+            </span>
+          </div>
+          <div>
+            Answers:
+            <div v-for="a in otherAnswerOffers" v-bind:key="a.qID">
+              <div v-if="a.quantity > 0">
+                {{ a.quantity }} answer(s) to Question#{{ a.qID }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </b-collapse>
@@ -232,15 +329,34 @@
       </div>
       <div class="card-content">
         <div class="content" style="max-height: 200px; overflow-y:auto;">
-          <div> Gold: {{ otherGoldRequest }} </div>
-          <div> Items: 
-            <span v-for="row in otherItemRequests" v-bind:key="row[0].id">{{ getItemName(row[0]) }}
-              <b-button class="button" v-if="!row[1]" size="is-small" @click="onRejectItem(row[0])"
+          <div>Gold: {{ otherGoldRequest }}</div>
+          <div>
+            Items:
+            <span v-for="row in otherItemRequests" v-bind:key="row[0].id"
+              >{{ getItemName(row[0]) }}
+              <b-button
+                class="button"
+                v-if="!row[1]"
+                size="is-small"
+                @click="onRejectItem(row[0])"
+                >Reject</b-button
+              >
+              <span v-if="row[1]">(Refused)</span>,
+            </span>
+          </div>
+          <div>
+            Answers:
+            <div v-for="row in otherAnswerRequests" v-bind:key="row[0].id"
+              >Answer(s) to Question#{{ row[0].id }}
+              <b-button
+                class="button"
+                v-if="!row[1]"
+                size="is-small"
+                @click="onRejectAnswerReq(row[0])"
                 >Reject</b-button
               >
               <span v-if="row[1]">(Refused)</span>
-              , 
-            </span>
+            </div>
           </div>
         </div>
       </div>
@@ -261,14 +377,20 @@ import { UI } from "../ui";
 export default class TradeTab extends Vue {
   @Prop({ default: 0 }) trigger: number;
   @Prop({ default: [] }) items: Item[];
+  @Prop({ default: [] }) inventory: Item[];
   @Prop({ default: [] }) knowledge: Info[];
+  @Prop({ default: [] }) validAnswers: Info[];
+  @Prop({ default: undefined }) question: Info;
+  @Prop({ default: undefined }) answer: Info;
+  @Prop({ default: undefined }) toAsk: Info;
+
   // Toggle what to display depending on if in a trade
   inTrade = false;
   @Watch("trigger")
   updateInTrade() {
     this.inTrade = ClientAPI.playerAgent
-       ? ClientAPI.playerAgent.trade !== undefined
-       : false;
+      ? ClientAPI.playerAgent.trade !== undefined
+      : false;
   }
   leaveTrade() {
     ClientAPI.cancelTrade();
@@ -287,6 +409,11 @@ export default class TradeTab extends Vue {
   otherGoldRequest: number;
   myItemRequests;
   otherItemRequests;
+  myAnswerRequests;
+  otherAnswerRequests;
+  gold: number;
+  offItem: Item;
+  reqItem: Item;
 
   @Watch("trigger")
   updateTrade() {
@@ -295,9 +422,8 @@ export default class TradeTab extends Vue {
     }
     const trade = ClientAPI.playerAgent.trade;
     const player = ClientAPI.playerAgent;
-    this.otherAgent = trade.conversation.getAgents(
-      ClientAPI.playerAgent
-    )[0];
+    this.inventory = player.inventory;
+    this.otherAgent = trade.conversation.getAgents(ClientAPI.playerAgent)[0];
     // Get ready status
     this.myReady = trade.getAgentReadyStatus(player);
     this.indicateReady = this.myReady;
@@ -309,7 +435,7 @@ export default class TradeTab extends Vue {
     this.myItemOffers = trade.getAgentItemsData(player);
     this.otherItemOffers = trade.getAgentItemsData(this.otherAgent);
     // Get answer offers
-    this.myAnswerOffers = trade.getAnswersOffered(player);
+    this.myAnswerOffers = trade.getAgentsAnswers(player);
     this.otherAnswerOffers = trade.getAnswersOffered(this.otherAgent);
     // Get gold requests
     this.myGoldRequest = trade.getAgentsRequestedGold(player);
@@ -317,6 +443,9 @@ export default class TradeTab extends Vue {
     // Get item requests
     this.myItemRequests = trade.getAgentsRequestedItems(player);
     this.otherItemRequests = trade.getAgentsRequestedItems(this.otherAgent);
+    // Get answer requests
+    this.myAnswerRequests = trade.getAgentsRequestedAnswers(player);
+    this.otherAnswerRequests = trade.getAgentsRequestedAnswers(this.otherAgent);
   }
   // Indicator for if player is ready
   indicateReady = false;
@@ -329,104 +458,138 @@ export default class TradeTab extends Vue {
 
   // trade controls tab
   questions: Info[] = [];
-  @Watch("knowledge") 
+  @Watch("knowledge")
   updateQuestions() {
-    this.questions = ClientAPI.playerAgent.getInfoByAction(Info.ACTIONS.ASK.name).map(i => i.getTerms().info);
+    this.questions = ClientAPI.playerAgent
+      .getInfoByAction(Info.ACTIONS.ASK.name)
+      .map((i) => i.getTerms().info);
+    this.onQuestionSelect();
   }
-  gold: number;
-  item: Item;
-  question: Info;
-  answer: Info;
+
+  onQuestionSelect() {
+    this.validAnswers = [];
+    if (this.question) {
+      console.log(this.question.getTerms());
+      for (const info of ClientAPI.playerAgent.knowledge) {
+        if (
+          !info.isQuery() &&
+          !info.isCommand() &&
+          info.isAnswer(this.question)
+        ) {
+          this.validAnswers.push(info);
+        }
+      }
+    }
+  }
 
   onOfferGold() {
     ClientAPI.addGoldToTrade(this.gold - this.myGoldOffer).then(
-      res => {
-      },
-      err => {
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
   }
   onRemoveAllOfferedGold() {
     ClientAPI.removeGoldfromTrade(this.gold).then(
-      res => {
-      },
-      err => {
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
   }
   onRemoveAllRequestedGold() {
     ClientAPI.requestGoldTrade(0).then(
-      res => {
-      },
-      err => {
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
   }
   onReqGold() {
     ClientAPI.requestGoldTrade(this.gold).then(
-      res => {
-      },
-      err => {
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
   }
   onOfferItem() {
-    ClientAPI.offerItemsTrade([this.item]).then(
-      res => {
-      },
-      err => {
+    ClientAPI.offerItemsTrade([this.offItem]).then(
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
   }
   onReqItem() {
-    ClientAPI.requestItemTrade(this.item).then(
-      res => {
-      },
-      err => {
+    ClientAPI.requestItemTrade(this.reqItem).then(
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
   }
   onOfferAnswer() {
     ClientAPI.offerAnswerTrade(this.answer, this.question).then(
-      res => {
-      },
-      err => {
+      (res) => {},
+      (err) => {
+        UI.instance.addError(err.message);
+      }
+    );
+  }
+  onRejectAnswerReq(info: Info) {
+    ClientAPI.passInfoRequestTrade(info).then(
+      (res) => {},
+      (err) => {
+        UI.instance.addError(err.message);
+      }
+    );
+  }
+  onRemoveAnswerRequest(info: Info) {
+    ClientAPI.removeInfoRequestTrade(info).then(
+      (res) => {},
+      (err) => {
+        UI.instance.addError(err.message);
+      }
+    );
+  }
+  onRemoveAnswer(infoID: number) {
+    ClientAPI.withdrawInfoTrade(Info.getByID(infoID)).then(
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
   }
   onReqAnswer() {
-    console.log("Not Implemented!");
+    ClientAPI.requestAnswerTrade(this.toAsk).then(
+      (res) => {},
+      (err) => {
+        UI.instance.addError(err.message);
+      }
+    );
   }
   onRejectItem(item: Item) {
     ClientAPI.passItemRequestTrade(item).then(
-      res => {
-      },
-      err => {
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
   }
   onRemoveItem(item: Item) {
     ClientAPI.withdrawItemsTrade([item]).then(
-      res => {
-      },
-      err => {
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
   }
   onRemoveItemRequest(item: Item) {
     ClientAPI.removeItemRequest(item).then(
-      res => {
-      },
-      err => {
+      (res) => {},
+      (err) => {
         UI.instance.addError(err.message);
       }
     );
