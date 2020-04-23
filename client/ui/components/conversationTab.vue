@@ -30,9 +30,9 @@
               <option disabled value>-- action --</option>
               <option
                 v-for="act in defaultActions"
-                v-bind:key="act"
-                v-bind:value="act"
-                >{{ act }}</option
+                v-bind:key="act.display"
+                v-bind:value="act.value"
+                >ask about {{ act.display }}</option
               >
             </b-select>
           </b-field>
@@ -209,51 +209,53 @@
               >
             </b-select>
           </b-field>
-          <quest-entry
-            v-bind:key="targetQuest.id"
-            v-bind:quest="targetQuest"
-            v-bind:abbridged="true"
-          ></quest-entry>
-          <b-field v-if="targetQuest.type !== 'item'">
-            <b-select
-              placeholder="-- info --"
-              size="is-small"
-              v-model="questInfo"
-            >
-              <option disabled value>-- info --</option>
-              <option
-                v-for="info in relevantInfo"
-                v-bind:key="info.id"
-                v-bind:value="info"
-                >{{ getType(info) }}#{{ info.id }}</option
+          <template v-if="targetQuest.id != undefined">
+            <quest-entry
+              v-bind:key="targetQuest.id"
+              v-bind:quest="targetQuest"
+              v-bind:abbridged="true"
+            ></quest-entry>
+            <b-field v-if="targetQuest.type !== 'item'">
+              <b-select
+                placeholder="-- info --"
+                size="is-small"
+                v-model="questInfo"
               >
-            </b-select>
-          </b-field>
-          <b-field v-else>
-            <b-select
-              placeholder="-- item --"
-              size="is-small"
-              v-model="questItem"
-            >
-              <option disabled value>-- item --</option>
-              <option
-                v-for="item in relevantItem"
-                v-bind:key="item.id"
-                v-bind:value="item"
-                >{{ item.itemName }}</option
+                <option disabled value>-- info --</option>
+                <option
+                  v-for="info in relevantInfo"
+                  v-bind:key="info.id"
+                  v-bind:value="info"
+                  >{{ getType(info) }}#{{ info.id }}</option
+                >
+              </b-select>
+            </b-field>
+            <b-field v-else>
+              <b-select
+                placeholder="-- item --"
+                size="is-small"
+                v-model="questItem"
               >
-            </b-select>
-          </b-field>
-          <info-entry
-            v-if="targetQuest.type !== 'item'"
-            v-bind:key="questInfo.id"
-            v-bind:info="questInfo"
-          ></info-entry>
-          <item-entry
-            v-else
-            v-bind:key="questItem.id"
-            v-bind:item="questItem"
-          ></item-entry>
+                <option disabled value>-- item --</option>
+                <option
+                  v-for="item in relevantItem"
+                  v-bind:key="item.id"
+                  v-bind:value="item"
+                  >{{ item.itemName }}</option
+                >
+              </b-select>
+            </b-field>
+            <info-entry
+              v-if="targetQuest.type !== 'item'"
+              v-bind:key="questInfo.id"
+              v-bind:info="questInfo"
+            ></info-entry>
+            <item-entry
+              v-else
+              v-bind:key="questItem.id"
+              v-bind:item="questItem"
+            ></item-entry>
+          </template>
         </div>
       </div>
       <footer class="card-footer">
@@ -290,7 +292,7 @@ import {
   Room,
   Info,
   Item,
-  Quest
+  Quest,
 } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import infoEntry from "./infoEntry.vue";
@@ -301,8 +303,8 @@ import ItemEntry from "./itemEntry.vue";
   components: {
     "info-entry": infoEntry,
     "quest-entry": questEntry,
-    "item-entry": ItemEntry
-  }
+    "item-entry": ItemEntry,
+  },
 })
 export default class ConverstaionTab extends Vue {
   @Prop({ default: 0 }) trigger: number;
@@ -339,7 +341,7 @@ export default class ConverstaionTab extends Vue {
   }
 
   // For question asking
-  @Prop({ default: [] }) defaultActions: string[];
+  @Prop({ default: [] }) defaultActions: { value: string; display: string }[];
   @Prop({ default: [] }) agents;
   @Prop({ default: [] }) items;
   @Prop({ default: [] }) rooms;
@@ -352,7 +354,7 @@ export default class ConverstaionTab extends Vue {
   onActionSelected() {
     this.questionInfo = {};
     const action =
-      this.actionSelected === this.defaultActions[0]
+      this.actionSelected === this.defaultActions[0].value
         ? undefined
         : this.actionSelected;
     const dummyInfo = {
@@ -360,7 +362,7 @@ export default class ConverstaionTab extends Vue {
       items: [],
       locations: [],
       quantities: [],
-      factions: []
+      factions: [],
     };
     this.questionInfo = action
       ? Info.ACTIONS[action].getTerms(dummyInfo)
@@ -380,24 +382,24 @@ export default class ConverstaionTab extends Vue {
     val = val.replace(/\d/, "");
     switch (val) {
       case "agent":
-        items = this.agents.map(a => {
+        items = this.agents.map((a) => {
           return { id: a.id, text: a.agentName, model: a };
         });
         break;
       case "loc":
-        items = this.rooms.map(r => {
+        items = this.rooms.map((r) => {
           return { id: r.id, text: r.roomName, model: r };
         });
         break;
       case "item":
         items = this.items
-          .filter(i => !i.isMaster())
-          .map(i => {
+          .filter((i) => !i.isMaster())
+          .map((i) => {
             return { id: i.id, text: i.itemName + "#" + i.id, model: i };
           });
         break;
       case "info":
-        items = this.knowledge.map(k => {
+        items = this.knowledge.map((k) => {
           return { id: k.id, text: k.id, model: k };
         });
         break;
@@ -413,7 +415,7 @@ export default class ConverstaionTab extends Vue {
   get questionInfoEntry() {
     const q: any = Object.assign({}, this.questionInfo);
     q.action =
-      this.actionSelected === this.defaultActions[0]
+      this.actionSelected === this.defaultActions[0].value
         ? undefined
         : this.actionSelected;
     return q;
@@ -423,7 +425,7 @@ export default class ConverstaionTab extends Vue {
     console.log("Asked!");
     const q: any = Object.assign({}, this.questionInfo);
     q.action =
-      this.actionSelected === this.defaultActions[0]
+      this.actionSelected === this.defaultActions[0].value
         ? undefined
         : this.actionSelected;
     ClientAPI.askQuestion(q);
@@ -466,7 +468,10 @@ export default class ConverstaionTab extends Vue {
     }
     this.inventory = ClientAPI.playerAgent.inventory;
     this.questions = ClientAPI.playerAgent.conversation.askedQuestions;
-    if (this.quests.length <= 0 || this.targetQuest && this.targetQuest.status !== "ACTIVE") {
+    if (
+      this.quests.length <= 0 ||
+      (this.targetQuest && this.targetQuest.status !== "ACTIVE")
+    ) {
       this.targetQuest = {} as Quest;
     } else {
       this.onQuestSelect();
