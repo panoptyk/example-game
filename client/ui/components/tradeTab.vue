@@ -53,7 +53,7 @@
             >
               <option disabled value>--ID--</option>
               <option
-                v-for="i in poassessItems"
+                v-for="i in posessItems"
                 v-bind:key="i.id"
                 v-bind:value="i"
                 >{{ i.itemName + "#" + i.id }}</option
@@ -283,7 +283,7 @@ export default class TradeTab extends Vue {
   }
 
   get posessItems() {
-    return this.items.filter(i => i.agent.id === ClientAPI.playerAgent.id);
+    return this.items.filter(i => (i.agent ? i.agent.id : 0) === ClientAPI.playerAgent.id);
   }
 
   get masterItems() {

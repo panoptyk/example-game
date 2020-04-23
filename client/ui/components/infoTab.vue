@@ -13,9 +13,9 @@
           <option v-bind:value="'NONE'">NONE</option>
           <option
             v-for="act in filteredActions"
-            v-bind:key="act"
-            v-bind:value="act"
-            >{{ act }}</option
+            v-bind:key="act.display"
+            v-bind:value="act.value"
+            >{{ act.display }}</option
           >
         </b-select>
       </b-field>

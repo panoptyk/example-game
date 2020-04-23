@@ -7,7 +7,7 @@ import {
   Room,
   Item,
   formatPanoptykDatetime,
-  ClientAPI
+  ClientAPI,
 } from "panoptyk-engine/dist/client";
 
 // useful formats
@@ -22,6 +22,23 @@ interface InfoTableEntry {
   item;
 }
 
+const verbMap = {
+  "???": "what someone did",
+  MOVE: "who moved",
+  PICKUP: "who picked up what",
+  DROP: "who dropped what",
+  KNOW: "who knows what",
+  CONVERSE: "who conversed with who",
+  GREET: "who greeted who",
+  ASK: "who asked what",
+  TOLD: "who told what",
+  GAVE: "who gave what",
+  QUEST: "who assigned a quest to who",
+  QUEST_COMPLETE: "who completed a quest",
+  QUEST_FAILED: "who failed a quest",
+  LOCATED_IN: "where an item is",
+};
+
 export class UI {
   // Singleton pattern
   private static _instance: UI;
@@ -35,14 +52,14 @@ export class UI {
   public static readonly RTABS = {
     REQUESTS: 0,
     CONVERSATION: 1,
-    TRADE: 2
+    TRADE: 2,
   };
 
   public static readonly LTABS = {
     INSPECT: 0,
     ITEMS: 1,
     INFO: 2,
-    QUEST: 3
+    QUEST: 3,
   };
 
   private lastLeftTab: typeof UI.LTABS;
@@ -54,16 +71,23 @@ export class UI {
   public prompting = false;
   constructor() {
     this.vm = new Vue({
-      render: h => h(App)
+      render: (h) => h(App),
     }).$mount("#app");
     this.main = this.vm.$children[0];
     // set up console data
     this.maxMsgs = this.main.$data.maxMsgs;
     // set up list of actions
-    this.main.$data.listOfActions = ["???"];
+    const acts = ["???"];
     for (const act in Info.ACTIONS) {
-      this.main.$data.listOfActions.push(Info.ACTIONS[act].name);
+      acts.push(Info.ACTIONS[act].name);
     }
+    const temp = [];
+    acts.forEach(val => {
+      if (verbMap[val]) {
+        temp.push({value: val, display: verbMap[val]});
+      }
+    });
+    this.main.$data.listOfActions = temp;
     // initial tabs positions
     this.setLeftTab(UI.LTABS.INFO);
   }
