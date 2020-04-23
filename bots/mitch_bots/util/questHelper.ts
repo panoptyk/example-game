@@ -20,13 +20,13 @@ class QuestHelper {
 
   static MAX_QUESTS = 4;
   static MIN_QUESTS = 1;
-  static MAX_QUANTITY = 3;
+  static MAX_QUANTITY = 2;
   static MIN_QUANTITY = 1;
 
   static getMaxQuests(lvl: number) {
     return Math.min(
       QuestHelper.MAX_QUESTS,
-      Math.max(QuestHelper.MIN_QUESTS, Math.floor(Math.random() * lvl))
+      Math.max(QuestHelper.MIN_QUESTS, lvl)
     );
   }
 
@@ -135,7 +135,7 @@ class QuestHelper {
   public async giveCraftsmenQuest(agent: Agent) {
     const lvl = agent.factionStatus.lvl;
     const quantity = QuestHelper.getRandomQuantity(lvl);
-    const rewardXP = 35 * quantity;
+    const rewardXP = 65 * quantity;
     const fetchTarget: Item = lvl < 3 ? this.getFetchItem() : this.getFetchItem2();
     await ClientAPI.giveQuest(
       agent,
@@ -168,7 +168,7 @@ class QuestHelper {
   public async giveInformantsQuest(agent: Agent) {
     const lvl = agent.factionStatus.lvl;
     const quantity = QuestHelper.getRandomQuantity(lvl);
-    const rewardXP = 35 * quantity;
+    const rewardXP = 65 * quantity;
     const query = lvl < 3 ? this.getQuery() : this.getQuery2();
     await ClientAPI.giveQuest(
       agent,
