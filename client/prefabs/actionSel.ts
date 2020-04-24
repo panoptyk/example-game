@@ -6,7 +6,7 @@ import { DoorSprite } from "./door";
 import GS from "./../states/game";
 import { ItemSprite } from "./item";
 
-const iconSel = function (x, y) {
+const iconSel = function(x, y) {
   return y * 16 + x;
 };
 
@@ -246,14 +246,20 @@ export class ActionSel {
       () => {
         pickupIcon.inputEnabled = true;
         pickupIcon.events.onInputDown.add(() => {
-          ClientAPI.takeItems([item.model]).then(
-            (res) => {
-              UI.instance.setLeftTab(UI.LTABS.ITEMS);
-            },
-            (err) => {
-              GS.instance.addErrorMessage(err.message);
-            }
-          );
+          if (ClientAPI.playerAgent.inventory.length > 0) {
+            GS.instance.addErrorMessage(
+              "You are only strong enough to carry 1 item!"
+            );
+          } else {
+            ClientAPI.takeItems([item.model]).then(
+              (res) => {
+                UI.instance.setLeftTab(UI.LTABS.ITEMS);
+              },
+              (err) => {
+                GS.instance.addErrorMessage(err.message);
+              }
+            );
+          }
         });
       }
     );
