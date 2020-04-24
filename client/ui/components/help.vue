@@ -12,8 +12,8 @@
               {{ b.text }}
             </span>
             <span v-if="quest.id">
-              <br>
-              <br>
+              <br />
+              <br />
               You can turn in a quest when in a conversation with the person who
               gave it. You must select the info you wish to turn-in and click
               the "Turn in Quest Info" button. The quest giver marks the quest
@@ -55,13 +55,12 @@
 
           <b-tab-item label="Information">
             Every action that occurs in panoptyk is stored as information. You
-            can sort information by type, agent, location, and item. Not all
+            can sort information by action, agent, location, and item. Not all
             information types will be able to be filtered by agent and item, for
             example, the MOVE action does not involve any items.
             <img src="./assets/info.png" />
-            The "EVENTS" filter is used to filter between actions, questions
-            people have asked, and commands that have been given as part of a
-            quest.
+            The "EVENTS" filter is used to filter between actions and questions
+            people have asked.
           </b-tab-item>
         </b-tabs>
       </div>
@@ -214,7 +213,7 @@ export default class HelpWindow extends Vue {
                   "You can check their last known move in your Info tab, but " +
                   "it is quite possible that they have moved again. " +
                   "You can arrest someone by clicking the handcuffs icon " +
-                  "after selecting them."
+                  "after selecting them.",
               });
               txt.push({
                 type: Sentence.BlockType.NONE,
@@ -240,7 +239,7 @@ export default class HelpWindow extends Vue {
                   "You can check their last known move in your Info tab, but " +
                   "it is quite possible that they have moved again. " +
                   "You can assault someone by clicking the bloody knife icon " +
-                  "after selecting them."
+                  "after selecting them.",
               });
               txt.push({
                 type: Sentence.BlockType.NONE,

@@ -13,7 +13,10 @@ import {
   ListenToOther,
   IdleState,
   AcceptConersationState,
-  RequestConversationState
+  RequestConversationState,
+  RequestGoldTradeState,
+  PassItemReqTradeState,
+  OfferItemTradeState
 } from "../";
 import { RequestTradeState } from "../ActionStates/reqTradeAState";
 import { SetTradeState } from "../ActionStates/setTradeStatusAState";

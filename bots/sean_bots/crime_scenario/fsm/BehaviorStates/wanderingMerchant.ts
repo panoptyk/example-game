@@ -36,7 +36,7 @@ export class WanderingMerchantBehavior extends BehaviorState {
     return this._activeInstance;
   }
 
-  constructor(idleTimeRoom = 10000, nextState?: () => BehaviorState) {
+  constructor(idleTimeRoom = 15000, nextState?: () => BehaviorState) {
     super(nextState);
     this.idleTimeRoom = idleTimeRoom;
     this.currentActionState = new IdleState(

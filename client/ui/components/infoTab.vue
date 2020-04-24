@@ -178,10 +178,10 @@ export default class InfoTab extends Vue {
     }
   }
 
-  filteredTypes = ["EVENTS", "QUESTIONS", "COMMANDS", "ALL"];
+  filteredTypes = ["EVENTS", "QUESTIONS", "BOTH"];
 
   // Filter controls
-  filterType = "EVENTS";
+  filterType = "BOTH";
   filterAction = "NONE";
   filterAgent;
   filterItem;
@@ -246,9 +246,9 @@ export default class InfoTab extends Vue {
       filterInfo = filterInfo.filter((val: Info) => {
         return val.isQuery();
       });
-    } else if (this.filterType === "COMMANDS") {
+    } else if (this.filterType === "BOTH") {
       filterInfo = filterInfo.filter((val: Info) => {
-        return val.isCommand();
+        return !val.isCommand();
       });
     }
 

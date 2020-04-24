@@ -4,7 +4,7 @@ import {
   SuccessAction,
   FailureAction,
   ActionState,
-  BehaviorState
+  BehaviorState,
 } from "../../../../lib";
 import {
   IdleState,
@@ -15,7 +15,8 @@ import {
   OfferItemTradeState,
   PassItemReqTradeState,
   SetTradeState,
-  TellItemOwnershipState
+  TellItemOwnershipState,
+  RequestGoldTradeState,
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
 import { WanderingMerchantBehavior } from "../BehaviorStates/wanderingMerchant";
@@ -60,30 +61,32 @@ export class Merchant extends Strategy {
     const knowledge = ClientAPI.playerAgent.knowledge;
     for (this._infoIdx; this._infoIdx < knowledge.length; this._infoIdx++) {
       const info = knowledge[this._infoIdx];
-      const terms = info.getTerms();
-      const item: Item = terms.item;
-      switch (info.action) {
-        case "STOLE":
-          this.markCrimeAndCriminal(terms.agent1, info);
-        /* falls through */
-        case "GAVE":
-          if (
-            item.itemTags.has("illegal") &&
-            terms.agent1 !== ClientAPI.playerAgent &&
-            terms.agent2 !== ClientAPI.playerAgent
-          ) {
+      if (!info.isQuery() && !info.isCommand()) {
+        const terms = info.getTerms();
+        const item: Item = terms.item;
+        switch (info.action) {
+          case "STOLE":
             this.markCrimeAndCriminal(terms.agent1, info);
-            this.markCrimeAndCriminal(terms.agent2, info);
-          }
-          break;
-        case "PICKUP":
-          if (
-            item.itemTags.has("illegal") &&
-            terms.agent !== ClientAPI.playerAgent
-          ) {
-            this.markCrimeAndCriminal(terms.agent, info);
-          }
-          break;
+          /* falls through */
+          case "GAVE":
+            if (
+              item.itemTags.has("illegal") &&
+              terms.agent1 !== ClientAPI.playerAgent &&
+              terms.agent2 !== ClientAPI.playerAgent
+            ) {
+              this.markCrimeAndCriminal(terms.agent1, info);
+              this.markCrimeAndCriminal(terms.agent2, info);
+            }
+            break;
+          case "PICKUP":
+            if (
+              item.itemTags.has("illegal") &&
+              terms.agent !== ClientAPI.playerAgent
+            ) {
+              this.markCrimeAndCriminal(terms.agent, info);
+            }
+            break;
+        }
       }
     }
   }
@@ -117,6 +120,13 @@ export class Merchant extends Strategy {
       if (trade.getAgentsOfferedGold(other) >= desiredGold) {
         return new SetTradeState(true, () => this.getNextTradeAction());
       } else {
+        if (
+          trade.getAgentsRequestedGold(ClientAPI.playerAgent) !== desiredGold
+        ) {
+          return new RequestGoldTradeState(desiredGold, () =>
+            this.getNextTradeAction()
+          );
+        }
         return new SetTradeState(false, () => this.getNextTradeAction());
       }
     }
