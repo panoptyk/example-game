@@ -236,3 +236,14 @@ export function exploreItemsCommand(agent: Agent) {
 export function getRoomByName(name: string): Room {
   return ClientAPI.seenRooms.find(room => room.roomName === name);
 }
+
+export function getLastInfoOnItem(item: Item): Info {
+  const itemInfo = ClientAPI.playerAgent.getInfoByItem(item);
+  let lastInfo: Info = undefined;
+  for (const info of itemInfo) {
+    if (!lastInfo || lastInfo.time < info.time) {
+      lastInfo = info;
+    }
+  }
+  return lastInfo;
+}

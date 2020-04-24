@@ -4,7 +4,7 @@ import * as Helper from "../../../../utils/helper";
 
 export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   public readonly ACTION_RATINGS = {
-    GAVE: 2,
+    GAVE: 4,
     MOVE: 0,
     DROP: 1,
     PICKUP: -1,
@@ -55,6 +55,8 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
             break;
           case Info.ACTIONS.THANKED.name:
             this._thankedActions.add(quest.reasonForQuest);
+            this._agentScores.get(terms.agent2).score = 1;
+            console.log(this._agentScores.get(terms.agent2).score);
             break;
         }
       }
@@ -97,8 +99,9 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
      * list can shrink
      */
     for (const quest of ClientAPI.playerAgent.activeGivenQuests) {
-      this._questingAgents.add(quest.receiver);
-      this.registerQuest(quest);
+      if (!this.questingAgents.has(quest.receiver)) {
+        this.registerQuest(quest);
+      }
     }
   }
 
@@ -151,8 +154,6 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   }
 
   public parseInfo() {
-    this.updateQuests();
-
     for (const item of this._unownedItems) {
       if (ClientAPI.playerAgent.hasItem(item)) {
         this._unownedItems.delete(item);
@@ -178,6 +179,7 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
         this.calcEffectOfAction(info);
       }
     }
+    this.updateQuests();
   }
 
   private constructor() {
@@ -217,17 +219,18 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   }
 
   public getReasonForItemQuest(agent: Agent, item: Item) {
-    if (this._previousQuests.has(agent)) {
-      for (const quest of this._previousQuests.get(agent)) {
-        for (const turnIn of quest.turnedInInfo) {
-          const terms = turnIn.getTerms();
-          if (terms.item === item) {
-            return turnIn;
-          }
-        }
-      }
-    }
-    return undefined;
+    return Helper.getLastInfoOnItem(item);
+    // if (this._previousQuests.has(agent)) {
+    //   for (const quest of this._previousQuests.get(agent)) {
+    //     for (const turnIn of quest.turnedInInfo) {
+    //       const terms = turnIn.getTerms();
+    //       if (terms.item === item) {
+    //         return turnIn;
+    //       }
+    //     }
+    //   }
+    // }
+    // return undefined;
   }
 
   public get validQuestItems(): { key: Item; val: number }[] {
@@ -246,7 +249,10 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
       Info.ACTIONS.ARRESTED.name
     )) {
       const terms = info.getTerms();
-      if (!this._avengedActions.has(info) && terms.agent2 === agent) {
+      if (
+        !this._avengedActions.has(info) &&
+        (terms.agent2 === agent || terms.agent2 === ClientAPI.playerAgent)
+      ) {
         return { target: terms.agent1, reason: info };
       }
     }
