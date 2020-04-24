@@ -11,7 +11,7 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
     ARRESTED: -10,
     ASSAULTED: -10,
     STOLE: -6,
-    PAID: 1
+    PAID: 1,
   };
 
   protected _agentScores = new Map<Agent, AgentReputation>();
@@ -104,8 +104,10 @@ export class PoliceKnowledgeBase extends KnowledgeBase {
     if (criminal && ClientAPI.playerAgent.faction === criminal.faction) {
       return;
     }
-    if (
-      criminal &&
+    if (!criminal) {
+      // can't punish crime if criminal is not known
+      this.punishedCrimes.add(crime);
+    } else if (
       !criminal.agentStatus.has("dead") &&
       !this.activeWarrants.has(criminal) &&
       !this.punishedCrimes.has(crime)
