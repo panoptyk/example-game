@@ -433,7 +433,10 @@ body {
   border-color: var(--borders);
   border-style: solid;
 }
-.game-tab {
+.b-tabs .tab-content {
   color: var(--text-color-primary);
+  max-height: 900px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 </style>

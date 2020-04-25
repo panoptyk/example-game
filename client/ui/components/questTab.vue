@@ -1,9 +1,7 @@
 <template>
   <div id="quest-tab" class="game-tab">
-    <div class="container">
-      Filters: NONE
-    </div>
-    <template v-for="q of subsetQuests">
+    <h3>Active Quests</h3>
+    <template v-for="q of openQuests">
       <div class="quest-box" v-bind:key="q.id">
         <div class="quest-id">#{{ q.id }}</div>
         <div class="quest-text">
@@ -11,6 +9,7 @@
         </div>
       </div>
     </template>
+    <h3>Completed Quests</h3>
     <template v-for="q of closedQuests">
       <div class="quest-box" v-bind:key="q.id">
         <div class="quest-id">#{{ q.id }}</div>
@@ -19,16 +18,6 @@
         </div>
       </div>
     </template>
-    <b-pagination
-      :total="total"
-      :current="curPage"
-      :per-page="perPage"
-      @change="onPageChange"
-      aria-next-label="Next page"
-      aria-previous-label="Previous page"
-      aria-page-label="Page"
-      aria-current-label="Current page"
-    ></b-pagination>
   </div>
 </template>
 
@@ -39,7 +28,7 @@ import {
   Room,
   Item,
   Info,
-  Quest
+  Quest,
 } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import QuestEntry from "./questEntry.vue";
@@ -47,55 +36,28 @@ import { UI } from "./../ui";
 
 @Component({
   components: {
-    "quest-entry": QuestEntry
-  }
+    "quest-entry": QuestEntry,
+  },
 })
 export default class QuestTab extends Vue {
   @Prop({ default: 0 }) trigger: number;
 
-  quests = [];
-  subsetQuests = [];
+  openQuests = [];
   closedQuests = [];
-
-  total = 0;
-  curPage = 1;
-  perPage = 10;
-  onPageChange(page) {
-    this.curPage = page;
-  }
 
   @Watch("trigger")
   updateInfo() {
     if (!ClientAPI.playerAgent) {
-      this.quests = [];
       return;
     }
 
-    this.quests = ClientAPI.playerAgent.activeAssignedQuests;
-    this.closedQuests = ClientAPI.playerAgent.closedAssignedQuests;
+    this.openQuests = ClientAPI.playerAgent.activeAssignedQuests;
+    this.closedQuests = ClientAPI.playerAgent.closedAssignedQuests.reverse();
     const pastVal = UI.instance.main.$data.activeQuest;
-    UI.instance.main.$data.activeQuests = this.quests.length;
-    if (pastVal < this.quests.length) {
+    UI.instance.main.$data.activeQuests = this.openQuests.length;
+    if (pastVal < this.openQuests.length) {
       UI.instance.addMessage("You have recieved a new quest!", true);
     }
-  }
-
-  @Watch("quests")
-  updateTotal() {
-    this.total = this.quests.length;
-  }
-
-  @Watch("curPage")
-  @Watch("total")
-  portionOfInfo() {
-    const start = (this.curPage - 1) * this.perPage;
-    const end = Math.min(start + this.perPage, this.total);
-    this.subsetQuests = this.quests
-      .slice(0)
-      .sort((a, b) => {
-        return b - a;
-      })
-      .slice(start, end);
   }
 }
 </script>
