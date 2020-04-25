@@ -76,7 +76,7 @@ export default class QuestTab extends Vue {
   flex: 0;
   text-align: left;
   padding-left: 10px;
-  min-width: 100px;
+  min-width: 75px;
 }
 .quest-text {
   flex: 1;

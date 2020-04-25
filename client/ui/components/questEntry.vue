@@ -1,6 +1,5 @@
 <template>
   <div class="quest-entry">
-    {{ status }} <br />
     {{ taskDescription }} <br />
     <span v-for="b in sentence" v-bind:key="b.text" v-bind:class="b.type">
       {{ b.text }}
