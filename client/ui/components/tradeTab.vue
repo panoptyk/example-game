@@ -379,6 +379,7 @@ export default class TradeTab extends Vue {
   @Prop({ default: [] }) items: Item[];
   @Prop({ default: [] }) inventory: Item[];
   @Prop({ default: [] }) knowledge: Info[];
+  @Prop({ default: [] }) questions: Info[];
   @Prop({ default: [] }) validAnswers: Info[];
   @Prop({ default: undefined }) question: Info;
   @Prop({ default: undefined }) answer: Info;
@@ -457,12 +458,14 @@ export default class TradeTab extends Vue {
   }
 
   // trade controls tab
-  questions: Info[] = [];
   @Watch("knowledge")
   updateQuestions() {
     this.questions = ClientAPI.playerAgent
       .getInfoByAction(Info.ACTIONS.ASK.name)
-      .map((i) => i.getTerms().info);
+      .map((i) => {
+        const terms = i.getTerms();
+        return terms.info ? terms.info : i;
+      });
     this.onQuestionSelect();
   }
 
