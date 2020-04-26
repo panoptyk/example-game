@@ -8,14 +8,44 @@
           position="is-centered"
         >
           <b-tab-item label="Inspect">
-            <inspect-tab v-bind:trigger="trigger" v-bind:target="inspectTarget"></inspect-tab>
+            <div class="topcorner">
+              <b-tooltip
+                label="This tab informs you about your character. It also displays information on any room, item, or other character you have left-clicked on."
+                position="is-left"
+                multilined
+                :delay="200"
+                ><b-icon icon="help-circle"></b-icon
+              ></b-tooltip>
+            </div>
+            <inspect-tab
+              v-bind:trigger="trigger"
+              v-bind:target="inspectTarget"
+            ></inspect-tab>
           </b-tab-item>
 
           <b-tab-item label="Items">
+            <div class="topcorner">
+              <b-tooltip
+                label="his tab displays the items you possess and their ID number."
+                position="is-left"
+                multilined
+                :delay="200"
+                ><b-icon icon="help-circle"></b-icon
+              ></b-tooltip>
+            </div>
             <item-tab v-bind:trigger="trigger"></item-tab>
           </b-tab-item>
 
           <b-tab-item label="Info">
+            <div class="topcorner">
+              <b-tooltip
+                label="This tab shows all of the information you have observed/gathered. It is an important archive of all of the actions you and others have done. The list can be filterd according to the dropdown boxes."
+                position="is-left"
+                multilined
+                :delay="200"
+                ><b-icon icon="help-circle"></b-icon
+              ></b-tooltip>
+            </div>
             <info-tab
               v-bind:trigger="trigger"
               v-bind:defaultActions="listOfActions"
@@ -27,13 +57,25 @@
           </b-tab-item>
 
           <b-tab-item v-bind:label="'Quests [' + activeQuests + ']'">
+            <div class="topcorner">
+              <b-tooltip
+                label="This tab displays active quests given to you by your guild leader."
+                position="is-left"
+                multilined
+                :delay="200"
+                ><b-icon icon="help-circle"></b-icon
+              ></b-tooltip>
+            </div>
             <quest-tab v-bind:trigger="trigger"></quest-tab>
           </b-tab-item>
         </b-tabs>
       </div>
       <div id="game-outline">
         <div id="game-top-bar">
-          <div v-if="showTopBar"><span class="room">{{ room }}</span> | <span class="time">{{ dateString }}</span></div>
+          <div v-if="showTopBar">
+            <span class="room">{{ room }}</span> |
+            <span class="time">{{ dateString }}</span>
+          </div>
         </div>
         <div id="phaser-game"></div>
         <console
@@ -49,10 +91,28 @@
           position="is-centered"
         >
           <b-tab-item v-bind:label="'Requests [' + requestsTally + ']'">
+            <div class="topcorner">
+              <b-tooltip
+                label="This tab displays any requests you have received to converse or trade with others."
+                position="is-left"
+                multilined
+                :delay="200"
+                ><b-icon icon="help-circle"></b-icon
+              ></b-tooltip>
+            </div>
             <request-tab v-bind:trigger="trigger"></request-tab>
           </b-tab-item>
 
           <b-tab-item label="Conversation">
+            <div class="topcorner">
+              <b-tooltip
+                label="Once in a conversation, this tab will provide all the actions you can take while conversing. You may build and ask a question, tell information directly, see all previously asked questions, and turn in quests to you guild leader."
+                position="is-left"
+                multilined
+                :delay="200"
+                ><b-icon icon="help-circle"></b-icon
+              ></b-tooltip>
+            </div>
             <convo-tab
               ref="convo"
               v-bind:trigger="trigger"
@@ -65,6 +125,15 @@
           </b-tab-item>
 
           <b-tab-item label="Trade">
+            <div class="topcorner">
+              <b-tooltip
+                label="Once in a trade, this tab will provide all the actions you can take while trading. You are able to offer/request gold, items, and answers to questions. Offers will be shown, and recieved requests can be passed on."
+                position="is-left"
+                multilined
+                :delay="200"
+                ><b-icon icon="help-circle"></b-icon
+              ></b-tooltip>
+            </div>
             <trade-tab
               v-bind:trigger="trigger"
               v-bind:items="items"
@@ -99,8 +168,8 @@ import Console from "./components/console.vue";
     "trade-tab": tradeTab,
     "quest-tab": questTab,
     "inspect-tab": inspectTab,
-    console: Console
-  }
+    console: Console,
+  },
 })
 export default class App extends Vue {
   trigger = 0;
@@ -124,7 +193,6 @@ export default class App extends Vue {
   // Tab logic
   activeQuests = 0;
   requestsTally = 0;
-
 
   // Top Bar logic
   showTopBar = false;
@@ -162,116 +230,116 @@ export default class App extends Vue {
 <style lang="scss">
 // Overall bulma edits
 $text: rgb(243, 227, 193);
-$scheme-main: #83796F;
-$border-light: #DFD2B5;
+$scheme-main: #83796f;
+$border-light: #dfd2b5;
 
 // Import Bulma's core
 @import "~bulma/sass/utilities/_all";
 
 // Set your colors
-$primary: #82232B;
+$primary: #82232b;
 $primary-invert: findColorInvert($primary);
 $twitter: #4099ff;
 $twitter-invert: findColorInvert($twitter);
-$success: #DFD2B5;
+$success: #dfd2b5;
 $success-invert: findColorInvert($primary);
-$danger: #82232B;
+$danger: #82232b;
 $danger-invert: findColorInvert($primary);
 
 // Notification color edits
-$notification-background-color: #83796F;
+$notification-background-color: #83796f;
 
 // Dropdown color edits
-$dropdown-content-background-color: #83796F;
+$dropdown-content-background-color: #83796f;
 $dropdown-item-color: $text;
 
 // Card color edits
 $card-color: rgb(243, 227, 193);
-$card-header-color: #25050E;
+$card-header-color: #25050e;
 $card-background-color: $scheme-main;
 
 // Panoptyk Colors
-$action: #E1AD5B;
+$action: #e1ad5b;
 $action-invert: findColorInvert($action);
-$agent: #62A1C3;
+$agent: #62a1c3;
 $agent-invert: findColorInvert($agent);
-$room: #C79386;
+$room: #c79386;
 $room-invert: findColorInvert($room);
-$item: #7CC890;
+$item: #7cc890;
 $item-invert: findColorInvert($item);
-$info: #64C87E;
+$info: #64c87e;
 $info-invert: findColorInvert($info);
-$time: #F3EED9;
+$time: #f3eed9;
 $time-invert: findColorInvert($time);
-$faction: #CBB96D;
+$faction: #cbb96d;
 $faction-invert: findColorInvert($faction);
 
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 $colors: (
   "action": (
     $action,
-    $action-invert
+    $action-invert,
   ),
   "agent": (
     $agent,
-    $agent-invert
+    $agent-invert,
   ),
   "room": (
     $room,
-    $room-invert
+    $room-invert,
   ),
   "item": (
     $item,
-    $item-invert
+    $item-invert,
   ),
   "info": (
     $info,
-    $info-invert
+    $info-invert,
   ),
   "time": (
     $time,
-    $time-invert
+    $time-invert,
   ),
   "faction": (
     $faction,
-    $faction-invert
+    $faction-invert,
   ),
   "white": (
     $white,
-    $black
+    $black,
   ),
   "black": (
     $black,
-    $white
+    $white,
   ),
   "light": (
     $light,
-    $light-invert
+    $light-invert,
   ),
   "dark": (
     $dark,
-    $dark-invert
+    $dark-invert,
   ),
   "primary": (
     $primary,
-    $primary-invert
+    $primary-invert,
   ),
   "success": (
     $success,
-    $success-invert
+    $success-invert,
   ),
   "warning": (
     $warning,
-    $warning-invert
+    $warning-invert,
   ),
   "danger": (
     $danger,
-    $danger-invert
+    $danger-invert,
   ),
   "twitter": (
     $twitter,
-    $twitter-invert
-  )
+    $twitter-invert,
+  ),
 );
 
 // Links
@@ -304,10 +372,10 @@ input.is-small.input {
 
 // Panoptyk UI variables
 :root {
-  --borders: #DFD2B5;
+  --borders: #dfd2b5;
   --background: rgb(12, 8, 9);
-  --item-border: #DFD2B5;
-  --item-background: #83796F;
+  --item-border: #dfd2b5;
+  --item-background: #83796f;
   --text-color-primary: rgb(243, 227, 193);
   --text-color-secondary: antiquewhite;
 }
@@ -395,5 +463,11 @@ body {
 }
 .game-tab {
   color: var(--text-color-primary);
+}
+
+.topcorner {
+  position: absolute;
+  top: 1px;
+  right: 1px;
 }
 </style>
