@@ -36,7 +36,7 @@ export class WanderingMerchantBehavior extends BehaviorState {
     return this._activeInstance;
   }
 
-  constructor(idleTimeRoom = 15000, nextState?: () => BehaviorState) {
+  constructor(idleTimeRoom = 10000, nextState?: () => BehaviorState) {
     super(nextState);
     this.idleTimeRoom = idleTimeRoom;
     this.currentActionState = new IdleState(
@@ -92,7 +92,21 @@ export class WanderingMerchantBehavior extends BehaviorState {
     // location change depends on time of day
     const timeOfDay = new Date(getPanoptykDatetime()).getHours();
     const curRoom = ClientAPI.playerAgent.room;
-    if (timeOfDay <= 7 && curRoom.roomName !== "Straw Roof Inn") {
+    if (
+      (timeOfDay > 12 && timeOfDay <= 17) ||
+      ClientAPI.playerAgent.inventory.length < 1
+    ) {
+      if (
+        Date.now() - this.startTime >
+        WanderingMerchantBehavior.activeInstance.idleTimeRoom
+      ) {
+        const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
+        return new MoveState(
+          potentialRooms[Helper.randomInt(0, potentialRooms.length)],
+          WanderingMerchantBehavior.moveTransition
+        );
+      }
+    } else if (timeOfDay <= 7 && curRoom.roomName !== "Straw Roof Inn") {
       return WanderingMerchantBehavior.activeInstance.getNextMove(
         "Straw Roof Inn"
       );
@@ -104,17 +118,6 @@ export class WanderingMerchantBehavior extends BehaviorState {
       return WanderingMerchantBehavior.activeInstance.getNextMove(
         "Redbrick Cafe"
       );
-    } else if (timeOfDay > 12 && timeOfDay <= 17) {
-      if (
-        Date.now() - this.startTime >
-        WanderingMerchantBehavior.activeInstance.idleTimeRoom
-      ) {
-        const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
-        return new MoveState(
-          potentialRooms[Helper.randomInt(0, potentialRooms.length)],
-          WanderingMerchantBehavior.moveTransition
-        );
-      }
     } else if (
       timeOfDay > 17 &&
       timeOfDay <= 23 &&
@@ -147,10 +150,7 @@ export class WanderingMerchantBehavior extends BehaviorState {
     }
     const potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
     if (potentialRooms.includes(dest)) {
-      return new MoveState(
-        dest,
-        WanderingMerchantBehavior.moveTransition
-      );
+      return new MoveState(dest, WanderingMerchantBehavior.moveTransition);
     }
     return new MoveState(
       potentialRooms[Helper.randomInt(0, potentialRooms.length)],
