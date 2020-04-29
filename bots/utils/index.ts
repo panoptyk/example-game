@@ -36,3 +36,4 @@ export { NavigateToRoomBehavior } from "./BehaviorStates/navigateToRoomBState";
 export { TellRewardQuestState } from "./ActionStates/tellrewardQuestAState";
 export { WaitState } from "./ActionStates/waitAState";
 export { RequestGoldTradeState } from "./ActionStates/requestGoldAState";
+export { RejectConersationState } from "./ActionStates/rejectConvAState";

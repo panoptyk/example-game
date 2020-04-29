@@ -4,7 +4,7 @@ import {
   FailureAction,
   SuccessBehavior,
   FailureBehavior,
-  ActionState
+  ActionState,
 } from "../../../../lib";
 import { ClientAPI } from "panoptyk-engine/dist/";
 import {
@@ -13,7 +13,8 @@ import {
   WaitState,
   AcceptConersationState,
   ListenToOther,
-  LeaveConersationState
+  LeaveConersationState,
+  RejectConersationState,
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
 
@@ -70,6 +71,11 @@ export class PoliceWatchBehavior extends BehaviorState {
           agent,
           PoliceWatchBehavior.acceptConversationTransition
         );
+      } else {
+        return new RejectConersationState(
+          agent,
+          PoliceWatchBehavior.rejectConversationTransition
+        );
       }
     }
     if (this.firstInRoom) {
@@ -82,7 +88,7 @@ export class PoliceWatchBehavior extends BehaviorState {
     let potentialRooms = ClientAPI.playerAgent.room.getAdjacentRooms();
     if (ClientAPI.playerAgent.factionRank < 10) {
       potentialRooms = potentialRooms.filter(
-        room => !room.roomTags.has("private")
+        (room) => !room.roomTags.has("private")
       );
     }
     return new WaitState(3000, () => {
@@ -95,6 +101,15 @@ export class PoliceWatchBehavior extends BehaviorState {
 
   static acceptConversationTransition(
     this: AcceptConersationState
+  ): ActionState {
+    if (this.completed || this.doneActing) {
+      return PoliceWatchBehavior.instance.getNextAction();
+    }
+    return this;
+  }
+
+  static rejectConversationTransition(
+    this: RejectConersationState
   ): ActionState {
     if (this.completed || this.doneActing) {
       return PoliceWatchBehavior.instance.getNextAction();
