@@ -73,6 +73,20 @@ export class WanderingMerchantBehavior extends BehaviorState {
     }
 
     if (ClientAPI.playerAgent.conversation) {
+      const other = Helper.getOthersInConversation()[0];
+      if (
+        !WanderingMerchantBehavior.activeInstance.conversedAgents.has(
+          other
+        )
+      ) {
+        WanderingMerchantBehavior.activeInstance.conversedAgents.add(
+          other
+        );
+        return new TellItemOwnershipState(
+          ClientAPI.playerAgent.inventory,
+          WanderingMerchantBehavior.tellWaresTransition
+        );
+      }
       return new ListenToOther(
         Helper.WAIT_FOR_OTHER,
         WanderingMerchantBehavior.listenTransition
