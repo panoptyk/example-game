@@ -146,12 +146,7 @@ export class PoliceLeader extends Strategy {
         );
       }
 
-      if (ClientAPI.playerAgent.tradeRequesters[0]) {
-        return new TradeBehavior(
-          ClientAPI.playerAgent.tradeRequesters[0],
-          PoliceLeader.genericTransition
-        );
-      } else if (PoliceLeader.isValidQuestingAgent(other)) {
+      if (PoliceLeader.isValidQuestingAgent(other)) {
         return PoliceLeader.activeInstance.assignQuestToIdleAgent(other);
       }
     }

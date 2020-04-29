@@ -112,7 +112,7 @@ export class CrimeLeader extends Strategy {
       agent2: target,
       time: undefined,
       loc: undefined,
-      info: reason
+      info: reason,
     });
     return new GiveQuestBehavior(
       agent,
@@ -169,12 +169,7 @@ export class CrimeLeader extends Strategy {
         );
       }
 
-      if (ClientAPI.playerAgent.tradeRequesters[0]) {
-        return new TradeBehavior(
-          ClientAPI.playerAgent.tradeRequesters[0],
-          CrimeLeader.defaultTransition
-        );
-      } else if (CrimeLeader.isValidQuestingAgent(other)) {
+      if (CrimeLeader.isValidQuestingAgent(other)) {
         return CrimeLeader.instance.assignQuestToIdleAgent(other);
       }
     }
