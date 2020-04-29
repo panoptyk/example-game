@@ -73,6 +73,7 @@ export class PoliceInformant extends Strategy {
         return new TellInfo(
           other,
           this.crimesToReport,
+          false,
           PoliceInformant.tellCrimesTransition
         );
       }
@@ -86,6 +87,7 @@ export class PoliceInformant extends Strategy {
           return new TellInfo(
             other,
             this.crimesToReport,
+            true,
             PoliceInformant.tellCrimesTransition
           );
         }
@@ -109,6 +111,7 @@ export class PoliceInformant extends Strategy {
         return new TellInfo(
           other,
           PoliceInformant.instance.crimesToReport,
+          true,
           PoliceInformant.tellCrimesTransition
         );
       }
@@ -141,6 +144,7 @@ export class PoliceInformant extends Strategy {
         return new TellInfo(
           agent,
           PoliceInformant.instance.crimesToReport,
+          true,
           PoliceInformant.tellCrimesTransition
         );
       }

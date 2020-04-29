@@ -4,19 +4,20 @@ import {
   SuccessAction,
   FailureAction,
   SuccessBehavior,
-  FailureBehavior
+  FailureBehavior,
 } from "../../lib";
 import { ClientAPI, Agent, Info } from "panoptyk-engine/dist/";
 import * as Helper from "../helper";
 import {
   LeaveConersationState,
   TellInfoState,
-  RequestConversationState
+  RequestConversationState,
 } from "../";
 
 export class TellInfo extends BehaviorState {
   _targetAgent: Agent;
   _toTell: Info[];
+  _leaveAfter: boolean;
 
   private static _activeInstance: TellInfo;
   static get activeInstance(): TellInfo {
@@ -26,25 +27,36 @@ export class TellInfo extends BehaviorState {
   constructor(
     targetAgent: Agent,
     toTell: Info[],
+    leaveAfter = false,
     nextState?: () => BehaviorState
   ) {
     super(nextState);
     this._targetAgent = targetAgent;
     this._toTell = toTell;
-    if (ClientAPI.playerAgent.conversation) {
-      if (ClientAPI.playerAgent.conversation.contains_agent(this._targetAgent)) {
-        this.currentActionState = new TellInfoState(
+    this._leaveAfter = leaveAfter;
+    this.currentActionState = this.getNextAction();
+  }
+
+  public getNextAction() {
+    if (this._toTell.length === 0) {
+      if (this._leaveAfter && ClientAPI.playerAgent.conversation) {
+        return new LeaveConersationState(TellInfo.leaveTransition);
+      }
+      return SuccessAction.instance;
+    } else if (ClientAPI.playerAgent.conversation) {
+      if (
+        ClientAPI.playerAgent.conversation.contains_agent(this._targetAgent)
+      ) {
+        return new TellInfoState(
           this._toTell.pop(),
           [],
           TellInfo.tellTransition
         );
       } else {
-        this.currentActionState = new LeaveConersationState(
-          TellInfo.leaveTransition
-        );
+        return new LeaveConersationState(TellInfo.leaveTransition);
       }
     } else {
-      this.currentActionState = new RequestConversationState(
+      return new RequestConversationState(
         this._targetAgent,
         TellInfo.requestConversationTransition
       );
@@ -58,10 +70,7 @@ export class TellInfo extends BehaviorState {
 
   static leaveTransition(this: LeaveConersationState): ActionState {
     if (this.completed) {
-      return new RequestConversationState(
-        TellInfo.activeInstance._targetAgent,
-        TellInfo.requestConversationTransition
-      );
+      return TellInfo.activeInstance.getNextAction();
     }
     return this;
   }
@@ -87,18 +96,8 @@ export class TellInfo extends BehaviorState {
   }
 
   static tellTransition(this: TellInfoState): ActionState {
-    if (this.completed) {
-      if (TellInfo.activeInstance._toTell[0]) {
-        return new TellInfoState(
-          TellInfo.activeInstance._toTell.pop(),
-          [],
-          TellInfo.tellTransition
-        );
-      } else {
-        return SuccessAction.instance;
-      }
-    } else if (this.doneActing) {
-      return FailureAction.instance;
+    if (this.completed || this.doneActing) {
+      return TellInfo.activeInstance.getNextAction();
     }
     return this;
   }

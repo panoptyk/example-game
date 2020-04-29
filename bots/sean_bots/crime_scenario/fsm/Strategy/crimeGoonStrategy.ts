@@ -195,6 +195,7 @@ export class CrimeGoon extends Strategy {
         return new TellInfo(
           agent,
           [CrimeGoon.instance.activeQuest.info],
+          false,
           CrimeGoon.tellQuestTransition
         );
       }
@@ -223,6 +224,7 @@ export class CrimeGoon extends Strategy {
         return new TellInfo(
           agent,
           [CrimeGoon.instance.activeQuest.info],
+          false,
           CrimeGoon.tellQuestTransition
         );
       }

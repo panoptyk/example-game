@@ -75,6 +75,7 @@ export class PoliceAgent extends Strategy {
           return new TellInfo(
             agent,
             Array.from(toTell),
+            false,
             PoliceAgent.tellTransition
           );
         }

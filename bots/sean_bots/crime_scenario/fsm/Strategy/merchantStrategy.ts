@@ -17,6 +17,7 @@ import {
   SetTradeState,
   TellItemOwnershipState,
   RequestGoldTradeState,
+  RequestConversationState,
 } from "../../../../utils";
 import * as Helper from "../../../../utils/helper";
 import { WanderingMerchantBehavior } from "../BehaviorStates/wanderingMerchant";
@@ -39,7 +40,7 @@ export class Merchant extends Strategy {
   private constructor() {
     super();
     this.currentBehavior = new WanderingMerchantBehavior(
-      Helper.WAIT_FOR_OTHER / 2,
+      Helper.WAIT_FOR_OTHER / 3,
       Merchant.wanderTransition
     );
   }
@@ -51,7 +52,11 @@ export class Merchant extends Strategy {
 
   private markCrimeAndCriminal(criminal: Agent, crime: Info) {
     // may need reworking as we manage the way death is handled and reported
-    if (criminal === undefined || !criminal.agentStatus.has("dead")) {
+    if (
+      criminal === undefined ||
+      (!criminal.agentStatus.has("dead") &&
+        (!criminal.faction || criminal.faction.factionType !== "police"))
+    ) {
       if (criminal) this._knownCriminals.add(criminal);
       this._crimesToReport.add(crime);
     }
@@ -78,6 +83,8 @@ export class Merchant extends Strategy {
               this.markCrimeAndCriminal(terms.agent2, info);
             }
             break;
+          case "DROP":
+          case "POSSESS":
           case "PICKUP":
             if (
               item.itemTags.has("illegal") &&
@@ -142,12 +149,17 @@ export class Merchant extends Strategy {
         Merchant.tradeTransition,
         Merchant.tradeLogic
       );
-    } else if (Merchant.instance._crimesToReport.size > 0) {
+    } else if (
+      Merchant.instance._crimesToReport.size > 0 &&
+      !ClientAPI.playerAgent.conversation &&
+      !ClientAPI.playerAgent.conversationRequesters[0]
+    ) {
       for (const other of Helper.getOthersInRoom()) {
         if (other.faction && other.faction.factionType === "police") {
           return new TellInfo(
             other,
             Array.from(Merchant.instance._crimesToReport),
+            true,
             Merchant.reportCrimeTransition
           );
         }
@@ -157,6 +169,15 @@ export class Merchant extends Strategy {
   }
 
   public static reportCrimeTransition(this: TellInfo) {
+    if (
+      this.currentActionState instanceof RequestConversationState &&
+      ClientAPI.playerAgent.conversationRequesters.length > 0
+    ) {
+      return new WanderingMerchantBehavior(
+        Helper.WAIT_FOR_OTHER / 3,
+        Merchant.wanderTransition
+      );
+    }
     if (
       this.currentActionState instanceof SuccessAction ||
       this.currentActionState instanceof FailureAction
@@ -171,7 +192,7 @@ export class Merchant extends Strategy {
         Merchant.instance._crimesToReport.clear();
       }
       return new WanderingMerchantBehavior(
-        Helper.WAIT_FOR_OTHER / 2,
+        Helper.WAIT_FOR_OTHER / 3,
         Merchant.wanderTransition
       );
     }
@@ -184,7 +205,7 @@ export class Merchant extends Strategy {
       this.currentActionState instanceof FailureAction
     ) {
       return new WanderingMerchantBehavior(
-        Helper.WAIT_FOR_OTHER / 2,
+        Helper.WAIT_FOR_OTHER / 3,
         Merchant.wanderTransition
       );
     }

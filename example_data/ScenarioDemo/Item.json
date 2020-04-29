@@ -38,7 +38,7 @@
     },
     "5": {
       "id": 5,
-      "_itemName": "Dank Brownie",
+      "_itemName": "Suspicious Brownie",
       "_type": "common",
       "_quantity": 1,
       "_itemTags": ["illegal"],
@@ -65,7 +65,7 @@
     },
     "8": {
       "id": 8,
-      "_itemName": "Meth",
+      "_itemName": "Forged Papers",
       "_type": "rare",
       "_quantity": 1,
       "_itemTags": ["illegal"],
@@ -83,28 +83,28 @@
     },
     "10": {
       "id": 10,
-      "_itemName": "Ugly Garbage",
+      "_itemName": "Lockpicks",
       "_type": "common",
       "_quantity": 1,
-      "_itemTags": [],
+      "_itemTags": ["illegal"],
       "roomID": 1,
       "inTransaction": false
     },
     "11": {
       "id": 11,
-      "_itemName": "Smelly Garbage",
-      "_type": "common",
+      "_itemName": "Meth",
+      "_type": "rare",
       "_quantity": 1,
-      "_itemTags": [],
+      "_itemTags": ["illegal"],
       "roomID": 2,
       "inTransaction": false
     },
     "12": {
       "id": 12,
-      "_itemName": "Average Garbage",
-      "_type": "common",
+      "_itemName": "Moon Sugar",
+      "_type": "rare",
       "_quantity": 1,
-      "_itemTags": [],
+      "_itemTags": ["illegal"],
       "roomID": 3,
       "inTransaction": false
     },
