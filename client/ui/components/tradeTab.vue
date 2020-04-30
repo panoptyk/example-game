@@ -93,35 +93,47 @@
 
           <b-field class="no-margin" label="Answer" grouped>
             <span class="trade-text" style="margin-left: .5rem;"> Q: </span>
-            <b-select
-              placeholder="--ID--"
-              size="is-small"
-              class="trade-select"
-              v-model="question"
+            <b-tooltip
+              v-bind:label="sentenceStr(question)"
+              position="is-top"
+              multilined
+              :delay="50"
             >
-              <option disabled value>--ID--</option>
-              <option
-                v-for="q in questions"
-                v-bind:key="q.id"
-                v-bind:value="q"
-                >{{ q.id }}</option
+              <b-select
+                placeholder="--ID--"
+                size="is-small"
+                class="trade-select"
+                v-model="question"
               >
-            </b-select>
+                <option disabled value>--ID--</option>
+                <option
+                  v-for="q in questions"
+                  v-bind:key="q.id"
+                  v-bind:value="q"
+                  >{{ getType(q) }}#{{ q.id }}</option
+                >
+              </b-select>
+            </b-tooltip>
+
             <span class="trade-text"> A: </span>
-            <b-select
-              placeholder="--ID--"
-              size="is-small"
-              class="trade-select"
-              v-model="answer"
+            <b-tooltip
+              v-bind:label="sentenceStr(answer)"
+              position="is-top"
+              multilined
+              :delay="50"
             >
-              <option disabled value>--ID--</option>
-              <option
-                v-for="i in knowledge"
-                v-bind:key="i.id"
-                v-bind:value="i"
-                >{{ i.id }}</option
+              <b-select
+                placeholder="--ID--"
+                size="is-small"
+                class="trade-select"
+                v-model="answer"
               >
-            </b-select>
+                <option disabled value>--ID--</option>
+                <option v-for="i in answers" v-bind:key="i.id" v-bind:value="i"
+                  >{{ getType(i) }}#{{ i.id }}</option
+                >
+              </b-select>
+            </b-tooltip>
 
             <div class="trade-right">
               <b-button class="button" size="is-small" @click="onOfferAnswer"
@@ -246,7 +258,9 @@
               >
             </span>
             <span v-else>
-              {{ aName(req.agent) }} has asked for answers to question#{{ req.model.id }}.
+              {{ aName(req.agent) }} has asked for answers to question#{{
+                req.model.id
+              }}.
               {{ req.pass ? "Passed" : "" }}
               <b-button
                 v-if="!req.pass && aName(req.agent) !== 'You'"
@@ -256,7 +270,8 @@
                 outlined
                 class="request-button"
                 >Pass</b-button
-              > </span>
+              >
+            </span>
           </div>
         </div>
       </div>
@@ -269,6 +284,7 @@
 </template>
 
 <script lang="ts">
+import Sentence from "../../utils/sentence";
 import { ClientAPI, Agent, Item, Info } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 
@@ -283,11 +299,13 @@ export default class TradeTab extends Vue {
   }
 
   get posessItems() {
-    return this.items.filter(i => (i.agent ? i.agent.id : 0) === ClientAPI.playerAgent.id);
+    return this.items.filter(
+      (i) => (i.agent ? i.agent.id : 0) === ClientAPI.playerAgent.id
+    );
   }
 
   get masterItems() {
-    return this.items.filter(i => i.isMaster());
+    return this.items.filter((i) => i.isMaster());
   }
 
   aName(agent: Agent): string {
@@ -344,13 +362,13 @@ export default class TradeTab extends Vue {
     // figure out requests
     const processReq = (agent: Agent) => {
       return (pass, model) => {
-        let index = this.displayRequests.findIndex(val => {
+        let index = this.displayRequests.findIndex((val) => {
           return val.model.id === model.id && val.agent.id === agent.id;
         });
         const obj = {
           model,
           agent,
-          pass
+          pass,
         };
         if (index !== -1) {
           this.displayRequests[index] = obj;
@@ -386,20 +404,54 @@ export default class TradeTab extends Vue {
     ClientAPI.setTradeReadyStatus(this.indicateReady);
   }
 
+  // Style
+  getType(i: Info) {
+    if (i.isQuery()) {
+      return "Question";
+    } else if (i.isCommand()) {
+      return "Command";
+    } else {
+      return "Info";
+    }
+  }
+
+  sentenceStr(info: Info): string {
+    const sentence = (info != undefined && info.id >= 0) ? Sentence.fromInfo(info) : [];
+    const temp = sentence.reduce((a, b) => a + b.text, "");
+    return temp;
+  }
+
   // trade controls tab
   questions: Info[] = [];
   @Watch("knowledge")
   updateQuestions() {
     this.questions = ClientAPI.playerAgent
       .getInfoByAction(Info.ACTIONS.ASK.name)
-      .filter(i => !i.isQuery())
-      .map(i => i.getTerms().info);
+      .filter((i) => !i.isQuery())
+      .map((i) => i.getTerms().info);
   }
   gold: number;
   itemO: Item;
   itemR: Item;
-  question: Info;
-  answer: Info;
+  question: Info = {} as any;
+  answers: Info[] = [];
+  answer: Info = {} as any;
+
+  @Watch("question")
+  updateAnswers() {
+    if (this.question == undefined || this.question.id <= 0) {
+      this.answers = [];
+    }
+
+    if (this.question.getTerms().action !== undefined) {
+      this.answers = ClientAPI.playerAgent.getInfoByAction(
+        this.question.getTerms().action
+      );
+    } else {
+      this.answers = this.knowledge;
+    }
+    this.answers = this.answers.filter((ans) => ans.isAnswer(this.question));
+  }
 
   onOfferGold() {
     ClientAPI.addGoldToTrade(this.gold - this.myGoldOffer);

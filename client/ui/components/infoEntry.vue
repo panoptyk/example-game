@@ -1,8 +1,18 @@
 <template>
   <div class="info-entry">
-    <span v-for="b in sentence" v-bind:key="b.text" v-bind:class="b.type">
-      {{ b.text }}
-    </span>
+    <template v-for="b in sentence">
+      <b-tooltip
+        v-if="b.type === 'info'"
+        v-bind:key="b.text"
+        v-bind:label="sentenceStr(b.text)"
+        position="is-top"
+        multilined
+        :delay="200"
+      >
+        <span v-bind:class="b.type">{{ b.text }}</span>
+      </b-tooltip>
+      <span v-bind:key="b.text" v-bind:class="b.type" v-else>{{ b.text }}</span>
+    </template>
   </div>
 </template>
 
@@ -27,6 +37,13 @@ export default class InfoEntry extends Vue {
     return [];
   }
 
+  sentenceStr(infoRef: string): string {
+    const info = Info.getByID(parseInt(infoRef.split("#")[1], 10));
+    const sentence = info ? Sentence.fromInfo(info) : [];
+    const temp = sentence.reduce((a, b) => a + b.text, "");
+    return temp;
+  }
+
   spoofQuery(queryTerms): any {
     const info = {
       isQuery() {
@@ -34,7 +51,7 @@ export default class InfoEntry extends Vue {
       },
       getTerms: () => {
         return queryTerms;
-      }
+      },
     };
     return info;
   }

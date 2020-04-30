@@ -130,6 +130,7 @@
         <div class="content" style="max-height: 200px; overflow-y:auto;">
           <div v-for="q in questions" v-bind:key="q.id">
             <info-entry v-bind:info="q"></info-entry>
+            <span>( {{ knowsAnswer(q) ? "you know an answer" : "you don't know any answers" }} )</span>
           </div>
         </div>
       </div>
@@ -258,7 +259,7 @@
           </template>
         </div>
       </div>
-      <footer class="card-footer">
+      <footer class="card-footer" v-if="targetQuest && targetQuest.id != undefined">
         <a
           v-if="targetQuest.type !== 'item'"
           class="card-footer-item"
@@ -345,7 +346,7 @@ export default class ConverstaionTab extends Vue {
   @Prop({ default: [] }) agents;
   @Prop({ default: [] }) items;
   @Prop({ default: [] }) rooms;
-  @Prop({ default: [] }) knowledge;
+  @Prop({ default: [] }) knowledge: Info[];
 
   actionSelected = "";
   questionFields = [];
@@ -378,7 +379,7 @@ export default class ConverstaionTab extends Vue {
     if (ClientAPI.playerAgent === undefined) {
       return [];
     }
-    let items: { name: string; id: number; model: any }[];
+    let items: { text: string; id: number; model: any }[];
     val = val.replace(/\d/, "");
     switch (val) {
       case "agent":
@@ -400,7 +401,7 @@ export default class ConverstaionTab extends Vue {
         break;
       case "info":
         items = this.knowledge.map((k) => {
-          return { id: k.id, text: k.id, model: k };
+          return { id: k.id, text: k.id as any, model: k as any };
         });
         break;
       case "faction":
@@ -475,6 +476,18 @@ export default class ConverstaionTab extends Vue {
       this.targetQuest = {} as Quest;
     } else {
       this.onQuestSelect();
+    }
+  }
+
+  knowsAnswer(question: Info): boolean {
+    if (question.isQuery()) {
+      for (const ans of this.knowledge) {
+        if (ans.isAnswer(question)) {
+          return true;
+        }
+      }
+    } else {
+      return false;
     }
   }
 
