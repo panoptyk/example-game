@@ -18,7 +18,7 @@ class QuestHelper {
     return QuestHelper._instance;
   }
 
-  static MAX_QUESTS = 4;
+  static MAX_QUESTS = 2;
   static MIN_QUESTS = 1;
   static MAX_QUANTITY = 2;
   static MIN_QUANTITY = 1;
