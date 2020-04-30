@@ -21,6 +21,9 @@ export class CrimeQuestKnowledgeBase extends KnowledgeBase {
   private _unknownInfo = new Set<Info>();
   private _assignedInfoQuest = new Set<Info>();
   private _assignedItemQuest = new Set<Item>();
+  public get assignedItemQuest() {
+    return this._assignedItemQuest;
+  }
   private _questingAgents = new Set<Agent>();
   private _avengedActions = new Set<Info>();
   private _thankedActions = new Set<Info>();

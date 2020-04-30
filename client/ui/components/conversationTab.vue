@@ -69,7 +69,7 @@
           </div>
         </div>
         <footer class="card-footer">
-          <a class="card-footer-item" @click="onQuestTurnIn">Turn in Quest Info</a>
+          <a class="card-footer-item" @click="onQuestTurnIn">Turn in</a>
           <div v-if="isQuestGiver">
             <a class="card-footer-item" @click="onCompleteQuest"
               >Mark as Complete</a

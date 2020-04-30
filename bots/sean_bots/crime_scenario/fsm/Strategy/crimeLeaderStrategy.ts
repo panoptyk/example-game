@@ -197,7 +197,10 @@ export class CrimeLeader extends Strategy {
           ) {
             for (const info of quest.turnedInInfo) {
               const terms = info.getTerms();
-              if (!ClientAPI.playerAgent.hasItem(terms.item)) {
+              if (
+                !ClientAPI.playerAgent.hasItem(terms.item) &&
+                !KB.instance.assignedItemQuest.has(terms.item)
+              ) {
                 return quest;
               }
             }

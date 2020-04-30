@@ -187,7 +187,23 @@
       "_assignedQuests": [],
       "_givenQuests": [],
       "_faction": 2    
+    },
+    "13": {
+      "id": 13,
+      "_conversationID": 0,
+      "_agentName": "Admin",
+      "roomID": 13,
+      "_inventory": [],
+      "_knowledge": [],
+      "_gold": 1000,
+      "_conversationRequests": [],
+      "_conversationRequested": [],
+      "_tradeRequests": [],
+      "_tradeRequested": [],
+      "_assignedQuests": [],
+      "_givenQuests": [],
+      "_faction": 2    
     }
   },
-  "nextID": 13
+  "nextID": 14
 }

@@ -5,6 +5,9 @@ import { PoliceKnowledgeBase } from "./policeKnowledge";
 
 export class PoliceQuestKnowledgeBase extends PoliceKnowledgeBase {
   private _assignedItemQuest = new Set<Item>();
+  public get assignedItemQuest() {
+    return this._assignedItemQuest;
+  }
   private _questingAgents = new Set<Agent>();
   public get questingAgents() {
     return this._questingAgents;

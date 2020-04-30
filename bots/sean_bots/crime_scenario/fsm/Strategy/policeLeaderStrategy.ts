@@ -177,7 +177,8 @@ export class PoliceLeader extends Strategy {
               if (
                 (terms.item &&
                   !ClientAPI.playerAgent.hasItem(terms.item) &&
-                  terms.item.itemTags.has("illegal")) ||
+                  terms.item.itemTags.has("illegal") &&
+                  !KB.instance.assignedItemQuest.has(terms.item)) ||
                 (KB.instance.allCrimes.has(info) &&
                   !KB.instance.punishedCrimes.has(info))
               ) {
