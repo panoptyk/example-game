@@ -1,7 +1,7 @@
 <template>
   <div id="info-tab" class="game-tab">
     <div class="container">
-      Filters:
+      Filter by:
       <b-field type="is-action">
         <b-select
           placeholder="-- action --"
@@ -11,6 +11,7 @@
         >
           <option disabled value>-- action --</option>
           <option v-bind:value="'NONE'">NONE</option>
+          <option v-bind:value="'Question'">(questions only)</option>
           <option
             v-for="act in filteredActions"
             v-bind:key="act.display"
@@ -19,6 +20,9 @@
           >
         </b-select>
       </b-field>
+    </div>
+    <div class="container">
+      Sub-filters:
       <b-field type="is-agent">
         <b-select
           placeholder="-- agent --"
@@ -59,15 +63,18 @@
         >
           <option disabled value>-- item --</option>
           <option v-bind:value="undefined">none</option>
-          <option v-for="val in filterItems" v-bind:key="val.id" v-bind:value="val">{{
-            val.itemName + "#" + val.id
-          }}</option>
+          <option
+            v-for="val in filterItems"
+            v-bind:key="val.id"
+            v-bind:value="val"
+            >{{ val.itemName + "#" + val.id }}</option
+          >
         </b-select>
       </b-field>
     </div>
     <template v-for="i of subsetInfo">
       <div class="info-box" v-bind:key="i.id">
-        <div class="info-id">{{getType(i)}}#{{ i.id }}</div>
+        <div class="info-id">{{ getType(i) }}#{{ i.id }}</div>
         <div class="info-text">
           <info-entry v-bind:info="i"></info-entry>
         </div>
@@ -92,15 +99,15 @@ import {
   Agent,
   Room,
   Item,
-  Info
+  Info,
 } from "panoptyk-engine/dist/client";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 import InfoEntry from "./infoEntry.vue";
 
 @Component({
   components: {
-    "info-entry": InfoEntry
-  }
+    "info-entry": InfoEntry,
+  },
 })
 export default class InfoTab extends Vue {
   @Prop({ default: 0 }) trigger: number;
@@ -108,7 +115,7 @@ export default class InfoTab extends Vue {
   @Prop({ default: [] }) agents;
   @Prop({ default: [] }) items: Item[];
   @Prop({ default: [] }) rooms;
-  @Prop({ default: [] }) knowledge;
+  @Prop({ default: [] }) knowledge: Info[];
   get filteredActions() {
     // slices out the "???" used for conversationTab
     return this.defaultActions.slice(1);
@@ -117,14 +124,14 @@ export default class InfoTab extends Vue {
     if (!ClientAPI.playerAgent) {
       return this.agents;
     }
-    return this.agents.map(a => {
+    return this.agents.map((a) => {
       return a.agentName === ClientAPI.playerAgent.agentName
         ? { name: "(you)", model: a }
         : { name: a.agentName, model: a };
     });
   }
   get filterItems() {
-    return this.items.filter(i => {
+    return this.items.filter((i) => {
       return !i.isMaster();
     });
   }
@@ -132,6 +139,7 @@ export default class InfoTab extends Vue {
   // Page controls
   info = [];
   subsetInfo = [];
+  softTrigger = 0;
 
   total = 0;
   curPage = 1;
@@ -142,9 +150,10 @@ export default class InfoTab extends Vue {
   @Watch("info")
   updateTotal() {
     this.total = this.info.length;
+    this.softTrigger = (this.softTrigger + 1) % 2;
   }
   @Watch("curPage")
-  @Watch("total")
+  @Watch("softTrigger")
   portionOfInfo() {
     const start = (this.curPage - 1) * this.perPage;
     const end = Math.min(start + this.perPage, this.total);
@@ -209,17 +218,21 @@ export default class InfoTab extends Vue {
       filterInfo = ClientAPI.playerAgent.getInfoByLoc(room);
     } else if (item) {
       filterInfo = ClientAPI.playerAgent.getInfoByItem(item);
-    } else if (this.filterAction !== "NONE") {
+    } else if (this.filterAction !== "NONE" && this.filterAction !== "Question") {
       filterInfo = ClientAPI.playerAgent.getInfoByAction(this.filterAction);
+    } else if (this.filterAction === "Question") {
+      filterInfo = this.knowledge.filter(i => i.isQuery());
     } else {
       filterInfo = this.knowledge;
       this.info = filterInfo;
       return;
     }
-    if ((agent || room || item) && this.filterAction !== "NONE") {
+    if ((agent || room || item) && this.filterAction !== "NONE" && this.filterAction !== "Question") {
       filterInfo = filterInfo.filter((val: Info) => {
         return val.action === this.filterAction;
       });
+    } else if (this.filterAction === "Question") {
+      filterInfo = filterInfo.filter(i => i.isQuery());
     }
 
     this.info = filterInfo ? filterInfo : [];

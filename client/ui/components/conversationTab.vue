@@ -209,7 +209,7 @@
               >
             </b-select>
           </b-field>
-          <template v-if="targetQuest.id != undefined">
+          <template v-if="targetQuest && targetQuest.id != undefined">
             <quest-entry
               v-bind:key="targetQuest.id"
               v-bind:quest="targetQuest"
