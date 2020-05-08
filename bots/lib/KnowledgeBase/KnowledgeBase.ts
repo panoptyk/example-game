@@ -1,7 +1,8 @@
+import { RoomMap } from "./RoomMap";
 import { ClientAPI, Info, Room } from "panoptyk-engine/dist/client";
+import { QuestionInfo } from "panoptyk-engine/dist/models/conversation";
 
-// TODO: needs a new name
-class KnowledgeBase {
+export class KnowledgeBase {
   // Singleton Pattern
   private static _instance: KnowledgeBase;
 
@@ -40,5 +41,5 @@ class KnowledgeBase {
   }
 }
 
-export { KnowledgeBase };
+// export { KnowledgeBase };
 export default KnowledgeBase.instance;
