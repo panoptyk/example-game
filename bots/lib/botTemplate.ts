@@ -24,10 +24,18 @@ function init() {
   console.log("Logging in as: " + username + " to server: " + address);
   logger.silence();
   address ? ClientAPI.init(address) : ClientAPI.init();
+  process.on("SIGINT", () => {
+    if (!_loggedIn) {
+      process.exit(0);
+    } else {
+      _endBot = true;
+    }
+  });
   attemptLogin();
 }
 
 let _retries = 1;
+let _loggedIn = false;
 function attemptLogin() {
   ClientAPI.login(username, password)
     .catch(res => {
@@ -40,6 +48,7 @@ function attemptLogin() {
     })
     .then(res => {
       console.log("Logged in!");
+      _loggedIn = true;
       // tslint:disable-next-line: ban
       setTimeout(actWrapper, 100);
     });
@@ -61,6 +70,9 @@ function actWrapper() {
   if (!_endBot) {
     // tslint:disable-next-line: ban
     setTimeout(actWrapper, ACT_INTERVAL);
+  } else {
+    console.log("bot exiting...");
+    process.exit(0);
   }
 }
 // Boilerplate agent code ================================================== END
