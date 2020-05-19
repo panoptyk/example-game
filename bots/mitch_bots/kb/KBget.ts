@@ -82,9 +82,9 @@ class KBget {
   }
 
   answerToQuestion(q: Info): Info {
-    for (let i = this.knowledge.length - 1; i >= 0; i++) {
+    for (let i = this.knowledge.length - 1; i >= 0; i--) {
       const ans = this.knowledge[i];
-      if (ans.isAnswer(q)) {
+      if (ans && ans.isAnswer(q)) {
         return ans;
       }
     }

@@ -1,4 +1,5 @@
 import { ActionState, FailureAction } from "../../lib";
+import { log } from "../util/log";
 
 
 export abstract class RetryActionState extends ActionState {
@@ -15,6 +16,7 @@ export abstract class RetryActionState extends ActionState {
 
   async tick() {
     if (this._timeOut && Date.now() - this.startTime > this._timeOut) {
+      log("> TimedOut", log.STATE);
       return FailureAction.instance;
     }
     return await super.tick();

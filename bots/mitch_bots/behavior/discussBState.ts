@@ -56,7 +56,7 @@ export class DiscussBehavior extends BehaviorState {
   _startTrade = false;
   _timedOut = false;
 
-  _tradeWait = 3000;
+  _tradeWait = 5000;
   _tradeTime = 0;
   _tradesRequested = 0;
 
@@ -116,9 +116,14 @@ export class DiscussBehavior extends BehaviorState {
       this._tradeTime = now;
       return false;
     }
+    const pplOfInterest = new Set(KB.get.agentsOfInterest());
+    const itsTime = now - this._tradeTime > this._tradeWait;
     if (KB.get.player.tradeRequesters.indexOf(this._target) !== -1) {
       return DECIDES.decide("accept-trade");
-    } else if (now - this._tradeTime > this._tradeWait) {
+    } else if (itsTime && pplOfInterest.has(this._target)) {
+      this._tradeTime = now;
+      return DECIDES.decide("decide-trade-poi");
+    } else if (itsTime) {
       this._tradeTime = now;
       return DECIDES.decide("decide-trade-random");
     }

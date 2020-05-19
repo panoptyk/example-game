@@ -9,7 +9,7 @@ export class AskQuestionAction extends RetryActionState {
   _timeToWait;
   _waitTime = 0;
 
-  constructor(info: any, timeout = 2500, nextState?: () => ActionState) {
+  constructor(info: any, timeout = 7000, nextState?: () => ActionState) {
     super(timeout, nextState);
     this._query = info;
     this._timeToWait = DELAYS.getDelay("convo-action");

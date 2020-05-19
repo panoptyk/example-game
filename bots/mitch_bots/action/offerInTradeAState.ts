@@ -10,7 +10,7 @@ export class OfferInTradeAction extends RetryActionState {
   _timeToWait;
   _waitTime = 0;
 
-  constructor(offer: any, timeout = 2500, nextState?: () => ActionState) {
+  constructor(offer: any, timeout = 3000, nextState?: () => ActionState) {
     super(timeout, nextState);
     this._offer = offer;
     this._isItem = this._offer instanceof Item;

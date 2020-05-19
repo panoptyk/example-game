@@ -72,7 +72,7 @@ class QuestHelper {
     });
 
     // advanced questions
-    // who GAVE who item?
+    // Agent GAVE who what?
     [2, 3, 4, 5, 6, 7, 8, 9].forEach(agentID => {
       const predicate = Info.ACTIONS.GAVE.getTerms(dummyInfo as Info);
       predicate.agent1 = { id: agentID } as Agent;

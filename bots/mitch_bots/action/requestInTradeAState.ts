@@ -1,5 +1,6 @@
 import { log } from "../util/log";
 import DELAYS from "../util/humanDelay";
+import Sentance from "../util/sentence";
 import { ActionState, SuccessAction } from "../../lib";
 import { RetryActionState } from "./retryActionState";
 import { Item, ClientAPI } from "panoptyk-engine/dist/client";
@@ -10,7 +11,7 @@ export class RequestInTradeAction extends RetryActionState {
   _timeToWait;
   _waitTime = 0;
 
-  constructor(req: any, timeout = 2500, nextState?: () => ActionState) {
+  constructor(req: any, timeout = 4000, nextState?: () => ActionState) {
     super(timeout, nextState);
     this._request = req;
     this._isItem = this._request instanceof Item;
@@ -29,7 +30,8 @@ export class RequestInTradeAction extends RetryActionState {
       });
     } else {
       await ClientAPI.requestAnswerTrade(this._request).then(res => {
-        log("Requested answer to question in trade: " + this._request, log.ACT);
+        const sentance = Sentance.fromInfo(this._request).reduce((a, b) => a + b.text, "");
+        log("Requested answer to question in trade: " + sentance + this._request, log.ACT);
         this._success = true;
       });
     }

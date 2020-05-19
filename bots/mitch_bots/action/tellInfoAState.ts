@@ -9,7 +9,7 @@ export class TellInfoAction extends RetryActionState {
   _timeToWait;
   _waitTime = 0;
 
-  constructor(info: Info, timeout = 2500, nextState?: () => ActionState) {
+  constructor(info: Info, timeout = 7000, nextState?: () => ActionState) {
     super(timeout, nextState);
     this._info = info;
     this._timeToWait = DELAYS.getDelay("convo-action");
