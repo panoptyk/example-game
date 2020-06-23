@@ -20,6 +20,7 @@
             <inspect-tab
               v-bind:trigger="trigger"
               v-bind:target="inspectTarget"
+              v-bind:rooms="rooms"
             ></inspect-tab>
           </b-tab-item>
 

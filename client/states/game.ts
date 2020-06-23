@@ -21,6 +21,8 @@ import { LeaveEvent } from "../components/events/leaveEvent";
 import { LogOffEvent } from "../components/events/logOffEvent";
 import { LogInEvent } from "../components/events/logInEvent";
 
+import { PathMap } from "../../bots/john_bots/PathMap";
+
 const offset = Date.UTC(2019, 9, 28); // Current server beginning of time
 
 class GameState extends Phaser.State {
@@ -104,6 +106,10 @@ class GameState extends Phaser.State {
     ClientAPI.addOnUpdateListener(models => {
       models.Info.forEach(i => {
         this.scheduleEventsFromInfo(i);
+        if (i.action === Info.ACTIONS.MOVE.name) {
+          const terms = i.getTerms();
+          PathMap.instance.addLocationTime(terms.agent, terms.loc1, terms.loc2, terms.time);
+        }
       });
       this.updateItems();
       this.UI.refresh();
@@ -208,7 +214,7 @@ class GameState extends Phaser.State {
     }
 
     // Check for decline
-    let requests = new Set();
+    let requests = new Set<Agent>();
     this.convoRequests.forEach(agent => {
       if (!player.conversationRequested.includes(agent)) {
         this.addConsoleMessage(
@@ -220,7 +226,7 @@ class GameState extends Phaser.State {
     });
     this.convoRequests = requests;
 
-    requests = new Set();
+    requests = new Set<Agent>();
     this.tradeRequests.forEach(agent => {
       if (!player.tradeRequested.includes(agent)) {
         this.addConsoleMessage(

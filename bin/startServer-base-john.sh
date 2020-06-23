@@ -17,11 +17,11 @@ ln -s ../../node_modules node_modules
 # time to set up server
 #sed -i "s/8080/$2/" panoptyk-settings.json
 #sed -i "s/localhost:8080/$EXT_IP/" ./client/app.ts
-npm run load-scenario Boot
+npm run load-scenario Boot2
 
 npm run webpack-client:dev 1>webpack.log 2>&1 & 
 npm run server 1>server.log 2>&1 & 
 sleep 30
 echo "$1 started on port $2"
-npm run bot ./bots/mitch_bots/questGiver.ts "Craftsmen Guild Leader" "pass" "http://localhost:$2" 1>guild1.bot.log 2>&1 & 
-npm run bot ./bots/mitch_bots/questGiver.ts "Informants Guild Leader" "pass" "http://localhost:$2" 1>guild2.bot.log 2>&1 &
+npm run bot ./bots/john_bots/mitchQuestGiver.ts "Craftsmen Guild Leader" "pass" "http://localhost:$2" "$3" 1>guild1.bot.log 2>&1 & 
+npm run bot ./bots/john_bots/mitchQuestGiver.ts "Informants Guild Leader" "pass" "http://localhost:$2" "$3" 1>guild2.bot.log 2>&1 &

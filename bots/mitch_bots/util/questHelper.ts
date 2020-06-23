@@ -68,6 +68,7 @@ class QuestHelper {
     [2, 3, 4, 5, 6, 7, 8, 9].forEach(agentID => {
       const predicate = Info.PREDICATE.TAL.getTerms(dummyInfo as Info);
       predicate.agent = { id: agentID } as Agent;
+      console.log(predicate);
       this.possibleQuestions.push(predicate);
     });
 
@@ -76,6 +77,7 @@ class QuestHelper {
     [2, 3, 4, 5, 6, 7, 8, 9].forEach(agentID => {
       const predicate = Info.ACTIONS.GAVE.getTerms(dummyInfo as Info);
       predicate.agent1 = { id: agentID } as Agent;
+      console.log(predicate);
       this.possibleQuestions2.push(predicate);
     });
     // who told agent what?

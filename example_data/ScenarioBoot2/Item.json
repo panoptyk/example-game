@@ -1,0 +1,77 @@
+{
+  "objects": {
+    "1": {
+      "id": 1,
+      "_itemName": "Cherry Log",
+      "_type": "Material",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    },
+    "2": {
+      "id": 2,
+      "_itemName": "Birch Stick",
+      "_type": "Material",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    },
+    "3": {
+      "id": 3,
+      "_itemName": "Small Stone",
+      "_type": "Material",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    },
+    "4": {
+      "id": 4,
+      "_itemName": "Iron Shield",
+      "_type": "Weapon",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    },
+    "5": {
+      "id": 5,
+      "_itemName": "Broken Barrel",
+      "_type": "Material",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    },
+    "6": {
+      "id": 6,
+      "_itemName": "Distilled Lubricant",
+      "_type": "Material",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    },
+    "7": {
+      "id": 7,
+      "_itemName": "Mythril Chef's Knife",
+      "_type": "Weapon",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    },
+    "8": {
+      "id": 8,
+      "_itemName": "Lump of Silver",
+      "_type": "Material",
+      "_quantity": 1,
+      "_itemTags": [],
+      "_master": 0,
+      "inTransaction": false
+    }
+  },
+  "nextID": 9
+}
